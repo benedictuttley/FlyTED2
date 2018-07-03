@@ -8,7 +8,13 @@
 
    <h2>General Query EQUAL TO</h2>
   <form method="post" action="/query">
-      <input type="text" name="Genral">
+    <input type="text" name="Genral">
+    <select name="Group">
+      <option value="GenA">Genotype A</option>
+      <option value="GenB">Genotype B</option>
+      <option value="Probe">Probe</option>
+      <option value="Probe">None</option>
+    </select>
   </form>
   <br>
 
@@ -18,15 +24,19 @@
  </form>
  <br>
 
- <h2>X-coordinate Query GREATER THAN</h2>
+ <h2>X-coordinate Query</h2>
 <form method="post" action="/x_query">
-    <input type="text" name="xAxis">
+    <input type="text" name="x_min" placeholder="Min X-coordinate">  <!-- If empty, any value permitted -->
+    <input type="text" name="x_max" placeholder="Max X-coordinate">  <!-- If empty, any value permitted -->
+    <input type="submit" value="Query">
 </form>
 <br>
 
-<h2>Y-coordinate Query GREATER THAN</h2>
+<h2>Y-coordinate Query</h2>
 <form method="post" action="/y_query">
-   <input type="text" name="yAxis">
+   <input type="text" name="y_min" placeholder="Min Y-coordinate">  <!-- If empty, any value permitted -->
+   <input type="text" name="y_max" placeholder="Max Y-coordinate">  <!-- If empty, any value permitted -->
+   <input type="submit" value="Query">
 </form>
 <br>
 

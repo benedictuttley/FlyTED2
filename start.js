@@ -22,7 +22,7 @@ app.post("/test", function (req, res) {
     res.send('Understood');
 });
 
-app.get('/', (req, res) => {res.sendFile('/home/benedict/Desktop/index.html')});
+app.get('/', (req, res) => {res.sendFile('/home/benedict/Desktop/FlyTED2/index.html')});
 
 
 // Demo handlebar helper function:
@@ -41,15 +41,6 @@ app.get('/htest', (req,res) => {
     }
   });
 });
-
-//
-// res.render('hello', {
-//     query_result: [
-//       "Yehuda Katz",
-//       "Alan Johnson",
-//       "Charles Jolley"
-//     ]});
-//   });
 
 app.listen(3000, () => console.log('App active on port:3000'))
 
@@ -87,15 +78,13 @@ function test(callback) {
 // Listen for general query post from HTML form:
 app.post('/query', (req, res) => {
 
-  console.log("General Query received");
-
   fetchAll((err, result) => {
     if (err) {
       throw err
     } else {
       res.send(result)
     }
-  });
+  }, req.body.Group);
 });
 
 
@@ -124,7 +113,7 @@ app.post('/x_query', (req, res) => {
     } else {
       res.send(result)
     }
-  }, req.body.xAxis);
+  }, req.body.x_min, req.body.x_max);
 });
 
 // List for probe query post from HTML form:
@@ -132,7 +121,7 @@ app.post('/y_query', (req, res) => {
 
   console.log("Y-coordinate Query received");
 
-  fetchX((err, result) => {
+  fetchY((err, result) => {
     if (err) {
       throw err
     } else {
@@ -171,21 +160,66 @@ app.post('/genb_query', (req, res) => {
 });
 
 
-// [1] Fetch all entries in table and list them:
-function fetchAll(callback){
-  conn.query("SELECT * FROM Demo", (err, result) => {
-    if (err)
-     throw err;
+// TODO: [1] Fetch all entries in table and list them:
+function fetchAll(callback, Group){
+  var group_by;
+  Group.length == "None" ? group_by = (" GROUP BY " + Group) : group_by = "";
+
+  conn.query("SELECT * FROM Demo" + group_by, (err, result) => {
+    if (err){
+      throw err;
+    }
     else {
-      callback(null, result)
+      callback(null, result);
     }
   });
 }
+
+// TODO: [1] Fetch all entries and group them by probe name:
+function group_by_probe(){
+  conn.query("SELECT * FROM Demo GROUP BY Probe", (err, result) => {
+    if(err){
+      throw err;
+    }
+    else {
+      callback(null,result);
+    }
+  });
+}
+
+// TODO: Fetch all entries and group them by Genotype A:
+function group_by_genA() {
+  conn.query("SELECT * FROM Demo GROUP BY GenotypeA", (err, result) => {
+    if(err){
+      throw err;
+    }
+    else {
+      callback(null, result);
+    }
+  });
+}
+
+// TODO: Fetch all entries and group them by Genotype B:
+function group_by_genB() {
+  conn.query("SELECT * FROM Demo GROUP BY GENOTYPE B", (err, result) => {
+    if(err){
+      throw err;
+    } else {
+      callback(null, result);
+    }
+  });
+}
+
 
 // [2] Fetch all entries with a certain Probe name and list them:
+// [2.a] Select enries corresponding to multiple probes:
 function fetchProbe(callback, probeName){
-  console.log(probeName);
-  conn.query("SELECT * FROM Demo WHERE Probe = " + "'" + probeName + "'" , (err, result) => {
+  var formatted_probes = ""
+  probeName = probeName.split(", ");
+  probeName.forEach(probe => formatted_probes += ("'" + probe + "' "));
+  formatted_probes = news.trim().replace(/\s+/g, ', ');
+
+  conn.query("SELECT * FROM Demo WHERE Probe IN (" + formatted_probes + ")" , (err, result) => {
     if (err)
      throw err;
     else {
@@ -194,10 +228,31 @@ function fetchProbe(callback, probeName){
   });
 }
 
-// [3] Fetch all entries that have a particular x coordinate greater than a given number:
-function fetchX(callback, xAxis){
-  console.log(xAxis);
-  conn.query("SELECT * FROM Demo WHERE Xcoordinate >= " + "'" + xAxis + "'", (err, result) => {
+// [3] Fetch all entries that have a particular x-coordinate greater than a given number:
+function fetchX(callback, xMin, xMax){
+
+  // Check if min x-value or max x-value input is empty, if true then permit any lower/upper bound:
+  xMin.length == 0 ? xMin = 0 : xMin = xMin;
+  xMax.length == 0 ? xMax = "(SELECT MAX(Xcoordinate) FROM Demo)": xMax = xMax;
+
+  conn.query("SELECT * FROM Demo WHERE Xcoordinate >= " + "'" + xMin + "'" + " AND Xcoordinate <= " + xMax , (err, result) => {
+    if (err)
+      throw err;
+    else {
+      callback(null, result)
+    }
+  });
+}
+
+
+// [4] Fetch all entries that have a particular y-coordinate greater than a given number:
+function fetchY(callback, yMin, yMax){
+
+  // Check if min y-value or max y-value input is empty, if true then permit any lower/upper bound:
+  yMin.length == 0 ? yMin = 0 : yMin = y_Min;
+  yMax.length == 0 ? yMax = "SELECT MAX(Ycoordinate) FROM Demo" : yMax = y_Max;
+
+  conn.query("SELECT * FROM Demo WHERE Ycoordinate >= " + "'" + yMin + "'" + " AND Ycoordinate <= " +  yMax , (err, result) => {
     if (err)
      throw err;
     else {
@@ -206,21 +261,10 @@ function fetchX(callback, xAxis){
   });
 }
 
-// [4] Fetch all entries that have a particular y coordinate greater than a given number:
-function fetchX(callback, yAxis){
-  console.log(yAxis);
-  conn.query("SELECT * FROM Demo WHERE Ycoordinate >= " + "'" + yAxis + "'", (err, result) => {
-    if (err)
-     throw err;
-    else {
-      callback(null, result)
-    }
-  });
-}
 
 // [4] Fetch all entries that have a particular y coordinate greater than a given number:
 function fetchGenA(callback, genA){
-  console.log(genA);
+  co
   conn.query("SELECT * FROM Demo WHERE GenotypeA = " + "'" + genA + "'", (err, result) => {
     if (err)
      throw err;
@@ -241,3 +285,13 @@ function fetchGenB(callback, genB){
     }
   });
 }
+
+
+// Compound query builder:
+// Variables to consider: probe, slide, Genotype A and B, Date, Coordinates.
+
+// // TODO: Coordinates Options
+// --------------------
+
+// Options for coordinates: The range, from n to p, n to max, as a slider:
+// If unchecked then coordinate can be any value
