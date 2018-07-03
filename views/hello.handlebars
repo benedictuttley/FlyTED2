@@ -1,0 +1,13 @@
+<!-- hello.handlebars -->
+<h1>What is your infom: {{info}}</h1>
+
+<ul>
+  {{#each query_result}}
+  {{#with this}}
+    <li>{{this}}</li>
+    {{/with}}
+    <br>
+    <br>
+    <br>
+  {{/each}}
+</ul>
