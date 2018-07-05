@@ -15,6 +15,8 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+app.use(express.static('public'));  // Provide access to static files stored in the public directory:
+
 app.use(bodyParser.json());
 
 app.post("/test", function (req, res) {
@@ -26,9 +28,12 @@ app.get('/', (req, res) => {res.sendFile('/home/benedict/Desktop/FlyTED2/index.h
 
 
 // Demo handlebar helper function:
-Handlebars.registerHelper('with', (row) => {
+Handlebars.registerHelper('withi', (row) => {
   return JSON.stringify(row);
 });
+
+
+var testIt = {name: "ben", age: "20"}
 
 
 app.get('/htest', (req,res) => {
@@ -97,7 +102,9 @@ app.post('/probe_query', (req, res) => {
     if (err) {
       throw err
     } else {
-      res.send(result)
+      JSON.stringify(result);
+      let data = {query_result: result, test: testIt}
+      res.render('hello', data );
     }
   }, req.body.Probe);
 });
@@ -217,7 +224,7 @@ function fetchProbe(callback, probeName){
   var formatted_probes = ""
   probeName = probeName.split(", ");
   probeName.forEach(probe => formatted_probes += ("'" + probe + "' "));
-  formatted_probes = news.trim().replace(/\s+/g, ', ');
+  formatted_probes = formatted_probes.trim().replace(/\s+/g, ', ');
 
   conn.query("SELECT * FROM Demo WHERE Probe IN (" + formatted_probes + ")" , (err, result) => {
     if (err)

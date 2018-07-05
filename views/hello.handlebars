@@ -1,13 +1,17 @@
 <!-- hello.handlebars -->
-<h1>What is your infom: {{info}}</h1>
+<h1>RESULTS:</h1>
 
 <ul>
   {{#each query_result}}
+
+  <li>{{#withi this}}
+    {{/withi}}
   {{#with this}}
-    <li>{{this}}</li>
+    <img src="{{[link to file]}}" alt="test"> <!--NOTE: To get images to render, need to adjust
+                                                        python script to fix each image's file path.-->
     {{/with}}
-    <br>
-    <br>
-    <br>
+  </li>
   {{/each}}
+
+
 </ul>

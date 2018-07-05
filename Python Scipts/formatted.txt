@@ -1,0 +1,80 @@
+"file name" "link to file" "slide name" date user probe "probe concentration" "genotype a" "genotype b" objective optivar c-mount "stages shown in picture" "description of staining pattern" comments x-coordinate y-coordinate
+2007-05-01 /1-5-07/CG8564/wt01.bmp CG8564/comr 2007-04-20 EB CG8564 10.0 wt  10.0 1.25 y "whole testes" "mid elongation"  136.0 18.0
+2007-05-01 /1-5-07/CG8564/comr01.bmp CG8564/comr 2007-04-20 EB CG8564 10.0 comr  10.0 1.6 y "2 whole testes" "no signal"  138.0 10.0
+2007-05-01 /1-5-07/CG14735/wt01.bmp CG14735/aly 2007-04-20 EB CG14735 10.0 wt  10.0 1.6 y "whole testes" "mid-late elongation"  142.0 14.0
+2007-05-01 /1-5-07/CG14735/aly01.bmp CG14735/aly 2007-04-20 EB CG14735 10.0 aly  10.0 1.6 y "whole testes" "no signal" background 141.0 15.0
+2007-05-01 /1-5-07/CG8654/wt01.bmp CG8654/aly 2007-04-20 EB CG8654 10.0 wt  10.0 1.0 y "whole testes" "primary spermatocytes and early spermatids?" background 134.0 9.0
+2007-05-01 /1-5-07/CG8654/aly01.bmp CG8654/aly 2007-04-20 EB CG8654 10.0 aly  10.0 1.25 y "2 whole testes" "no signal" background 139.0 22.0
+2007-05-01 /1-5-07/CG4669/wt01.bmp CG4669/aly 2007-04-20 EB CG4669 10.0 wt  10.0 1.25 y "whole testes" "mid elongation"  140.0 22.0
+2007-05-01 /1-5-07/CG4669/aly01.bmp CG4669/aly 2007-04-20 EB CG4669 10.0 aly  10.0 1.6 y "whole testes" "no signal" background 141.0 21.0
+2007-05-01 /1-5-07/CG6349/wt01.bmp CG6349/aly 2007-04-20 EB CG6349 10.0 wt  10.0 1.25 y "whole testes" "mid-late elongation"  138.0 19.0
+2007-05-01 /1-5-07/CG6349/aly01.bmp CG6349/aly 2007-04-20 EB CG6349 10.0 aly  10.0 1.25 y "whole testes" "slight signal in all spermatocytes"  131.0 18.0
+2007-05-01 /1-5-07/CG8257/wt01.bmp CG8257/aly 2007-04-20 EB CG8257 10.0 wt  10.0 1.25 y "whole testes" "mid elongation"  141.0 21.0
+2007-05-01 /1-5-07/CG8257/aly01.bmp CG8257/aly 2007-04-20 EB CG8257 10.0 aly  10.0 1.25 y "whole testes" "early-mid spermatocytes"  148.0 21.0
+2007-05-01 /1-5-07/CG8257/wtandaly.bmp CG8257/aly 2007-04-20 EB CG8257 10.0 wt aly 10.0 1.0 y "2 whole testes" "mid elongation (wt), some expression in spermatocytes (aly)"  145.0 21.0
+2007-05-01 /1-5-07/CG10202/wt01.bmp CG10202/aly 2007-04-20 EB CG10202 10.0 wt  10.0 1.25 y "whole testes" "mid elongation"  138.0 20.0
+2007-05-01 /1-5-07/CG10202/aly01.bmp CG10202/aly 2007-04-20 EB CG10202 10.0 aly  10.0 1.25 y "whole testes" "no signal" background 139.0 18.0
+2007-05-01 /1-5-07/CG1317/wt01.bmp CG1317/aly 2007-04-20 EB CG1317 10.0 wt  10.0 1.25 y "whole testes" "early elongation" background 137.0 7.0
+2007-05-01 /1-5-07/CG1317/aly01.bmp CG1317/aly 2007-04-20 EB CG1317 10.0 aly  10.0 1.25 y "whole testes" "all spermatocytes"  131.0 18.0
+2007-05-01 /1-5-07/CG11141/wtandaly.bmp CG11141/aly 2007-04-20 EB CG11141 10.0 wt aly 10.0 1.0 y "2 whole testes" "mid-late elongation (wt), all spermatocytes (aly)"  136.0 17.0
+2007-05-01 /1-5-07/CG11247/wt01.bmp CG11247/tomb 2007-04-20 EB CG11247 10.0 wt  10.0 1.6 y "whole testes" "slightly higher signal at tip and in early spermatocytes" "very low signal" 135.0 16.0
+2007-05-01 /1-5-07/CG11247/tomb01.bmp CG11247/tomb 2007-04-20 EB CG11247 10.0 tomb  10.0 1.6 y "whole testes" "slightly higher signal at tip and in early spermatocytes" "very low signal" 135.0 18.0
+2007-05-01 /1-5-07/CG31441/wt01.bmp CG31441/topi 2007-04-20 EB CG31441 10.0 wt  10.0 1.6 y "whole testes" spermatocytes "very low signal" 135.0 13.0
+2007-05-01 /1-5-07/CG31441/topi01.bmp CG31441/topi 2007-04-20 EB CG31441 10.0 topi  10.0 1.6 y "whole testes" "slight signal in all spermatocytes"  148.0 23.0
+2007-05-01 /1-5-07/CG31388/wt01.bmp CG31388/topi 2007-04-20 EB CG31388 10.0 wt  10.0 1.0 y "2 whole testes" "slight signal in all spermatocytes"  139.0 19.0
+2007-05-01 /1-5-07/CG31388/topi01.bmp CG31388/topi 2007-04-20 EB CG31388 10.0 topi  10.0 1.6 y "whole testes" "slight signal in all spermatocytes"  129.0 13.0
+2007-05-01 /1-5-07/CG33490/wt01.bmp CG33490/tomb 2007-04-20 EB CG33490 10.0 wt  10.0 1.6 y "whole testes" "mid elongation" "low signal" 144.0 21.0
+2007-05-01 /1-5-07/CG33490/tomb01.bmp CG33490/tomb 2007-04-20 EB CG33490 10.0 tomb  10.0 1.6 y "whole testes" "no signal" background 143.0 23.0
+2007-05-01 /1-5-07/sut4/wt01.bmp sut4/topi 2007-04-20 EB sut4 10.0 wt  10.0 1.6 y "whole testes" "mid elongation"  142.0 15.0
+2007-05-01 /1-5-07/sut4/topi01.bmp sut4/topi 2007-04-20 EB sut4 10.0 topi  10.0 1.6 y "2 whole testes" "no signal"  140.0 13.0
+2007-05-01 /1-5-07/CG6665/wt01.bmp CG6665/tomb 2007-04-20 EB CG6665 10.0 wt  10.0 1.6 y "whole testes" "slightly higher signal at tip and in early spermatocytes" background 145.0 154.0
+2007-05-01 /1-5-07/CG6665/wt02.bmp CG6665/tomb 2007-04-20 EB CG6665 10.0 wt  10.0 1.0 y "whole testes" "slightly higher signal at tip and in early spermatocytes" background 141.0 22.0
+2007-05-01 /1-5-07/CG6665/tomb01.bmp CG6665/tomb 2007-04-20 EB CG6665 10.0 tomb  10.0 1.25 y "whole testes" "slight signal in all spermatocytes"  134.0 16.0
+2007-05-01 /1-5-07/CG33489/wt01.bmp CG33489/tomb 2007-04-20 EB CG33489 10.0 wt  10.0 1.25 y "whole testes" "slight signal in all spermatocytes and early spermatids" "low signal" 133.0 12.0
+2007-05-01 /1-5-07/CG33489/tomb01.bmp CG33489/tomb 2007-04-20 EB CG33489 10.0 tomb  10.0 1.25 y "whole testes" "no signal"  135.0 6.0
+2007-05-01 /1-5-07/CG9861/wtandtomb.bmp CG9861/tomb 2007-04-20 EB CG9861 10.0 wt tomb 10.0 1.25 y "2 whole testes" "early elongation (wt), no signal (aly)"  136.0 11.0
+2007-05-01 /1-5-07/CG9861/wt01.bmp CG9861/tomb 2007-04-20 EB CG9861 10.0 wt  10.0 1.25 y "whole testes" "early-mid elongation"  131.0 16.0
+2007-05-01 /1-5-07/CG7387/wt01.bmp CG7387/comr 2007-04-20 EB CG7387 10.0 wt  10.0 1.6 y "whole testes" "mid elongation"  130.0 16.0
+2007-05-01 /1-5-07/CG7387/comr01.bmp CG7387/comr 2007-04-20 EB CG7387 10.0 comr  10.0 1.6 y "whole testes" "some signal in all spermatocytes"  133.0 12.0
+2007-05-01 /1-5-07/l(2)02045/wt01.bmp l(2)02045/comr 2007-04-20 EB l(2)02045 10.0 wt  10.0 1.0 y "2 whole testes" "mid elongation" background 130.0 16.0
+2007-05-01 /1-5-07/l(2)02045/comr01.bmp l(2)02045/comr 2007-04-20 EB l(2)02045 10.0 comr  10.0 1.6 y "whole testes" "no signal" background 137.0 8.0
+2007-05-01 /1-5-07/CG6388/wtandcomr.bmp CG6388/comr 2007-04-20 EB CG6388 10.0 wt comr 10.0 1.0 y "2 whole testes" "slight expression in spermatocytes?" background 135.0 11.0
+                
+2007-05-03 /3-5-07/CG5790/wt01.bmp CG5790/comr 2007-04-26 EB CG5790 10.0 wt  10.0 1.0 y "whole testes" "early elongation"  131.0 18.0
+2007-05-03 /3-5-07/CG5790/wtandcomr.bmp CG5790/comr 2007-04-26 EB CG5790 10.0 wt comr 10.0 1.0 y "2 whole testes" "early elongation(wt), some signal in all spermatocytes (comr)"  130.0 18.0
+2007-05-03 /3-5-07/CG9389/wt01.bmp CG9389/comr 2007-04-26 EB CG9389 10.0 wt  10.0 1.25 y "whole testes" "early elongation"  139.0 20.0
+2007-05-03 /3-5-07/CG9389/comr01.bmp CG9389/comr 2007-04-26 EB CG9389 10.0 comr  10.0 1.6 y "whole testes" "no signal"  138.0 15.0
+2007-05-03 /3-5-07/CG5718/wt01.bmp CG5718/comr 2007-04-26 EB CG5718 10.0 wt  10.0 1.25 y "whole testes" "late elongation" background 135.0 7.0
+2007-05-03 /3-5-07/CG5718/comr01.bmp CG5718/comr 2007-04-26 EB CG5718 10.0 comr  10.0 1.25 y "whole testes" "no signal" background 135.0 9.0
+2007-05-03 /3-5-07/CG5718/wt02.bmp CG5718/comr 2007-04-26 EB CG5718 10.0 wt  10.0 1.25 y "whole testes" "late elongation" background 134.0 20.0
+2007-05-03 /3-5-07/l(1)G0255/wt01.bmp l(1)G0255/aly 2007-04-26 EB l(1)G0255 10.0 wt  10.0 1.0 y "2 whole testes" "mid elongation"  131.0 19.0
+2007-05-03 /3-5-07/l(1)G0255/aly01.bmp l(1)G0255/aly 2007-04-26 EB l(1)G0255 10.0 aly  10.0 1.25 y "whole testes" "all spermatocytes"  129.0 12.0
+2007-05-03 /3-5-07/CG33340/wtandpongo.bmp CG33340/pongo 2007-04-26 EB CG33340 10.0 wt pongo 10.0 1.0 y "2 whole testes" "late elongation (wt), no signal (pongo)"  147.0 15.0
+2007-05-03 /3-5-07/CG16825/wt01.bmp CG16825/cani 2007-04-26 EB CG16825 10.0 wt  10.0 1.25 y "whole testes" spermatocytes "slight expression" 143.0 15.0
+2007-05-03 /3-5-07/CG16825/cani01.bmp CG16825/cani 2007-04-26 EB CG16825 10.0 cani  10.0 1.25 y "whole testes" "no signal"  144.0 14.0
+2007-05-03 "/3-5-07/CG16825/wt02(on pongo slide).bmp" CG16825/pongo 2007-04-26 EB CG16825 10.0 wt  10.0 1.25 y "whole testes" spermatocytes "slight expression" 137.0 14.0
+2007-05-03 /3-5-07/CG16825/pongo01.bmp CG16825/pongo 2007-04-26 EB CG16825 10.0 pongo  10.0 1.25 y "whole testes" "no signal"  129.0 11.0
+2007-05-03 /3-5-07/CG7069/wt01.bmp CG7069/comr 2007-04-26 EB CG7069 10.0 wt  10.0 1.25 y "whole testes" "early elongation" background 141.0 20.0
+2007-05-03 /3-5-07/CG7069/wtandcomr.bmp CG7069/comr 2007-04-26 EB CG7069 10.0 wt comr 10.0 1.25 y "2 whole testes" "early elongation (wt), no signal (comr)" background 141.0 20.0
+2007-05-03 /3-5-07/sut4/wt01.bmp sut4/cani 2007-04-26 EB sut4 10.0 wt  10.0 1.25 y "whole testes" "mid elongation"  144.0 13.0
+2007-05-03 /3-5-07/sut4/cani01.bmp sut4/cani 2007-04-26 EB sut4 10.0 cani  10.0 1.25 y "2 whole testes" "no signal" background 136.0 25.0
+2007-05-03 "/3-5-07/sut4/wt02 (aly slide).bmp" sut4/aly 2007-04-26 EB sut4 10.0 wt  10.0 1.25 y "whole testes" "mid elongation"  139.0 18.0
+2007-05-03 /3-5-07/sut4/aly01.bmp sut4/aly 2007-04-26 EB sut4 10.0 aly  10.0 1.25 y "whole testes" "no signal" background 137.0 19.0
+2007-05-03 "/3-5-07/CG5718/wt03(aly slide).bmp" CG5718/aly 2007-04-26 EB CG5718 10.0 wt  10.0 1.25 y "whole testes" "mid elongation"  145.0 17.0
+2007-05-03 /3-5-07/CG5718/aly01.bmp CG5718/aly 2007-04-26 EB CG5718 10.0 aly  10.0 1.25 y "whole testes" "some signal in all spermatocytes"  146.0 17.0
+2007-05-03 /3-5-07/CG3306/wt01.bmp CG3306/pongo 2007-04-26 EB CG3306 10.0 wt  10.0 1.25 y "whole testes" "early elongation"  140.0 17.0
+2007-05-03 /3-5-07/CG3306/pongo01.bmp CG3306/pongo 2007-04-26 EB CG3306 10.0 pongo  10.0 1.25 y "whole testes" "no signal"  131.0 20.0
+2007-05-03 /3-5-07/eIF-5C/wt01.bmp eIF-5C/pongo 2007-04-26 EB eIF-5C 10.0 wt  10.0 1.25 y "whole testes" "early elongation"  133.0 20.0
+2007-05-03 /3-5-07/eIF-5C/pongo01.bmp eIF-5C/pongo 2007-04-26 EB eIF-5C 10.0 pongo  10.0 1.25 y "whole testes" "no signal"  133.0 16.0
+2007-05-03 /3-5-07/emp/wt01.bmp emp/topi 2007-04-26 EB emp 10.0 wt  10.0 1.25 y "whole testes" "early elongation"  142.0 16.0
+2007-05-03 /3-5-07/emp/topi01.bmp emp/topi 2007-04-26 EB emp 10.0 topi  10.0 1.25 y "whole testes" "some signal in late spermatocytes"  137.0 15.0
+2007-05-03 /3-5-07/CG31441/wt01.bmp CG31441/topi 2007-04-26 EB CG31441 10.0 wt  10.0 1.25 y "2 whole testes" "some signal until early elongation"  150.0 11.0
+2007-05-03 /3-5-07/CG31441/topi01.bmp CG31441/topi 2007-04-26 EB CG31441 10.0 topi  10.0 1.25 y "whole testes" "some signal in all spermatocytes"  154.0 23.0
+2007-05-03 /3-5-07/CG10841/wt01.bmp CG10841/comr 2007-04-26 EB CG10841 10.0 wt  10.0 1.25 y "whole testes" "early-mid elongation"  149.0 18.0
+2007-05-03 /3-5-07/CG10841/comr01.bmp CG10841/comr 2007-04-26 EB CG10841 10.0 comr  10.0 1.25 y "whole testes" "slightin signal in spermatocytes"  150.0 10.0
+2007-05-03 /3-5-07/CG3345/wt01.bmp CG3345/comr 2007-04-26 EB CG3345 10.0 wt  10.0 1.25 y "whole testes" "mid-late elongation"  137.0 10.0
+2007-05-03 /3-5-07/CG3345/comr01.bmp CG3345/comr 2007-04-26 EB CG3345 10.0 comr  10.0 1.25 y "whole testes" "no signal"  140.0 7.0
+2007-05-03 /3-5-07/CG7816/wt01.bmp CG7816/topi 2007-04-26 EB CG7816 10.0 wt  10.0 1.25 y "whole testes" "mid elongation"  131.0 7.0
+2007-05-03 /3-5-07/CG7816/topi01.bmp CG7816/topi 2007-04-26 EB CG7816 10.0 topi  10.0 1.25 y "whole testes" "no signal"  142.0 11.0
+2007-05-03 /3-5-07/CG8006/wt01.bmp CG8006/comr 2007-04-26 EB CG8006 10.0 wt  10.0 1.25 y "whole testes" "slight signal until elongation"  151.0 6.0
+2007-05-03 /3-5-07/CG8006/comr01.bmp CG8006/comr 2007-04-26 EB CG8006 10.0 comr  10.0 1.25 y "whole testes" "no signal"  134.0 5.0
