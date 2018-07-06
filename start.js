@@ -4,81 +4,59 @@ const express = require('express')
 const app = express();
 const mysql = require('mysql');
 const bodyParser = require("body-parser");
-
+const ncbi = require('bionode-ncbi');
+const intermine = require('imjs');
 // Include handlbars
-const handlebars = require('express-handlebars');
+const handlebars = require('express-handlebars'); // For use in an express environment
 const Handlebars = require('handlebars');
-app.engine('handlebars', handlebars({defaultLayout: 'main'}));
+app.engine('handlebars', handlebars({
+  defaultLayout: 'main'
+}));
 app.set('view engine', 'handlebars');
 
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-    extended: true
+  extended: true
 }));
 
-app.use(express.static('public'));  // Provide access to static files stored in the public directory:
+app.use(express.static('public')); // Provide access to static files stored in the public directory
 
-app.use(bodyParser.json());
-
-app.post("/test", function (req, res) {
-    console.log(req.body.name)
-    res.send('Understood');
+// Current landing page
+app.get('/', (req, res) => {
+  res.sendFile('/home/benedict/Desktop/FlyTED2/index.html')
 });
 
-app.get('/', (req, res) => {res.sendFile('/home/benedict/Desktop/FlyTED2/index.html')});
 
-
-// Demo handlebar helper function:
+// Handlebar helper function to convert db row to JSON for nice output:
 Handlebars.registerHelper('withi', (row) => {
   return JSON.stringify(row);
-});
-
-
-var testIt = {name: "ben", age: "20"}
-
-
-app.get('/htest', (req,res) => {
-
-  fetchAll((err, result) => {
-    if (err) {
-      throw err
-    } else {
-      res.render('hello', {query_result: result});
-    }
-  });
 });
 
 app.listen(3000, () => console.log('App active on port:3000'))
 
 // Create mysql connection to existing FlyTed database:
 var conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'pmauser',
-    password: '[*3G4vlSp7',
-    database: 'FlyTed2'
+  host: 'localhost',
+  user: 'pmauser',
+  password: '[*3G4vlSp7',
+  database: 'FlyTed2'
 });
 
 // Test connection:
 conn.connect(err => {
-    if (err) throw err;
-    console.log("Mysql Connection Established");
+  if (err) throw err;
+  console.log("Mysql Connection Established");
 });
 
-// Query Database (simple) - Actual Function:
+// Query Database for all available rows:
 function test(callback) {
-    conn.query('SELECT * FROM table_name_for_df ', (err, result) => {
-        if (err) throw err;
-        if (err)
-            callback(err, null);
-        else
-            callback(null, result);
-    });
+  conn.query('SELECT * FROM table_name_for_df ', (err, result) => {
+    if (err)
+      callback(err, null);
+    else
+      callback(null, result);
+  });
 }
-
-// Attempt to send FlyTed2 image to client and render on screen:
-// Need to:
-// Fetch from DB
-// Test Vue with db
-
 
 // Listen for general query post from HTML form:
 app.post('/query', (req, res) => {
@@ -98,13 +76,17 @@ app.post('/probe_query', (req, res) => {
 
   console.log("Probe Query received");
 
-  fetchProbe((err, result) => {
+  fetchProbe((err, result, myQuery) => {
     if (err) {
       throw err
     } else {
       JSON.stringify(result);
-      let data = {query_result: result, test: testIt}
-      res.render('hello', data );
+      let data = {
+        query_result: result,
+        test: testIt,
+        query: myQuery
+      }
+      res.render('hello', data);
     }
   }, req.body.Probe);
 });
@@ -168,28 +150,26 @@ app.post('/genb_query', (req, res) => {
 
 
 // TODO: [1] Fetch all entries in table and list them:
-function fetchAll(callback, Group){
+function fetchAll(callback, Group) {
   var group_by;
   Group.length == "None" ? group_by = (" GROUP BY " + Group) : group_by = "";
 
   conn.query("SELECT * FROM Demo" + group_by, (err, result) => {
-    if (err){
+    if (err) {
       throw err;
-    }
-    else {
+    } else {
       callback(null, result);
     }
   });
 }
 
 // TODO: [1] Fetch all entries and group them by probe name:
-function group_by_probe(){
+function group_by_probe() {
   conn.query("SELECT * FROM Demo GROUP BY Probe", (err, result) => {
-    if(err){
+    if (err) {
       throw err;
-    }
-    else {
-      callback(null,result);
+    } else {
+      callback(null, result);
     }
   });
 }
@@ -197,10 +177,9 @@ function group_by_probe(){
 // TODO: Fetch all entries and group them by Genotype A:
 function group_by_genA() {
   conn.query("SELECT * FROM Demo GROUP BY GenotypeA", (err, result) => {
-    if(err){
+    if (err) {
       throw err;
-    }
-    else {
+    } else {
       callback(null, result);
     }
   });
@@ -209,7 +188,7 @@ function group_by_genA() {
 // TODO: Fetch all entries and group them by Genotype B:
 function group_by_genB() {
   conn.query("SELECT * FROM Demo GROUP BY GENOTYPE B", (err, result) => {
-    if(err){
+    if (err) {
       throw err;
     } else {
       callback(null, result);
@@ -218,31 +197,37 @@ function group_by_genB() {
 }
 
 
-// [2] Fetch all entries with a certain Probe name and list them:
-// [2.a] Select enries corresponding to multiple probes:
-function fetchProbe(callback, probeName){
-  var formatted_probes = ""
-  probeName = probeName.split(", ");
-  probeName.forEach(probe => formatted_probes += ("'" + probe + "' "));
-  formatted_probes = formatted_probes.trim().replace(/\s+/g, ', ');
+// Select enries corresponding to multiple probes:
+function fetchProbe(callback, probeName) {
 
-  conn.query("SELECT * FROM Demo WHERE Probe IN (" + formatted_probes + ")" , (err, result) => {
+  let formatted_probes = formatProbes(probeName);
+  myQuery = "SELECT * FROM Demo WHERE Probe IN (" + formatted_probes + ")"
+
+  conn.query(myQuery, (err, result) => {
     if (err)
-     throw err;
+      throw err;
     else {
-      callback(null, result)
+      callback(null, result, myQuery);
     }
   });
 }
 
+function formatProbes(probeName) {
+  let formatted_probes = ""
+  probeName = probeName.split(", ");
+  probeName.forEach(probe => formatted_probes += ("'" + probe + "' "));
+  formatted_probes = formatted_probes.trim().replace(/\s+/g, ', ');
+  return formatted_probes;
+}
+
 // [3] Fetch all entries that have a particular x-coordinate greater than a given number:
-function fetchX(callback, xMin, xMax){
+function fetchX(callback, xMin, xMax) {
 
   // Check if min x-value or max x-value input is empty, if true then permit any lower/upper bound:
   xMin.length == 0 ? xMin = 0 : xMin = xMin;
-  xMax.length == 0 ? xMax = "(SELECT MAX(Xcoordinate) FROM Demo)": xMax = xMax;
+  xMax.length == 0 ? xMax = "(SELECT MAX(Xcoordinate) FROM Demo)" : xMax = xMax;
 
-  conn.query("SELECT * FROM Demo WHERE Xcoordinate >= " + "'" + xMin + "'" + " AND Xcoordinate <= " + xMax , (err, result) => {
+  conn.query("SELECT * FROM Demo WHERE Xcoordinate >= " + "'" + xMin + "'" + " AND Xcoordinate <= " + xMax, (err, result) => {
     if (err)
       throw err;
     else {
@@ -253,15 +238,15 @@ function fetchX(callback, xMin, xMax){
 
 
 // [4] Fetch all entries that have a particular y-coordinate greater than a given number:
-function fetchY(callback, yMin, yMax){
+function fetchY(callback, yMin, yMax) {
 
   // Check if min y-value or max y-value input is empty, if true then permit any lower/upper bound:
   yMin.length == 0 ? yMin = 0 : yMin = y_Min;
   yMax.length == 0 ? yMax = "SELECT MAX(Ycoordinate) FROM Demo" : yMax = y_Max;
 
-  conn.query("SELECT * FROM Demo WHERE Ycoordinate >= " + "'" + yMin + "'" + " AND Ycoordinate <= " +  yMax , (err, result) => {
+  conn.query("SELECT * FROM Demo WHERE Ycoordinate >= " + "'" + yMin + "'" + " AND Ycoordinate <= " + yMax, (err, result) => {
     if (err)
-     throw err;
+      throw err;
     else {
       callback(null, result)
     }
@@ -270,11 +255,11 @@ function fetchY(callback, yMin, yMax){
 
 
 // [4] Fetch all entries that have a particular y coordinate greater than a given number:
-function fetchGenA(callback, genA){
-  co
+function fetchGenA(callback, genA) {
+
   conn.query("SELECT * FROM Demo WHERE GenotypeA = " + "'" + genA + "'", (err, result) => {
     if (err)
-     throw err;
+      throw err;
     else {
       callback(null, result)
     }
@@ -282,16 +267,20 @@ function fetchGenA(callback, genA){
 }
 
 // [4] Fetch all entries that have a particular y coordinate greater than a given number:
-function fetchGenB(callback, genB){
-  console.log(genB);
+function fetchGenB(callback, genB) {
+
   conn.query("SELECT * FROM Demo WHERE GenotypeB = " + "'" + genB + "'", (err, result) => {
     if (err)
-     throw err;
+      throw err;
     else {
       callback(null, result)
     }
   });
 }
+
+// One API to provide limited NCBI data on the gene:
+// ncbi.search('gene', 'CG8564', (data) => {console.log(data)});
+
 
 
 // Compound query builder:
@@ -302,3 +291,106 @@ function fetchGenB(callback, genB){
 
 // Options for coordinates: The range, from n to p, n to max, as a slider:
 // If unchecked then coordinate can be any value
+
+
+
+
+// For FlyMine API: Fetch the following data can be fetched
+// Chromosome location
+// Description
+// Length
+// Alleles
+// Homologues
+// Protein information
+// Expression in different tissues
+// Expression at different developmental stages
+// Also include transcription link to fly atlas
+
+var flymine   = new intermine.Service({root: 'http://www.flymine.org/query'});
+// var query = {select: ['Tissue.expressionResults.*'], where: {'gene.secondaryIdentifier': "CG8564"}}
+var query = {select :['CDNAClone.tissueSource.*'], where: {'gene.secondaryIdentifier': "CG8564"}}
+flymine.rows(query).then(function(rows) {
+  rows.forEach((row) => {
+    console.log("*** " + row);
+  });
+});
+
+
+
+
+
+/* Install from npm: npm install imtables
+ * This snippet assumes the presence on the page of an element like:
+ * <div id="some-elem"></div>
+ */
+//var imtables = require('imtables');
+
+
+var selector = '#some-elem';
+var service  = {root: 'http://www.flymine.org/flymine/service/'};
+var query    = {
+  "name": "Gene_FlyAtlas",
+  "title": "Gene --> FlyAtlas expression data",
+  "comment": "06.06.07 updated to work from gene class - Philip",
+  "description": "For a given D. melanogaster gene, show expression data from FlyAtlas.",
+  "constraintLogic": "A and B and C and D and E and F",
+  "from": "Gene",
+  "select": [
+    "secondaryIdentifier",
+    "symbol",
+    "microArrayResults.mRNASignal",
+    "microArrayResults.mRNASignalSEM",
+    "microArrayResults.presentCall",
+    "microArrayResults.enrichment",
+    "microArrayResults.affyCall",
+    "microArrayResults.dataSets.name",
+    "microArrayResults.tissue.name"
+  ],
+  "orderBy": [
+    {
+      "path": "secondaryIdentifier",
+      "direction": "ASC"
+    }
+  ],
+  "where": [
+    {
+      "path": "organism.name",
+      "op": "=",
+      "value": "Drosophila melanogaster",
+      "code": "B",
+      "editable": false,
+      "switched": "LOCKED",
+      "switchable": false
+    },
+    {
+      "path": "microArrayResults",
+      "type": "FlyAtlasResult"
+    },
+    {
+      "path": "Gene",
+      "op": "LOOKUP",
+      "value": "CG8564",
+      "code": "A",
+      "editable": true,
+      "switched": "LOCKED",
+      "switchable": false
+    },
+    {
+      "path": "microArrayResults.affyCall",
+      "op": "NONE OF",
+      "values": [
+        "None"
+      ],
+      "code": "C",
+      "editable": true,
+      "switched": "ON",
+      "switchable": true
+    }
+  ]
+};
+
+flymine.rows(query).then(function(rows) {
+  rows.forEach((row) => {
+    console.log("*** " + row);
+  });
+});
