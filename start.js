@@ -4,11 +4,15 @@ const express = require('express')
 const app = express();
 const mysql = require('mysql');
 const bodyParser = require("body-parser");
-const ncbi = require('bionode-ncbi');
-const intermine = require('imjs');
-// Include handlbars
+
+const intermine = require('imjs'); // API to fetch Flymine data.
+
 const handlebars = require('express-handlebars'); // For use in an express environment
-const Handlebars = require('handlebars');
+const Handlebars = require('handlebars'); // For construncting the HTML files that contain results to user queries.
+
+const async = require('async'); // Used here for multiple asynchronous API calls where all results are stored in one results array.
+
+
 app.engine('handlebars', handlebars({
   defaultLayout: 'main'
 }));
@@ -26,10 +30,11 @@ app.get('/', (req, res) => {
   res.sendFile('/home/benedict/Desktop/FlyTED2/index.html')
 });
 
+// CREDIT: The API queries below were provided through the Flymine site, where UI queries can be translated into their actual query syntax.
+// Query [1] --> Find the expression score in all different tissues of the Drosophila for a given Gene:
 
-// Handlebar helper function to convert db row to JSON for nice output:
-Handlebars.registerHelper('withi', (row) => {
-  return JSON.stringify(row);
+const flymine = new intermine.Service({
+  root: 'http://www.flymine.org/query'
 });
 
 app.listen(3000, () => console.log('App active on port:3000'))
@@ -71,6 +76,98 @@ app.post('/query', (req, res) => {
 });
 
 
+
+function createExpressionQueries(probeName) {
+
+  let queries = {
+
+    // Expression (tissue) query:
+    expression_tissue_query: {
+      "name": "Gene_FlyAtlas",
+      "title": "Gene --> FlyAtlas expression data",
+      "comment": "06.06.07 updated to work from gene class - Philip",
+      "description": "For a given D. melanogaster gene, show expression data from FlyAtlas.",
+      "constraintLogic": "A and B and C and D and E and F",
+      "from": "Gene",
+      "select": [
+        "secondaryIdentifier",
+        "symbol",
+        "microArrayResults.mRNASignal",
+        "microArrayResults.mRNASignalSEM",
+        "microArrayResults.presentCall",
+        "microArrayResults.enrichment",
+        "microArrayResults.affyCall",
+        "microArrayResults.dataSets.name",
+        "microArrayResults.tissue.name"
+      ],
+      "orderBy": [{
+        "path": "secondaryIdentifier",
+        "direction": "ASC"
+      }],
+      "where": [{
+          "path": "organism.name",
+          "op": "=",
+          "value": "Drosophila melanogaster",
+          "code": "B",
+          "editable": false,
+          "switched": "LOCKED",
+          "switchable": false
+        },
+        {
+          "path": "microArrayResults",
+          "type": "FlyAtlasResult"
+        },
+        {
+          "path": "Gene",
+          "op": "LOOKUP",
+          "value": probeName,
+          "code": "A",
+          "editable": true,
+          "switched": "LOCKED",
+          "switchable": false
+        },
+        {
+          "path": "microArrayResults.affyCall",
+          "op": "NONE OF",
+          "values": [
+            "None"
+          ],
+          "code": "C",
+          "editable": true,
+          "switched": "ON",
+          "switchable": true
+        }
+      ]
+    },
+    // Expression (stage) query:
+    expression_stage_query: {
+      "from": "Gene",
+      "select": [
+        "primaryIdentifier",
+        "symbol",
+        "rnaSeqResults.stage",
+        "rnaSeqResults.expressionScore",
+        "rnaSeqResults.expressionLevel"
+      ],
+      "orderBy": [{
+        "path": "rnaSeqResults.stage",
+        "direction": "ASC"
+      }],
+      "where": [{
+        "path": "Gene",
+        "op": "LOOKUP",
+        "value": probeName,
+        "extraValue": "D. melanogaster",
+        "code": "A",
+        "editable": true,
+        "switched": "LOCKED",
+        "switchable": false
+      }]
+    }
+  }
+  return queries;
+}
+
 // List for probe query post from HTML form:
 app.post('/probe_query', (req, res) => {
 
@@ -81,12 +178,33 @@ app.post('/probe_query', (req, res) => {
       throw err
     } else {
       JSON.stringify(result);
-      let data = {
-        query_result: result,
-        test: testIt,
-        query: myQuery
-      }
-      res.render('hello', data);
+
+      // Example async API component A:
+      // test: function (callback) {flymine.rows((val) => {callback(null, val);
+      var queries = createExpressionQueries(req.body.Probe);
+
+      async.parallel({
+        tissue: function(callback) {
+          flymine.rows(queries.expression_tissue_query).then(rows => {
+            callback(null, rows)
+          });
+        },
+        stage: function(callback) {
+          flymine.rows(queries.expression_stage_query).then(rows => {
+            callback(null, rows)
+          });
+        }
+      }, function(err, results) {
+
+        let data = {
+          query_result: result,
+          query: myQuery,
+          exp_tissue: results.tissue,
+          exp_stage: results.stage
+        }
+        res.render('hello', data); // Serve Handlebars HTML page.
+      });
+
     }
   }, req.body.Probe);
 });
@@ -282,7 +400,6 @@ function fetchGenB(callback, genB) {
 // ncbi.search('gene', 'CG8564', (data) => {console.log(data)});
 
 
-
 // Compound query builder:
 // Variables to consider: probe, slide, Genotype A and B, Date, Coordinates.
 
@@ -292,105 +409,10 @@ function fetchGenB(callback, genB) {
 // Options for coordinates: The range, from n to p, n to max, as a slider:
 // If unchecked then coordinate can be any value
 
-
-
-
 // For FlyMine API: Fetch the following data can be fetched
-// Chromosome location
+// Snip location by calculating primer location through performing a BLAST on the 3' and 5'.
 // Description
-// Length
-// Alleles
-// Homologues
-// Protein information
 // Expression in different tissues
 // Expression at different developmental stages
-// Also include transcription link to fly atlas
-
-var flymine   = new intermine.Service({root: 'http://www.flymine.org/query'});
-// var query = {select: ['Tissue.expressionResults.*'], where: {'gene.secondaryIdentifier': "CG8564"}}
-var query = {select :['CDNAClone.tissueSource.*'], where: {'gene.secondaryIdentifier': "CG8564"}}
-flymine.rows(query).then(function(rows) {
-  rows.forEach((row) => {
-    console.log("*** " + row);
-  });
-});
-
-
-
-
-
-/* Install from npm: npm install imtables
- * This snippet assumes the presence on the page of an element like:
- * <div id="some-elem"></div>
- */
-//var imtables = require('imtables');
-
-
-var selector = '#some-elem';
-var service  = {root: 'http://www.flymine.org/flymine/service/'};
-var query    = {
-  "name": "Gene_FlyAtlas",
-  "title": "Gene --> FlyAtlas expression data",
-  "comment": "06.06.07 updated to work from gene class - Philip",
-  "description": "For a given D. melanogaster gene, show expression data from FlyAtlas.",
-  "constraintLogic": "A and B and C and D and E and F",
-  "from": "Gene",
-  "select": [
-    "secondaryIdentifier",
-    "symbol",
-    "microArrayResults.mRNASignal",
-    "microArrayResults.mRNASignalSEM",
-    "microArrayResults.presentCall",
-    "microArrayResults.enrichment",
-    "microArrayResults.affyCall",
-    "microArrayResults.dataSets.name",
-    "microArrayResults.tissue.name"
-  ],
-  "orderBy": [
-    {
-      "path": "secondaryIdentifier",
-      "direction": "ASC"
-    }
-  ],
-  "where": [
-    {
-      "path": "organism.name",
-      "op": "=",
-      "value": "Drosophila melanogaster",
-      "code": "B",
-      "editable": false,
-      "switched": "LOCKED",
-      "switchable": false
-    },
-    {
-      "path": "microArrayResults",
-      "type": "FlyAtlasResult"
-    },
-    {
-      "path": "Gene",
-      "op": "LOOKUP",
-      "value": "CG8564",
-      "code": "A",
-      "editable": true,
-      "switched": "LOCKED",
-      "switchable": false
-    },
-    {
-      "path": "microArrayResults.affyCall",
-      "op": "NONE OF",
-      "values": [
-        "None"
-      ],
-      "code": "C",
-      "editable": true,
-      "switched": "ON",
-      "switchable": true
-    }
-  ]
-};
-
-flymine.rows(query).then(function(rows) {
-  rows.forEach((row) => {
-    console.log("*** " + row);
-  });
-});
+// Include link to FlyMine
+// Include link to FlyBase
