@@ -1,17 +1,367 @@
 <!-- hello.handlebars -->
-<h1>RESULTS:</h1>
+
+<!--Load the AJAX API for google charts -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<!--Add collapsable Test-->
+<style>
+  /* Style the button that is used to open and close the collapsible content */
+
+  .tab {
+    width: 100%;
+    background-color: gray;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+  }
+
+
+
+
+  .collapsible {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+  }
+
+
+  /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+
+  .active,
+  .collapsible:hover {
+    background-color: #ccc;
+  }
+
+
+  /* Style the collapsible content. Note: hidden by default */
+
+  .content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+  }
+</style>
+
+<!--Current table styling-->
+<style>
+  #customers {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  #customers td,
+  #customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  #customers tr:nth-child(even) {
+    background-color: #f2f2f2;
+    color: black
+  }
+
+  #customers tr:hover {
+    background-color: #ddd;
+  }
+
+  #customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  #customersTwo {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  #customersTwo td,
+  #customersTwo th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  #customersTwo tr:nth-child(even) {
+    background-color: #f2f2f2;
+    color: black
+  }
+
+  #customersTwo tr:hover {
+    background-color: #ddd;
+  }
+
+  #customersTwo th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+  }
+</style>
+
+<script>
+  var data_array = [];
+  data_array.push(["Tissue Type", "Expression Count"]);
+</script>
+
+
+<!-- HTML START -->
+<h1>RESULTS FOR QUERY: {{query}}</h1>
 
 <ul>
   {{#each query_result}}
-
-  <li>{{#withi this}}
-    {{/withi}}
-  {{#with this}}
-    <img src="{{[link to file]}}" alt="test"> <!--NOTE: To get images to render, need to adjust
-                                                        python script to fix each image's file path.-->
-    {{/with}}
-  </li>
+    <li style="background-color: red; color: white; padding: 5px; border: 3px solid black">
+      {{#with this}}
+        <p>Probe: {{probe}}</p>
+        <p>Slide Name: {{[slide name]}}</p>
+        <p>Genotype A: {{[genotype a]}}</p>
+        <p>Genotype B: {{[genotype b]}}</p>
+        <p>Stages Shown: {{[stages shown in picture]}}</p>
+        <p>Description of Staining Pattern: {{[description of staining pattern]}}
+          <p>Observer Comments: {{comments}}</p>
+          <p>X-coordinate: {{x-coordinate}}</p>
+          <p>Y-coordinate: {{y-coordinate}}</p>
+      {{/with}}
+      {{#with this}}
+        <br>
+        <img src="{{[link to file]}}" alt="test" width="300px" height="300px" border="2px solid black">
+      {{/with}}
+    </li>
+    <br>
   {{/each}}
 
+  <div style="background-color: purple; color: white; padding: 5px; border: 3px solid black">
+    <h3>Tissue Type Expression for Gene by tissue:</h3>
+    <table style="width: 100%" id="customers">
+      <tr>
+        <th>Gene Secondary Identifier</th>
+        <th>Gene Symbol</th>
+        <th>mRNA Signal</th>
+        <th>mRNA Signal SEM</th>
+        <th>Present Call</th>
+        <th>Enrichment</th>
+        <th>Affy Call</th>
+        <th>Data Sets Name</th>
+        <th>Tissue Name</th>
+      </tr>
 
+      {{#each exp_tissue}}
+        <tr>
+          <script>
+            temp = []
+            temp.push("{{this.[8]}}");
+            temp.push(parseFloat("{{this.[3]}}"));
+            data_array.push(temp);
+          </script>
+
+          <td>{{this.[0]}}</td>
+          <td>{{this.[1]}}</td>
+          <td>{{this.[2]}}</td>
+          <td>{{this.[3]}}</td>
+          <td>{{this.[4]}}</td>
+          <td>{{this.[5]}}</td>
+          <td>{{this.[6]}}</td>
+          <td>{{this.[7]}}</td>
+          <td>{{this.[8]}}</td>
+        </tr>
+      {{/each}}
+    </table>
+  </div>
+
+  <div style="background-color: orange; color: white; padding: 5px; border: 3px solid black">
+    <h3>Expression for Gene by stage:</h3>
+    <table style="width: 100%" id="customersTwo">
+      <tr>
+        <th>Gene Secondary Identifier</th>
+        <th>Rna Seq Results Stage</th>
+        <th>Rna Seq Results Expression Score</th>
+        <th>Rna Seq Results Expression Level</th>
+      </tr>
+
+      {{#each exp_stage}}
+        <tr>
+          <td>{{this.[1]}}</td>
+          <td>{{this.[2]}}</td>
+          <td>{{this.[3]}}</td>
+          <td>{{this.[4]}}</td>
+        </tr>
+      {{/each}}
+    </table>
+  </div>
+  <!--Div that will hold the pie chart-->
+  <!-- <div id="chart_div" style="border: 2px solid black"></div> -->
+  <!-- <div class="container" style="width: 100%; margin: 0; padding:0">
+    <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading" style="background-color: green; color: white">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" href="#collapse1">Tissue Expression Graph</a>
+          </h4>
+        </div>
+        <div id="collapse1">
+          <div class="panel-body" >
+            <div id="chart_div" ></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <br>
+  <br>
+  <div class="tab" onclick="test()">PRESS ME</div>
+  <div id="chart_div" style="width: 100%; height: 100%; border: 2px solid black"></div>
 </ul>
+
+
+
+<script type="text/javascript">
+  // google.charts.load('current', {packages: ['corechart', 'bar']});
+  // google.charts.setOnLoadCallback(drawBasic);
+  //
+  // // Construct the google chart:
+  // function drawBasic() {
+  //   var data = google.visualization.arrayToDataTable(data_array);
+  //   var options = {
+  //     legend: 'bottom',
+  //     title: 'Tissue Expression Graph',
+  //     width: '100%',
+  //     height: 800,
+  //     colors: ['purple'],
+  //     hAxis: {
+  //       title: 'Tissue',
+  //       slantedText: true,  /* Enable slantedText for horizontal axis */
+  //       slantedTextAngle: 90, /* Define slant Angle */
+  //     },
+  //     chartArea: {  width: "82%", height: "80%", top: "5%"},
+  //
+  //     vAxis: {
+  //       title: 'Expression',
+  //       format: 'short',
+  //       slantedText: true,  /* Enable slantedText for horizontal axis */
+  //       slantedTextAngle: 90, /* Define slant Angle */
+  //       sliceVisibilityThreshold:0
+  //     },
+  //   };
+  //
+  //   var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+  //
+  //   function resize () {
+  //     var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+  //     chart.draw(data, options);
+  //   }
+
+
+  google.charts.load('current', {
+    'packages': ['corechart']
+  });
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+
+    var data = google.visualization.arrayToDataTable(data_array);
+
+    var options = {
+      legend: 'bottom',
+      width: '100%',
+      height: 800,
+      title: 'Gene Expression in Different Drosopilla Tissues',
+      colors: ['purple'],
+      hAxis: {
+        title: 'Tissue Type',
+        slantedText: true,
+        /* Enable slantedText for horizontal axis */
+        slantedTextAngle: 90,
+        /* Define slant Angle */
+      },
+      chartArea: {
+        width: "82%",
+        height: "80%",
+        top: "5%"
+      },
+      vAxis: {
+        title: 'Expression (mRNA Signal SEM)',
+        format: 'short',
+        slantedText: true,
+        /* Enable slantedText for horizontal axis */
+        slantedTextAngle: 90,
+        /* Define slant Angle */
+        sliceVisibilityThreshold: 0
+      },
+    };
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+    var container = document.getElementById('chart_div');
+    container.style.display = 'block';
+    google.visualization.events.addListener(chart, 'ready', function() {
+      container.style.display = 'none';
+    });
+    chart.draw(data, options);
+  }
+
+  function test() {
+    var x = document.getElementById('chart_div');
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+
+  function resize() {
+    var data = google.visualization.arrayToDataTable(data_array);
+
+    var options = {
+      legend: 'bottom',
+      width: '100%',
+      height: 800,
+      title: 'Gene Expression in Different Drosopilla Tissues',
+      colors: ['purple'],
+      hAxis: {
+        title: 'Tissue Type',
+        slantedText: true,
+        /* Enable slantedText for horizontal axis */
+        slantedTextAngle: 90,
+        /* Define slant Angle */
+      },
+      chartArea: {
+        width: "82%",
+        height: "80%",
+        top: "5%"
+      },
+      vAxis: {
+        title: 'Expression (mRNA Signal SEM)',
+        format: 'short',
+        slantedText: true,
+        /* Enable slantedText for horizontal axis */
+        slantedTextAngle: 90,
+        /* Define slant Angle */
+        sliceVisibilityThreshold: 0
+      },
+    };
+
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+    var container = document.getElementById('chart_div');
+    chart.draw(data, options);
+  }
+
+  window.onload = resize;
+  window.onresize = resize;
+</script>
