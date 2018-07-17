@@ -1,82 +1,106 @@
 <!-- hello.handlebars -->
 
-<!--Load the AJAX API for google charts -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<html lang="en">
 
-<!--Add collapsable Test-->
-<style>
-  /* Style the button that is used to open and close the collapsible content */
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"
+    integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+    integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
+    crossorigin="anonymous">
+  <!--Load the AJAX API for google charts -->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Results</title>
+
+
+
+  <!-- TODO: Create external stylesheets -->
+
+  <!-- Collapsable tab styling -->
+  <style>
   .tab {
+    margin-top: 8px;
     width: 100%;
     background-color: gray;
     color: white;
     cursor: pointer;
     padding: 5px;
+    height: auto;
   }
 
-
-
-
-  .collapsible {
-    background-color: #eee;
-    color: #444;
-    cursor: pointer;
-    padding: 18px;
-    width: 100%;
-    border: none;
-    text-align: left;
-    outline: none;
-    font-size: 15px;
-  }
-
-
-  /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-
-  .active,
-  .collapsible:hover {
+  .tab:hover {
     background-color: #ccc;
   }
+  </style>
 
+  <!--TODO: Change the class name and find a more suitable table design that is reposndive to changes in window size and can have search functionality added to it. -->
 
-  /* Style the collapsible content. Note: hidden by default */
-
-  .content {
-    padding: 0 18px;
-    display: none;
-    overflow: hidden;
-    background-color: #f1f1f1;
-  }
-</style>
-
-<!--Current table styling-->
-<style>
-  #customers {
+  <!--Current table styling-->
+  <style>
+  .customers {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
     width: 100%;
   }
 
-  #customers td,
-  #customers th {
-    border: 1px solid #ddd;
+  .customers td,
+  .customers th {
+    border: 1px solid #d4374a;
     padding: 8px;
   }
 
-  #customers tr:nth-child(even) {
+  .customers tr:nth-child(even) {
     background-color: #f2f2f2;
     color: black
   }
 
-  #customers tr:hover {
+  .customers tr:hover {
     background-color: #ddd;
   }
 
-  #customers th {
+  .customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #d4374a;
+    color: white;
+  }
+
+  .customersTwo {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .customersTwo td,
+  .customersTwo th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  .customersTwo tr:nth-child(even) {
+    background-color: #f2f2f2;
+    color: black
+  }
+
+  .customersTwo tr:hover {
+    background-color: #ddd;
+  }
+
+  .customersTwo th {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
@@ -84,197 +108,312 @@
     color: white;
   }
 
-  #customersTwo {
-    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
+  .slideImage {
+    float: right;
+    width: 25%;
+    height: 25%;
+    border: 3px solid pink;
+  }
+
+  .flytedContainer {
+    display: inline-block;
     width: 100%;
-  }
-
-  #customersTwo td,
-  #customersTwo th {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-
-  #customersTwo tr:nth-child(even) {
-    background-color: #f2f2f2;
-    color: black
-  }
-
-  #customersTwo tr:hover {
-    background-color: #ddd;
-  }
-
-  #customersTwo th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: left;
-    background-color: #4CAF50;
+    height: auto;
+    padding: 5px;
     color: white;
+    border: 2px solid black;
   }
-</style>
 
-<script>
-  var data_array = [];
-  data_array.push(["Tissue Type", "Expression Count"]);
-</script>
+  .qbox {
+    position: fixed;
+    top: 20px;
+    right: 50px;
+  }
 
+  .sidenav {
+    top: 25%;
+    height: 50%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    background-color: gray;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+  }
 
-<!-- HTML START -->
-<h1>RESULTS FOR QUERY: {{query}}</h1>
+  .sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+  }
 
-<ul>
-  {{#each query_result}}
-    <li style="background-color: red; color: white; padding: 5px; border: 3px solid black">
-      {{#with this}}
-        <p>Probe: {{probe}}</p>
-        <p>Slide Name: {{[slide name]}}</p>
-        <p>Genotype A: {{[genotype a]}}</p>
-        <p>Genotype B: {{[genotype b]}}</p>
-        <p>Stages Shown: {{[stages shown in picture]}}</p>
-        <p>Description of Staining Pattern: {{[description of staining pattern]}}
-          <p>Observer Comments: {{comments}}</p>
-          <p>X-coordinate: {{x-coordinate}}</p>
-          <p>Y-coordinate: {{y-coordinate}}</p>
-      {{/with}}
-      {{#with this}}
-        <br>
-        <img src="{{[link to file]}}" alt="test" width="300px" height="300px" border="2px solid black">
-      {{/with}}
-    </li>
-    <br>
-  {{/each}}
+  .sidenav a:hover {
+    color: #f1f1f1;
+  }
 
-  <div style="background-color: purple; color: white; padding: 5px; border: 3px solid black">
-    <h3>Tissue Type Expression for Gene by tissue:</h3>
-    <table style="width: 100%" id="customers">
-      <tr>
-        <th>Gene Secondary Identifier</th>
-        <th>Gene Symbol</th>
-        <th>mRNA Signal</th>
-        <th>mRNA Signal SEM</th>
-        <th>Present Call</th>
-        <th>Enrichment</th>
-        <th>Affy Call</th>
-        <th>Data Sets Name</th>
-        <th>Tissue Name</th>
-      </tr>
+  .sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+    cursor: pointer;
+  }
 
-      {{#each exp_tissue}}
-        <tr>
-          <script>
-            temp = []
-            temp.push("{{this.[8]}}");
-            temp.push(parseFloat("{{this.[3]}}"));
-            data_array.push(temp);
-          </script>
+  @media screen and (max-height: 450px) {
+    .sidenav {
+      padding-top: 15px;
+    }
+    .sidenav a {
+      font-size: 18px;
+    }
+  }
+  </style>
 
-          <td>{{this.[0]}}</td>
-          <td>{{this.[1]}}</td>
-          <td>{{this.[2]}}</td>
-          <td>{{this.[3]}}</td>
-          <td>{{this.[4]}}</td>
-          <td>{{this.[5]}}</td>
-          <td>{{this.[6]}}</td>
-          <td>{{this.[7]}}</td>
-          <td>{{this.[8]}}</td>
-        </tr>
-      {{/each}}
-    </table>
-  </div>
+</head>
 
-  <div style="background-color: orange; color: white; padding: 5px; border: 3px solid black">
-    <h3>Expression for Gene by stage:</h3>
-    <table style="width: 100%" id="customersTwo">
-      <tr>
-        <th>Gene Secondary Identifier</th>
-        <th>Rna Seq Results Stage</th>
-        <th>Rna Seq Results Expression Score</th>
-        <th>Rna Seq Results Expression Level</th>
-      </tr>
+<body>
+  <div id="mySidenav" class="sidenav">
 
-      {{#each exp_stage}}
-        <tr>
-          <td>{{this.[1]}}</td>
-          <td>{{this.[2]}}</td>
-          <td>{{this.[3]}}</td>
-          <td>{{this.[4]}}</td>
-        </tr>
-      {{/each}}
-    </table>
-  </div>
-  <!--Div that will hold the pie chart-->
-  <!-- <div id="chart_div" style="border: 2px solid black"></div> -->
-  <!-- <div class="container" style="width: 100%; margin: 0; padding:0">
-    <div class="panel-group">
-      <div class="panel panel-default">
-        <div class="panel-heading" style="background-color: green; color: white">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" href="#collapse1">Tissue Expression Graph</a>
-          </h4>
-        </div>
-        <div id="collapse1">
-          <div class="panel-body" >
-            <div id="chart_div" ></div>
+    <div class="container">
+      <a class="closebtn" onclick="closeNav()" style="color: white" onclick="toggleSide()">&times</a>
+      <br>
+      <br>
+      <form class="form-horizontal" method="post" action="/probe_query">
+        <h3>Query Builder</h3>
+
+        <div class="form-group">
+          <label class="control-label col-sm-2" style="color: white">GENE</label>
+          <div class="col-sm-10">
+            <input class="form-control" id="gene" name="Probe" placeholder="Enter gene(s)" data-toggle="tooltip"
+              data-placement="left" title="Seperate multiple genes with commas.">
           </div>
 
         </div>
-      </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">EXECUTE</button>
+          </div>
+        </div>
+      </form>
     </div>
-  </div> -->
+  </div>
 
+  <script>
+  function toggleSide() {
+    let side = document.getElementById("mySidenav");
+    if (side.style.width === "250px") {
+      side.style.width = "0px"
+    } else {
+      side.style.width = "250px"
+      side.style.borderRight = "2px solid black";
+    }
+
+  }
+
+  function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+
+  }
+
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+  }
+  </script>
+
+
+
+
+  <!-- OUTER WRAPPER START -->
+
+  <!-- ACTUAL SIDEBAR END -->
+
+  <nav class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top" style="background-color: gray !important">
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+      aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="nav navbar-nav mr-auto">
+        <li class="nav-item">
+          <h3>FlyTED2</h3>
+        </li>
+        <li class="nav-item">
+          <bbutton type="button" class="btn btn-default" onclick="toggleSide()" style="font-weight: bold">SEARCH</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="index.html">Home</a>
+          <span class="sr-only">(current)</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="about.html">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="credits.html">Credits</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="liscence_and_citing.html">Liscence and Citing</a>
+        </li>
+
+      </ul>
+    </div>
+  </nav>
   <br>
   <br>
-  <div class="tab" onclick="test()">PRESS ME</div>
-  <div id="chart_div" style="width: 100%; height: 100%; border: 2px solid black"></div>
-</ul>
+
+  <script>
+  var gene = "none";
+  var data_array = [];
+  </script>
+
+  {{#each flyMineData}}
+
+    <div style="background-color: #d4374a; color: white; padding: 20px; padding-bottom:0"
+      id="wrapper">
+      <br>
+      <br>
+      <h1>Gene: {{[probe]}}</h1>
+
+      {{#each [flyted]}}
+        <div class="flytedContainer">
+          <img src="{{[link to file]}}" alt="test" class="slideImage">
+          {{#with this}}
+            <p>Probe: {{[probe]}}</p>
+            <p>Slide Name: {{[slide name]}}</p>
+            <p>Genotype A: {{[genotype a]}}</p>
+            <p>Genotype B: {{[genotype b]}}</p>
+            <p>Stages Shown: {{[stages shown in picture]}}</p>
+            <p>Description of Staining Pattern: {{[description of staining pattern]}}
+              <p>Observer Comments: {{comments}}</p>
+          {{/with}}
+        </div>
+        <br>
+        <br>
+
+      {{/each}}
+      <!-- NOTE: Could do filtering based on both name and expression count -->
+      <!--Make and assign id for table and search, pass id into myFunction() -->
+      <h3>Expression for Gene by tissue:</h3>
+      <!-- Create elements with temporary id's -->
+      <input type="text" id="myInput" onkeyup="SearchTable(this.id)" placeholder="Enter a Tissue"
+        title="Filter Table">
+      <table id="myTable" style="width: 100%; border: 3px solid white; " class="customers">
+
+        <script>
+        // Change input id to match respective gene:
+        var tochange = document.getElementById('myInput');
+        tochange.id = "{{[probe]}}" + "_input";
+
+        // Change table id to match respective gene:
+        var tochangetwo = document.getElementById('myTable');
+        tochangetwo.id = "{{[probe]}}" + "_table";
+        </script>
 
 
+        <tr>
+          <th>Gene Secondary Identifier</th>
+          <th>Gene Symbol</th>
+          <th>mRNA Signal</th>
+          <th>mRNA Signal SEM</th>
+          <th>Present Call</th>
+          <th>Enrichment</th>
+          <th>Affy Call</th>
+          <th>Data Source</th>
+          <th>Tissue Name</th>
+        </tr>
 
-<script type="text/javascript">
-  // google.charts.load('current', {packages: ['corechart', 'bar']});
-  // google.charts.setOnLoadCallback(drawBasic);
-  //
-  // // Construct the google chart:
-  // function drawBasic() {
-  //   var data = google.visualization.arrayToDataTable(data_array);
-  //   var options = {
-  //     legend: 'bottom',
-  //     title: 'Tissue Expression Graph',
-  //     width: '100%',
-  //     height: 800,
-  //     colors: ['purple'],
-  //     hAxis: {
-  //       title: 'Tissue',
-  //       slantedText: true,  /* Enable slantedText for horizontal axis */
-  //       slantedTextAngle: 90, /* Define slant Angle */
-  //     },
-  //     chartArea: {  width: "82%", height: "80%", top: "5%"},
-  //
-  //     vAxis: {
-  //       title: 'Expression',
-  //       format: 'short',
-  //       slantedText: true,  /* Enable slantedText for horizontal axis */
-  //       slantedTextAngle: 90, /* Define slant Angle */
-  //       sliceVisibilityThreshold:0
-  //     },
-  //   };
-  //
-  //   var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-  //
-  //   function resize () {
-  //     var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-  //     chart.draw(data, options);
-  //   }
+        {{#with this}}
 
+          <script>
+          var tissue_expression_dataset = [];
+          tissue_expression_dataset.push(["Tissue Type", "Expression Count"]);
+          </script>
+          <a href="http://flybase.org/reports/{{this.[tissue].[0].[9]}}" style="color:white">FlyBase Report For Gene</a>
 
+          {{#each [tissue]}}
+
+            <script>
+            gene = "{{this.[0]}}";
+            var temp = [];
+            var tissue_type = "{{this.[8]}}";
+            var expression_level = parseFloat("{{this.[3]}}");
+            temp.push(tissue_type, expression_level);
+            tissue_expression_dataset.push(temp);
+            </script>
+
+            <tr>
+              <td>{{this.[0]}}</td>
+              <td>{{this.[1]}}</td>
+              <td>{{this.[2]}}</td>
+              <td>{{this.[3]}}</td>
+              <td>{{this.[4]}}</td>
+              <td>{{this.[5]}}</td>
+              <td>{{this.[6]}}</td>
+              <td>{{this.[7]}}</td>
+              <td>{{this.[8]}}</td>
+            </tr>
+          {{/each}}
+          <script>
+          data_array.push(gene);
+          data_array.push(tissue_expression_dataset); // Push the gene name and the asscoiated expression data
+          </script>
+        {{/with}}
+
+      </table>
+
+      <br>
+      <script>
+      // Fetch previous table element:
+      var items = document.querySelectorAll("table");
+      var lastchild = items[items.length - 1];
+      // Create button:
+      var chart_button = document.createElement('div');
+      var id = gene;
+      chart_button.setAttribute("id", id);
+      chart_button.classList.add('tab');
+      chart_button.innerHTML = "View Tissue Expression Graph For Gene: " +
+        gene;
+      lastchild.parentNode.insertBefore(chart_button, lastchild.nextSibling);
+      document.getElementById(id).onclick = function() {
+        test(this.id);
+      };
+
+      // Create chart container:
+      var chart_element = document.createElement('div');
+      var id = "chart_" + gene;
+      chart_element.setAttribute("id", id);
+      chart_button.appendChild(chart_element);
+      </script>
+
+    </div>
+  {{/each}}
+
+  <script type="text/javascript">
   google.charts.load('current', {
     'packages': ['corechart']
   });
+
   google.charts.setOnLoadCallback(drawChart);
 
-  function drawChart() {
+  var mine = [];
 
+  function drawChart() {
+    for (let i = 1; i < data_array.length; i = i + 2) {
+      testing(data_array[i], data_array[i - 1]);
+    }
+  }
+
+  function testing(data_array, gene) {
     var data = google.visualization.arrayToDataTable(data_array);
 
     var options = {
@@ -282,41 +421,45 @@
       width: '100%',
       height: 800,
       title: 'Gene Expression in Different Drosopilla Tissues',
-      colors: ['purple'],
+      colors: ['#d4374a'],
+
       hAxis: {
         title: 'Tissue Type',
         slantedText: true,
-        /* Enable slantedText for horizontal axis */
         slantedTextAngle: 90,
-        /* Define slant Angle */
       },
+
       chartArea: {
         width: "82%",
         height: "80%",
         top: "5%"
       },
+
       vAxis: {
         title: 'Expression (mRNA Signal SEM)',
         format: 'short',
         slantedText: true,
-        /* Enable slantedText for horizontal axis */
         slantedTextAngle: 90,
-        /* Define slant Angle */
         sliceVisibilityThreshold: 0
       },
     };
 
-    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-    var container = document.getElementById('chart_div');
+    let id = "chart_" + gene;
+    var container = document.getElementById(id)
+    var chart = new google.visualization.ColumnChart(container);
     container.style.display = 'block';
-    google.visualization.events.addListener(chart, 'ready', function() {
-      container.style.display = 'none';
+    google.visualization.events.addListener(chart, 'ready', () => {
+      container.style.display = 'none'
     });
+
+    mine.push(gene, data, options);
     chart.draw(data, options);
   }
 
-  function test() {
-    var x = document.getElementById('chart_div');
+  function test(element) {
+    var y = element.replace("chart_", "");
+    var z = "chart_" + y;
+    var x = document.getElementById(z);
     if (x.style.display === "none") {
       x.style.display = "block";
     } else {
@@ -325,43 +468,77 @@
   }
 
   function resize() {
-    var data = google.visualization.arrayToDataTable(data_array);
+    for (let i = 0; i < mine.length; i += 3) {
+      let hidden_before = false;
+      let thisChart = document.getElementById("chart_" + mine[i]);
 
-    var options = {
-      legend: 'bottom',
-      width: '100%',
-      height: 800,
-      title: 'Gene Expression in Different Drosopilla Tissues',
-      colors: ['purple'],
-      hAxis: {
-        title: 'Tissue Type',
-        slantedText: true,
-        /* Enable slantedText for horizontal axis */
-        slantedTextAngle: 90,
-        /* Define slant Angle */
-      },
-      chartArea: {
-        width: "82%",
-        height: "80%",
-        top: "5%"
-      },
-      vAxis: {
-        title: 'Expression (mRNA Signal SEM)',
-        format: 'short',
-        slantedText: true,
-        /* Enable slantedText for horizontal axis */
-        slantedTextAngle: 90,
-        /* Define slant Angle */
-        sliceVisibilityThreshold: 0
-      },
-    };
+      if (thisChart.style.display == "none") hidden_before = true;
 
+      let chart = new google.visualization.ColumnChart(thisChart);
+      thisChart.style.display = 'block';
 
-    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-    var container = document.getElementById('chart_div');
-    chart.draw(data, options);
+      google.visualization.events.addListener(chart, 'ready', () => {
+        if (hidden_before) thisChart.style.display = 'none'
+      });
+
+      chart.draw(mine[i + 1], mine[i + 2]);
+    }
   }
 
   window.onload = resize;
   window.onresize = resize;
-</script>
+  </script>
+
+  </div>
+  <!-- HORIZONTAL NAVIGATION BAR END-->
+  </div>
+  <!-- OUTER WRAPPER END -->
+
+  <!-- SIDEBAR TOGGLE SCRIPT START -->
+  <script>
+  $("#wrapper").toggleClass("toggled");
+  $("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
+
+  // Same but for colse button
+  $("#close_demo").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
+  </script>
+
+  <script>
+  function SearchTable(id) {
+    var table_id, input, filter, table, tr, td, i;
+    input = document.getElementById(id);
+    filter = input.value.toUpperCase();
+
+    // Construct the table ID:
+    table_id = id.replace('input', 'table');
+    table = document.getElementById(table_id);
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[8];
+      if (td) {
+        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }
+  </script>
+
+  </div>
+
+  <!-- PAGE START -->
+
+
+  <!-- SIDEBAR TOGGLE SCRIPT END -->
+
+</body>
+
+</html>
