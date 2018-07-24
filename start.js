@@ -1,88 +1,97 @@
-// Note: Currently the primary key consists of: Slide Name, Genotype A, Genotype B, X-coordinate and
-// Y-coordinate.
+// <--- HEADER START --->
+// Node app Version 1.0
+// Status: Incomplete logic but partial core backend functionality implemented
+// Author: Benedict Uttley
+// Date: 13/07/2018
+// Current data credit listing: InterMine, FlyMine, FlyBase, FlyAtlas.
+// <--- HEADER END --->
+
+// --- NODE APP SETUP AND MODULE IMPORTS --- //
+// Note: Currently the primary key consists of: Slide Name, Genotype A, Genotype B, X-coordinate and Y-coordinate.
 const express = require('express')
 const app = express();
-const mysql = require('mysql');
-const bodyParser = require("body-parser");
+
+const mysql = require('mysql'); // Import mysql module to interact with FlyTed2 database.
+
+const bodyParser = require("body-parser"); // Parse incoming request bodies for example form entry values.
 
 const intermine = require('imjs'); // API to fetch Flymine data.
 
+// NOTE: PossiblE FlyMine data to integrate:
+// --> Snip location by calculating primer location through performing a BLAST on the 3' and 5'.
+// --> Description
+// --> Expression in different tissues
+// --> Expression at different developmental stages
+// --> Include link to FlyMine
+// --> Include link to FlyBase
+
 const handlebars = require('express-handlebars'); // For use in an express environment
-const Handlebars = require('handlebars'); // For construncting the HTML files that contain results to user queries.
+const Handlebars = require('handlebars'); // Used as the HTML templating framework to construct the HTML pages server side.
 
-const async = require('async'); // Used here for multiple asynchronous API calls where all results are stored in one results array.
+const async = require('async'); // Required for multiple asynchronous FlyMine API and mySQL calls where all results are stored in one results array.
 
+//  NOTE: -- CREDIT: The API queries below were provided through the Flymine site,
+//  where the respective javascript code for a given user query is generated.
+
+const flymine = new intermine.Service({ // Require the flymine API to integrate data from multiple sources including FlyBase and FlyAtlas.
+  root: 'http://www.flymine.org/query' // WARNING: May be moved to HTTPS in the near future!
+});
 
 app.engine('handlebars', handlebars({
   defaultLayout: 'main'
 }));
-app.set('view engine', 'handlebars');
 
 app.use(bodyParser.json());
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-app.use(express.static('public')); // Provide access to static files stored in the public directory
+app.use(express.static('public')); // Gain access to all static files stored in the 'public' directory.
+
+app.set('view engine', 'handlebars'); // Create the handlebars engine.
 
 // Current landing page
 app.get('/', (req, res) => {
-  res.sendFile('/home/benedict/Desktop/FlyTED2/index.html')
+  res.sendFile('/home/benedict/Desktop/FlyTED2/index.html');
 });
 
-// CREDIT: The API queries below were provided through the Flymine site, where UI queries can be translated into their actual query syntax.
-// Query [1] --> Find the expression score in all different tissues of the Drosophila for a given Gene:
+app.listen(3000, () => console.log('App active on port:3000')); // bind application to port 3000;
+// --- NODE APP SETUP AND MODULE IMPORTS --- //
 
-const flymine = new intermine.Service({
-  root: 'http://www.flymine.org/query'
-});
 
-app.listen(3000, () => console.log('App active on port:3000'))
-
-// Create mysql connection to existing FlyTed database:
+// Create mysql connection to FlyTed database.
 var conn = mysql.createConnection({
   host: 'localhost',
-  user: 'pmauser',
-  password: '[*3G4vlSp7',
+  user: 'pmauser', // TODO: Change the username to something more meaningful before release.
+  password: '[*3G4vlSp7', // TODO: Change the password before release.
   database: 'FlyTed2'
 });
 
-// Test connection:
+// Form connection
 conn.connect(err => {
   if (err) throw err;
   console.log("Mysql Connection Established");
 });
-
-// Query Database for all available rows:
-function test(callback) {
-  conn.query('SELECT * FROM table_name_for_df ', (err, result) => {
-    if (err)
-      callback(err, null);
-    else
-      callback(null, result);
-  });
-}
 
 // Listen for general query post from HTML form:
 app.post('/query', (req, res) => {
 
   fetchAll((err, result) => {
     if (err) {
-      throw err
+      throw err;
     } else {
-      res.send(result)
+      res.send(result);
     }
   }, req.body.Group);
 });
 
-
-
+// TODO: Export queries and related helper funnctions such as any formatters to their own module
 function createExpressionQueries(probeName) {
 
   let queries = {
 
-    // Expression (tissue) query:
-    expression_tissue_query: {
+    expression_tissue_query: { // Tissue expresssion query
       "name": "Gene_FlyAtlas",
       "title": "Gene --> FlyAtlas expression data",
       "comment": "06.06.07 updated to work from gene class - Philip",
@@ -98,10 +107,11 @@ function createExpressionQueries(probeName) {
         "microArrayResults.enrichment",
         "microArrayResults.affyCall",
         "microArrayResults.dataSets.name",
-        "microArrayResults.tissue.name"
+        "microArrayResults.tissue.name",
+        "primaryIdentifier"
       ],
       "orderBy": [{
-        "path": "secondaryIdentifier",
+        "path": "microArrayResults.tissue.name",
         "direction": "ASC"
       }],
       "where": [{
@@ -139,8 +149,8 @@ function createExpressionQueries(probeName) {
         }
       ]
     },
-    // Expression (stage) query:
-    expression_stage_query: {
+
+    expression_stage_query: { // Developmental stage expression query
       "from": "Gene",
       "select": [
         "primaryIdentifier",
@@ -168,108 +178,66 @@ function createExpressionQueries(probeName) {
   return queries;
 }
 
-// List for probe query post from HTML form:
-app.post('/probe_query', (req, res) => {
+app.post('/probe_query', (req, res) => { // Listen for incoming probe search requests
 
   console.log("Probe Query received");
+  var isEmpty = false;
 
-  fetchProbe((err, result, myQuery) => {
-    if (err) {
-      throw err
-    } else {
-      JSON.stringify(result);
-
-      // Example async API component A:
-      // test: function (callback) {flymine.rows((val) => {callback(null, val);
-      var queries = createExpressionQueries(req.body.Probe);
-
-      async.parallel({
-        tissue: function(callback) {
+  FetchExternalData((probe_list, queries) => { // Fetch SQL and FlyMine data
+    var asyncTest = function asyncTest(probe, callback) {
+      var queries = createExpressionQueries(probe); // Fecth the FlyMine API queries objects
+      async.parallel({ // Async module method to enable multiple asynchronous calls all returned in one result object
+        tissue: function(callback) { // Fetch tissue expression data for the associated gene.
           flymine.rows(queries.expression_tissue_query).then(rows => {
-            callback(null, rows)
+            callback(null, rows);
           });
         },
-        stage: function(callback) {
-          flymine.rows(queries.expression_stage_query).then(rows => {
-            callback(null, rows)
+        probe: function(callback) { // Also include the probe (CG****) for this result object as a reference
+          callback(null, probe);
+        },
+        flyted: function(callback) { // Fetch images and annotation for the given gene from the mySQL database.
+          // TODO: Move SQL logic to dedicated functions and possibly own module.
+          var myQuery = "SELECT * FROM Demo WHERE Probe IN (" + ("'" + probe + "'") + ")";
+
+          // Check if VARIANT has been set.
+          if (!(req.body.Variant === undefined || req.body.Variant == "")) {
+            myQuery += " AND `genotype a` LIKE " + conn.escape('%' + req.body.Variant + '%'); // Check Genotype A column.
+            myQuery += " AND `genotype b` LIKE " + conn.escape('%' + req.body.Variant + '%'); // Check Genotype B column.
+          }
+          conn.query(myQuery, (err, my_res) => {
+            if(my_res.length == 0) {
+              isEmpty = true;
+              console.log("RESULTS ARE VOID");
+            }
+            if (err) throw err;
+            else callback(null, my_res);
           });
         }
-      }, function(err, results) {
-
-        let data = {
-          query_result: result,
-          query: myQuery,
-          exp_tissue: results.tissue,
-          exp_stage: results.stage
-        }
-        res.render('hello', data); // Serve Handlebars HTML page.
+      }, (err, results) => {
+        callback(null, results)
       });
-
     }
-  }, req.body.Probe);
-});
 
-// List for probe query post from HTML form:
-app.post('/x_query', (req, res) => {
-
-  console.log("X-coordinate Query received");
-
-  fetchX((err, result) => {
-    if (err) {
-      throw err
-    } else {
-      res.send(result)
-    }
-  }, req.body.x_min, req.body.x_max);
-});
-
-// List for probe query post from HTML form:
-app.post('/y_query', (req, res) => {
-
-  console.log("Y-coordinate Query received");
-
-  fetchY((err, result) => {
-    if (err) {
-      throw err
-    } else {
-      res.send(result)
-    }
-  }, req.body.yAxis);
-});
-
-// List for genotype b query post from HTML form:
-app.post('/gena_query', (req, res) => {
-
-  console.log("Genotype A Query received");
-
-  fetchGenA((err, result) => {
-    if (err) {
-      throw err
-    } else {
-      res.send(result)
-    }
-  }, req.body.genA);
+    // Async module method to allow async.paralllel method to be place in for loop so that external data for multiple genes can be required.
+    async.map(probe_list, asyncTest, function(err, results) {
+      let data = {
+        flyMineData: results, // Stores the API and SQL query results
+      }
+      console.log(isEmpty);
+      if (isEmpty) {
+        res.render('none')
+      } else {
+        res.render('hello', data); // Serve Handlebars HTML page. TODO: Change the name of this handlebars page (e.g queries).
+      }
+  });
+  }, req.body.Probe, req.body.Variant);
 });
 
 
-// List for genotype b query post from HTML form:
-app.post('/genb_query', (req, res) => {
 
-  console.log("Genotype B Query received");
-
-  fetchGenB((err, result) => {
-    if (err) {
-      throw err
-    } else {
-      res.send(result)
-    }
-  }, req.body.genB);
-});
-
-
-// TODO: [1] Fetch all entries in table and list them:
+// TODO: Add this as an option, perhaps only listing a constant amount each time, [page: queries] ratio?
 function fetchAll(callback, Group) {
-  var group_by;
+  let group_by = "none";
   Group.length == "None" ? group_by = (" GROUP BY " + Group) : group_by = "";
 
   conn.query("SELECT * FROM Demo" + group_by, (err, result) => {
@@ -292,127 +260,9 @@ function group_by_probe() {
   });
 }
 
-// TODO: Fetch all entries and group them by Genotype A:
-function group_by_genA() {
-  conn.query("SELECT * FROM Demo GROUP BY GenotypeA", (err, result) => {
-    if (err) {
-      throw err;
-    } else {
-      callback(null, result);
-    }
-  });
+function FetchExternalData(callback, probes) {
+  console.log("VVVVVVVVVVVVVVVV");
+  let probe_list = probes.split(", "); // Create array containing each of the probes entered by the user onto the form.
+  let queries = createExpressionQueries(probe_list); // Fecth the FlyMine API queries objects
+  callback(probe_list, queries);
 }
-
-// TODO: Fetch all entries and group them by Genotype B:
-function group_by_genB() {
-  conn.query("SELECT * FROM Demo GROUP BY GENOTYPE B", (err, result) => {
-    if (err) {
-      throw err;
-    } else {
-      callback(null, result);
-    }
-  });
-}
-
-
-// Select enries corresponding to multiple probes:
-function fetchProbe(callback, probeName) {
-
-  let formatted_probes = formatProbes(probeName);
-  myQuery = "SELECT * FROM Demo WHERE Probe IN (" + formatted_probes + ")"
-
-  conn.query(myQuery, (err, result) => {
-    if (err)
-      throw err;
-    else {
-      callback(null, result, myQuery);
-    }
-  });
-}
-
-function formatProbes(probeName) {
-  let formatted_probes = ""
-  probeName = probeName.split(", ");
-  probeName.forEach(probe => formatted_probes += ("'" + probe + "' "));
-  formatted_probes = formatted_probes.trim().replace(/\s+/g, ', ');
-  return formatted_probes;
-}
-
-// [3] Fetch all entries that have a particular x-coordinate greater than a given number:
-function fetchX(callback, xMin, xMax) {
-
-  // Check if min x-value or max x-value input is empty, if true then permit any lower/upper bound:
-  xMin.length == 0 ? xMin = 0 : xMin = xMin;
-  xMax.length == 0 ? xMax = "(SELECT MAX(Xcoordinate) FROM Demo)" : xMax = xMax;
-
-  conn.query("SELECT * FROM Demo WHERE Xcoordinate >= " + "'" + xMin + "'" + " AND Xcoordinate <= " + xMax, (err, result) => {
-    if (err)
-      throw err;
-    else {
-      callback(null, result)
-    }
-  });
-}
-
-
-// [4] Fetch all entries that have a particular y-coordinate greater than a given number:
-function fetchY(callback, yMin, yMax) {
-
-  // Check if min y-value or max y-value input is empty, if true then permit any lower/upper bound:
-  yMin.length == 0 ? yMin = 0 : yMin = y_Min;
-  yMax.length == 0 ? yMax = "SELECT MAX(Ycoordinate) FROM Demo" : yMax = y_Max;
-
-  conn.query("SELECT * FROM Demo WHERE Ycoordinate >= " + "'" + yMin + "'" + " AND Ycoordinate <= " + yMax, (err, result) => {
-    if (err)
-      throw err;
-    else {
-      callback(null, result)
-    }
-  });
-}
-
-
-// [4] Fetch all entries that have a particular y coordinate greater than a given number:
-function fetchGenA(callback, genA) {
-
-  conn.query("SELECT * FROM Demo WHERE GenotypeA = " + "'" + genA + "'", (err, result) => {
-    if (err)
-      throw err;
-    else {
-      callback(null, result)
-    }
-  });
-}
-
-// [4] Fetch all entries that have a particular y coordinate greater than a given number:
-function fetchGenB(callback, genB) {
-
-  conn.query("SELECT * FROM Demo WHERE GenotypeB = " + "'" + genB + "'", (err, result) => {
-    if (err)
-      throw err;
-    else {
-      callback(null, result)
-    }
-  });
-}
-
-// One API to provide limited NCBI data on the gene:
-// ncbi.search('gene', 'CG8564', (data) => {console.log(data)});
-
-
-// Compound query builder:
-// Variables to consider: probe, slide, Genotype A and B, Date, Coordinates.
-
-// // TODO: Coordinates Options
-// --------------------
-
-// Options for coordinates: The range, from n to p, n to max, as a slider:
-// If unchecked then coordinate can be any value
-
-// For FlyMine API: Fetch the following data can be fetched
-// Snip location by calculating primer location through performing a BLAST on the 3' and 5'.
-// Description
-// Expression in different tissues
-// Expression at different developmental stages
-// Include link to FlyMine
-// Include link to FlyBase
