@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="description" content="FlyTED2 results page">
   <meta name="author" content="Benedict Uttley, Cardiff University, Biosciences">
-  <title>SEARCH</title>
+  <title>RESULTS</title>
 
   <!--Load jquery-->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -41,7 +41,7 @@
   }
 
   .tab:hover {
-    background-color: #ccc;
+    background-color: #d4374a;
   }
   </style>
 
@@ -368,7 +368,7 @@
     <div class="container">
       <a class="closebtn" onclick="closeNav()" style="color: white" onclick="toggleSide()">&times</a>
       <br>
-      <form class="form-horizontal" method="post" action="/probe_query">
+      <form class="form-horizontal" method="post" action="/results">
         <h3>Query Builder</h3>
         <div class="form-group">
           <label class="control-label col-sm-2" style="color: white">GENE</label>
@@ -427,18 +427,14 @@
         </li>
       </ul>
       <ul class="navbar-nav ml-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="index.html">Home</a>
-          <span class="sr-only">(current)</span>
+        <li class="nav-item">
+          <a class="nav-link" href="/home">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="about.html">About</a>
+          <a class="nav-link" href="/credits">Credits</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="credits.html">Credits</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="liscence_and_citing.html">Liscence and Citing</a>
+          <a class="nav-link" href="/cite">Liscence and Citing</a>
         </li>
       </ul>
     </div>
@@ -451,9 +447,60 @@
 
   {{#each flyMineData}}
     <div class="content">
-      <h1>Gene: {{[probe]}}</h1>
+      <h1>Gene: {{[probe]}} <a href="http://flybase.org/reports/{{this.[tissue].[0].[9]}}" class="btn-link">Link To FlyBase Report For Gene</a></h1>
       <!-- Include link to the FlyBase page dedicated to the repsective gene -->
-      <a href="http://flybase.org/reports/{{this.[tissue].[0].[9]}}" class="btn-link">Link To FlyBase Report For Gene</a>
+      <h4>Probe Transcripts For Gene:</h4>
+      {{#each [transcript]}}
+        {{#with this}}
+
+        <div class="tab" id="temp"></div>
+
+        <script>
+          // Create button:
+          var transcript_button = document.getElementById('temp');
+          var id = "{{[Transcript_ID]}}"+"_tab"; // Set the transcript tab equal to the transcript ID.
+          transcript_button.setAttribute("id", id);
+          transcript_button.classList.add('tab');
+          transcript_button.innerHTML = ">> View Transcript information for: " + "{{[Transcript_ID]}}";
+          transcript_button.onclick = function() {
+            toggle_transcript_view("{{[Transcript_ID]}}" + "_container");
+          };
+          console.log("DONE");
+        </script>
+
+        </script>
+        <div id="{{[Transcript_ID]}}_container" style="padding:2%; border: 2px solid black;">
+          <!-- Include link to the FlyBase page dedicated to the repsective transcript -->
+          <p><font color='#d4374a'>Transcript Primary ID: </font>{{[Transcript_ID]}}
+            <a href="http://flybase.org/reports/{{[Transcript_ID]}}" class="btn-link">Link To FlyBase Report For This Transcript</a>
+          </p>
+          <p>5' Sequence: <span style="color: #660066; text-decoration: underline overline; font-weight: bold;">{{[5_Prime_Sequence]}}</span></p>
+          <p>3' Sequence: <span style="color: #009933; text-decoration: underline overline; font-weight: bold;">{{[3_Prime_Sequence]}}</span></p>
+          <p>Probe Length: {{[Target_Sequence_Length]}} </p>
+          <h5 style="color:#d4374a">Probe Sequence</h5>
+          <div id="{{[Transcript_ID]}}" wrap="hard" style="overflow-wrap: break-word; width:100%">
+            {{[Target_Sequence]}}
+          </div>
+        </div>
+
+
+          <script>
+          var test = document.getElementById("{{[Transcript_ID]}}")
+          var three = test.innerHTML.replace("{{[3_Prime_Sequence]}}", "");
+          var res = three.replace("{{[5_Prime_Sequence]}}", "");
+          res = res.trim();
+
+          var final = '<span style="color: #660066; text-decoration: underline overline; font-weight: bold">' + "{{[5_Prime_Sequence]}}" +
+            '</span>' + '<span>' + res + '</span>' +
+            '<span style="color: #009933; text-decoration: underline overline; font-weight: bold;">' + "{{[3_Prime_Sequence]}}" + '</span>';
+          document.getElementById("{{[Transcript_ID]}}").innerHTML = final;
+
+          // Hide transcripts Initially:
+          document.getElementById("{{[Transcript_ID]}}" + "_container").style.display = "none";
+          </script>
+
+        {{/with}}
+      {{/each}}
       <br>
 
       {{#each [flyted]}}
@@ -585,12 +632,6 @@
             sortTable('{{[probe]}}', 'desc');
           });
 
-          // Initially present table in ascending order.
-          $(document).ready(function() {
-            sortTable('{{[probe]}}', 'asc');
-            tochangethree.click();
-
-          });
           </script>
 
           <tr>
@@ -827,6 +868,17 @@
         }
       }
     }
+  </script>
+
+  <script>
+  function toggle_transcript_view(transcript_id) {
+    var x = document.getElementById(transcript_id);
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
   </script>
 
   </div>
