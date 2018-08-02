@@ -1,13 +1,12 @@
 // <--- HEADER START --->
-// Node app Version 1.0
-// Status: Incomplete logic but partial core backend functionality implemented
+// Node app Version 1.2
+// Status: Logic complete
 // Author: Benedict Uttley
-// Date: 13/07/2018
-// Current data credit listing: InterMine, FlyMine, FlyBase, FlyAtlas.
+// Date: 02/08/2018
+// Current data credit listing: InterMine, FlyMine.
 // <--- HEADER END --->
 
-// --- NODE APP SETUP AND MODULE IMPORTS --- //
-// Note: Currently the primary key consists of: Slide Name, Genotype A, Genotype B, X-coordinate and Y-coordinate.
+// --- MODULE IMPORTS START --- //
 const express = require('express')
 const app = express();
 
@@ -17,26 +16,20 @@ const bodyParser = require("body-parser"); // Parse incoming request bodies for 
 
 const intermine = require('imjs'); // API to fetch Flymine data.
 
-// NOTE: PossiblE FlyMine data to integrate:
-// --> Snip location by calculating primer location through performing a BLAST on the 3' and 5'.
-// --> Description
-// --> Expression in different tissues
-// --> Expression at different developmental stages
-// --> Include link to FlyMine
-// --> Include link to FlyBase
-
 const handlebars = require('express-handlebars'); // For use in an express environment
 const Handlebars = require('handlebars'); // Used as the HTML templating framework to construct the HTML pages server side.
 
 const async = require('async'); // Required for multiple asynchronous FlyMine API and mySQL calls where all results are stored in one results array.
 
-//  NOTE: -- CREDIT: The API queries below were provided through the Flymine site,
+//  NOTE: -- CREDIT: The tissue expression API queries below were provided through the Flymine site,
 //  where the respective javascript code for a given user query is generated.
 
 const flymine = new intermine.Service({ // Require the flymine API to integrate data from multiple sources including FlyBase and FlyAtlas.
   root: 'http://www.flymine.org/query' // WARNING: May be moved to HTTPS in the near future!
 });
+// --- MODULE IMPORTS END --- //
 
+// --- APP CONFIGURATION START --- //
 app.engine('handlebars', handlebars({
   defaultLayout: 'main'
 }));
@@ -48,30 +41,56 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(express.static('public')); // Gain access to all static files stored in the 'public' directory.
+// Serve the 'home' handlebars page when a new user connects to the site, home.hanldebars is the landing page.
 
 app.set('view engine', 'handlebars'); // Create the handlebars engine.
 
-// Current landing page
-app.get('/', (req, res) => {
-  res.sendFile('/home/benedict/Desktop/FlyTED2/index.html');
-});
-
 app.listen(3000, () => console.log('App active on port:3000')); // bind application to port 3000;
-// --- NODE APP SETUP AND MODULE IMPORTS --- //
+// --- APP CONFIGURATION END --- //
 
-
-// Create mysql connection to FlyTed database.
-var conn = mysql.createConnection({
+// --- SQL CONFIGURATION START --- //
+const conn = mysql.createConnection({ // Create mysql connection to FlyTed database.
   host: 'localhost',
   user: 'pmauser', // TODO: Change the username to something more meaningful before release.
   password: '[*3G4vlSp7', // TODO: Change the password before release.
   database: 'FlyTed2'
 });
 
-// Form connection
+// Form and verify connection.
 conn.connect(err => {
   if (err) throw err;
   console.log("Mysql Connection Established");
+});
+// --- SQL CONFIGURATION END --- //
+
+
+
+// MAIN SERVER LOGIC BELOW //
+
+// --- PAGE REQUESTS ---
+
+// Serve the 'home' handlebars page when a new user connects to the site, home.hanldebars is the landing page.
+app.get('/', (req, res) => {
+  res.render('home');
+});
+
+// Serve the 'home' handlebars page upon request:
+app.get('/home', (req, res) => {
+  res.render('home');
+})
+
+// Serve the 'credits' handlebars page upon request:
+app.get('/credits', (req, res) => {
+  res.render('credits');
+})
+
+// Serve the 'cite' handlebars page upon request:
+app.get('/cite', (req, res) => {
+  res.render('cite');
+})
+
+Handlebars.registerHelper('json', function(context) {
+  return JSON.stringify(context);
 });
 
 // Listen for general query post from HTML form:
@@ -178,9 +197,7 @@ function createExpressionQueries(probeName) {
   return queries;
 }
 
-app.post('/probe_query', (req, res) => { // Listen for incoming probe search requests
-
-  console.log("Probe Query received");
+app.post('/results', (req, res) => { // Listen for incoming probe search requests
   var isEmpty = false;
 
   FetchExternalData((probe_list, queries) => { // Fetch SQL and FlyMine data
@@ -190,6 +207,8 @@ app.post('/probe_query', (req, res) => { // Listen for incoming probe search req
         tissue: function(callback) { // Fetch tissue expression data for the associated gene.
           flymine.rows(queries.expression_tissue_query).then(rows => {
             callback(null, rows);
+          }).catch('error', function(e) {
+            console.log(e); // Check for error with API and log the error.
           });
         },
         probe: function(callback) { // Also include the probe (CG****) for this result object as a reference
@@ -201,68 +220,71 @@ app.post('/probe_query', (req, res) => { // Listen for incoming probe search req
 
           // Check if VARIANT has been set.
           if (!(req.body.Variant === undefined || req.body.Variant == "")) {
-            myQuery += " AND `genotype a` LIKE " + conn.escape('%' + req.body.Variant + '%'); // Check Genotype A column.
-            myQuery += " AND `genotype b` LIKE " + conn.escape('%' + req.body.Variant + '%'); // Check Genotype B column.
+            // Search for entries where the genotypes (a and b) match the users input for the varient.
+            myQuery += " AND ( `genotype a` LIKE " + conn.escape('%' + req.body.Variant + '%') +
+              " OR `genotype b` LIKE " + conn.escape('%' + req.body.Variant + '%') + ")";
           }
+
           conn.query(myQuery, (err, my_res) => {
-            if(my_res.length == 0) {
+            if (my_res.length == 0) {
               isEmpty = true;
-              console.log("RESULTS ARE VOID");
+              console.log("RESULTS ARE VOID!");
             }
             if (err) throw err;
             else callback(null, my_res);
           });
+        },
+        affy: function(callback) { // Fetch the affy data and annotations from the database.
+          var myQuery = "SELECT * FROM Probe_Annotations WHERE Gene = (" + ("'" + probe + "'") + ")";
+
+          conn.query(myQuery, (err, my_res) => {
+            if (err) throw err;
+            else callback(null, my_res);
+          });
+        },
+
+        transcript: function(callback) { // Fetch the probe sequence data from the database.
+          var myQuery = "SELECT * FROM Probe_Sequences WHERE Probe IN (" + ("'" + probe + "'") + ")";
+
+          conn.query(myQuery, (err, my_res) => {
+            if (err) throw err;
+            else callback(null, my_res);
+          });
         }
-      }, (err, results) => {
+
+      }, (err, results) => { // Return the result of each indivisulal query in one object called results, once all api/db calls have completed.
         callback(null, results)
       });
     }
 
-    // Async module method to allow async.paralllel method to be place in for loop so that external data for multiple genes can be required.
+    // Async module method to allow async.paralllel method to be placed in for loop so that external data for multiple genes can be required.
     async.map(probe_list, asyncTest, function(err, results) {
       let data = {
         flyMineData: results, // Stores the API and SQL query results
       }
-      console.log(isEmpty);
       if (isEmpty) {
-        res.render('none')
+        res.render('none'); // Return dedicated 'no results' page when no data is found (image-wise) NOTE: Could be adapted for other data sets being void instead.
       } else {
-        res.render('hello', data); // Serve Handlebars HTML page. TODO: Change the name of this handlebars page (e.g queries).
+        res.render('results', data); // Serve Handlebars HTML page.
       }
-  });
-  }, req.body.Probe, req.body.Variant);
+    });
+  }, req.body.Probe, req.body.Variant); // Arguments passed in from user to the async method, these are the keywords of the query.
 });
 
-
-
-// TODO: Add this as an option, perhaps only listing a constant amount each time, [page: queries] ratio?
-function fetchAll(callback, Group) {
-  let group_by = "none";
-  Group.length == "None" ? group_by = (" GROUP BY " + Group) : group_by = "";
-
-  conn.query("SELECT * FROM Demo" + group_by, (err, result) => {
-    if (err) {
-      throw err;
-    } else {
-      callback(null, result);
-    }
-  });
-}
-
-// TODO: [1] Fetch all entries and group them by probe name:
-function group_by_probe() {
-  conn.query("SELECT * FROM Demo GROUP BY Probe", (err, result) => {
-    if (err) {
-      throw err;
-    } else {
-      callback(null, result);
-    }
-  });
-}
+// TODO: Add as an option, perhaps only listing a constant amount each time, [page: queries] ratio?
 
 function FetchExternalData(callback, probes) {
-  console.log("VVVVVVVVVVVVVVVV");
   let probe_list = probes.split(", "); // Create array containing each of the probes entered by the user onto the form.
   let queries = createExpressionQueries(probe_list); // Fecth the FlyMine API queries objects
   callback(probe_list, queries);
 }
+
+// Handle 404 errors.
+app.use(function(req, res) { //TODO: REPLACE WITH CUSTOM ERROR PAGE.
+  res.send('404: Page not Found', 404);
+});
+
+// Handle 500 errors.
+app.use(function(error, req, res, next) { //TODO: REPLACE WITH CUSTOM ERROR PAGE.
+  res.send('500: Internal Server Error', 500);
+});
