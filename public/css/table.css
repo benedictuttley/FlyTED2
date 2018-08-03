@@ -1,0 +1,54 @@
+table.table-bordered>tbody>tr>td {
+  border: 1px solid black
+}
+
+.expression_table {
+  position: relative;
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.expression_table td,
+.expression_table th {
+  border: 2px solid black;
+  padding: 8px;
+  color: black;
+  background-color: white;
+}
+
+.expression_table tr:hover {
+  background-color: #ddd;
+}
+
+.expression_table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #d4374a;
+  color: white;
+}
+
+.customersTwo {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.customersTwo td,
+.customersTwo th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.customersTwo tr:hover {
+  background-color: #ddd;
+}
+
+.customersTwo th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}

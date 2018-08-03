@@ -20,352 +20,12 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
-
-  <!-- TODO: Create external stylesheets -->
+  
+  <link rel="stylesheet" href="css/table.css"></link>
+  <link rel="stylesheet" href="css/side_bar.css"></link>
+  <link rel="stylesheet" href="css/main.css"></link>
 
   <!-- Collapsable tab displaying tissue expression chart styling -->
-  <style>
-    .tab,
-    .tab2 {
-      margin-top: 8px;
-      width: 100%;
-      background-color: gray;
-      color: white;
-      cursor: pointer;
-      padding: 5px;
-      height: auto;
-    }
-
-    .key {
-      font-weight: bold;
-    }
-
-    .tab:hover {
-      background-color: #d4374a;
-    }
-
-    .tab2:hover {
-      background-color: #4286f4;
-    }
-  </style>
-
-  <!--TODO: Change the class name and find a more suitable table design that is reposndive to changes in window size and can have search functionality added to it. -->
-
-  <style>
-    table.table-bordered>tbody>tr>td {
-      border: 1px solid black
-    }
-
-    .customers {
-      position: relative;
-      font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-      border-collapse: collapse;
-      width: 100%;
-    }
-
-    .customers td,
-    .customers th {
-      border: 2px solid black;
-      padding: 8px;
-      color: black;
-      background-color: white;
-    }
-
-    .customers tr:hover {
-      background-color: #ddd;
-    }
-
-    .customers th {
-      padding-top: 12px;
-      padding-bottom: 12px;
-      text-align: left;
-      background-color: #d4374a;
-      color: white;
-    }
-
-    .customersTwo {
-      font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-      border-collapse: collapse;
-      width: 100%;
-    }
-
-    .customersTwo td,
-    .customersTwo th {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-
-    .customersTwo tr:hover {
-      background-color: #ddd;
-    }
-
-    .customersTwo th {
-      padding-top: 12px;
-      padding-bottom: 12px;
-      text-align: left;
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    .qbox {
-      position: fixed;
-      top: 20px;
-      right: 50px;
-    }
-
-    .sidenav {
-      top: 25%;
-      height: 50%;
-      width: 250px;
-      position: fixed;
-      z-index: 100;
-      left: 0;
-      overflow-x: hidden;
-      transition: 0.5s;
-      padding-top: 60px;
-      background-color: gray;
-      border-top: 2px solid black;
-      border-bottom: 2px solid black;
-      border-right: 2px solid black;
-    }
-
-    .sidenav a {
-      padding: 8px 8px 8px 32px;
-      text-decoration: none;
-      font-size: 25px;
-      color: #818181;
-      display: block;
-      transition: 0.3s;
-    }
-
-    .sidenav a:hover {
-      color: #f1f1f1;
-    }
-
-    .sidenav .closebtn {
-      position: absolute;
-      top: 0;
-      right: 25px;
-      font-size: 36px;
-      margin-left: 50px;
-      cursor: pointer;
-    }
-
-    @media screen and (max-height: 450px) {
-      .sidenav {
-        padding-top: 15px;
-      }
-      .sidenav a {
-        font-size: 18px;
-      }
-    }
-
-    .Up {
-      border: solid green;
-      border-width: 0 3px 3px 0;
-      display: inline-block;
-      padding: 3px;
-      transform: rotate(-135deg);
-      -webkit-transform: rotate(-135deg);
-    }
-
-    .Down {
-      border: solid red;
-      border-width: 0 3px 3px 0;
-      display: inline-block;
-      padding: 3px;
-      transform: rotate(45deg);
-      -webkit-transform: rotate(45deg);
-    }
-
-    .content {
-      position: relative;
-      height: 100%;
-      width: 100%;
-      padding: 5%;
-    }
-
-    .flytedContainer {
-      padding: 5px;
-      width: 100%;
-      height: 75%;
-      background-color: #d4374a;
-    }
-
-    .image {
-      position: relative;
-      float: left;
-      width: 50%;
-      height: 100%;
-      background-color: yellow;
-      border: 2px solid black;
-    }
-
-    .annotation {
-      position: relative;
-      float: right;
-      width: 50%;
-      height: 100%;
-      color: white;
-    }
-
-    .key {
-      font-weight: bold;
-    }
-
-    .form-control:focus {
-      border-color: #d4374a;
-      box-shadow: 0px 1px 1px #d4374a inset, 0px 0px 8px #d4374a;
-    }
-
-    .square {
-      position: relative;
-      width: 100%;
-      border: 3px solid black;
-      height: 40%;
-    }
-
-    .square:after {
-      content: "";
-      display: block;
-      padding-bottom: 40%;
-    }
-
-    .contenta {
-      position: absolute;
-      width: 50%;
-      height: 100%;
-      right: 0%;
-    }
-
-    .contentb {
-      position: absolute;
-      width: 50%;
-      height: 100%;
-      left: 0%;
-    }
-
-    /**************************
-  DEFAULT BOOTSTRAP STYLES
-**************************/
-
-    .btn {
-      display: inline-block;
-      padding: 6px 12px;
-      margin-bottom: 0;
-      font-size: 14px;
-      font-weight: normal;
-      line-height: 1.42857143;
-      text-align: center;
-      white-space: nowrap;
-      vertical-align: middle;
-      cursor: pointer;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      background-image: none;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      padding: 10px 16px;
-    }
-
-    .btn-lg {
-      font-size: 18px;
-      line-height: 1.33;
-      border-radius: 6px;
-    }
-
-    .btn-primary {
-      color: white;
-      background-color: white;
-      border-color: white;
-    }
-
-    .btn-primary:hover,
-    .btn-primary:focus,
-    .btn-primary:active,
-    .btn-primary.active,
-    .open .dropdown-toggle.btn-primary {
-      color: white;
-      background-color: white;
-      border-color: white;
-    }
-
-    /***********************
-  SHARP BUTTONS
-************************/
-
-    .sharp {
-      border-radius: 0;
-    }
-
-    /***********************
-  CUSTON BTN VALUES
-************************/
-
-    .btn {
-      padding: 14px 24px;
-      border: 0 none;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      outline: none !important;
-    }
-
-    .btn:focus,
-    .btn:active:focus,
-    .btn.active:focus {
-      outline: none !important;
-    }
-
-    .btn {
-      background: white;
-      color: #d4374a;
-      outline: none !important;
-    }
-
-    .btn:hover,
-    .btn-primary:focus,
-    .btn-primary:active,
-    .btn-primary.active,
-    .open>.dropdown-toggle.btn-primary {
-      background: #d4374a;
-      color: white;
-      outline: none !important;
-    }
-
-    .btn:active,
-    .btn.active {
-      outline: none !important;
-      background: black;
-      box-shadow: none;
-    }
-
-    .btn:focus {
-      outline: none !important;
-    }
-
-    .btn-link {
-      padding: 14px 24px;
-      border: 0 none;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      outline: none !important;
-      color: #d4374a;
-    }
-
-    .btn-link:hover {
-      color: #d4374a;
-    }
-
-    .btn:focus,
-    .btn:active {
-      outline: none !important;
-      box-shadow: none !important;
-    }
-  </style>
 
 </head>
 
@@ -459,16 +119,17 @@
 
   {{#each flyMineData}}
     <div class="content">
-      <h1>Gene: {{[probe]}} <a href="http://flybase.org/reports/{{this.[tissue].[0].[9]}}" class="btn-link">Link To FlyBase Report For Gene</a></h1>
+      <h1 style="background-color:#d4374a; color:white;">RESULT FOR GENE: {{[probe]}} <a href="http://flybase.org/reports/{{this.[tissue].[0].[9]}}" class="gene_link">Link To FlyBase Report For Gene</a></h1>
       <!-- Include flybase page for gene -->
       <br>
 
       <!---DISPLAY TRANSCRIPTS HEADER START -->
       <script>
         if ("{{[transcript]}}".length != 0) { // Display transcript title only when not empty.
-          var probe_header = document.getElementsByTagName("H1");
-          var transcript_header = document.createElement("h4");
-          var text = document.createTextNode("Transcripts");
+          var probe_header = document.getElementsByTagName("div");
+          var transcript_header = document.createElement("h2");
+          var text = document.createTextNode("TRANSCRIPTS");
+          transcript_header.style.color = "#d4374a";
           transcript_header.appendChild(text);
           probe_header[probe_header.length - 1].appendChild(transcript_header); // Append transcripts header to repective probe header.
         }
@@ -548,6 +209,8 @@
 
       <br>
 
+      <h2 style="color:#d4374a">IMAGES AND THEIR DESCRIPTIONS</h2>
+
       <!-- LOOP THGROUGH SQL ANNOTAION ANDS IMAGES DATA START-->
       {{#each [flyted]}}
         <div class="square">
@@ -556,6 +219,7 @@
           <!-- Liscence for fancybox can be found on their site -> https://fancyapps.com/fancybox/3
           It is free to use fancyBox for your personal or non-profit website projects. This website is non-profit.
           fancybox is released under the GNU General Public License v3.0 -->
+
           <script>
             $("[data-fancybox]").fancybox({
               arrows: false,
@@ -620,12 +284,13 @@
             <!-- TABLE TO SHOW IMAGES AND RESPECTIVE ANNOTATIONS END -->
           {{/with}}
         </div>
-
         <br>
       {{/each}}
 
+      <h2 style="color:#4286f4">MICROARRAY GRAPH AND ANNOTATIONS</h2>
+
       <!-- TABLE TO SHOW ADDITIONAL PROBE ANNOTTAIONS FROM THE 'PROBE_ANNOTATIONS' TABLE IN SQL START -->
-      <table id="annotation_for_{{[probe]}}" class="table table-bordered">
+      <table id="annotation_for_{{[probe]}}" class="expression_table">
         <tbody>
           <tr>
             <td data-field="key" class="key">Gene</td>
@@ -647,14 +312,12 @@
       </table>
       <!-- TABLE TO SHOW ADDITIONAL PROBE ANNOTTAIONS FROM THE 'PROBE_ANNOTATIONS' TABLE IN SQL END -->
 
-      <br>
-
       <!-- CREATE THE CHART CONTAINER AND BUTTON FOR AFFY DATA START -->
       <script>
-        var gene = "{{[probe]}}"
+        var gene = "{{[probe]}}";
 
         // Fetch previous table element:
-        var items = document.querySelectorAll("br");
+        var items = document.querySelectorAll("table");
         var lastchild = items[items.length - 1];
 
         // Create button:
@@ -662,7 +325,7 @@
         var id = "button_affy_" + gene;
         chart_affy_button.setAttribute("id", id);
         chart_affy_button.classList.add('tab2');
-        chart_affy_button.innerHTML = "View the affy" + gene;
+        chart_affy_button.innerHTML = "VIEW MICROARRAY DATA FOR GENE: " + gene;
         lastchild.parentNode.insertBefore(chart_affy_button, lastchild.nextSibling);
         document.getElementById(id).onclick = function() {
           affy_test(this.id);
@@ -675,11 +338,10 @@
         chart_affy_button.appendChild(chart_affy_element);
       </script>
       <!-- CREATE THE CHART CONTAINER AND BUTTON FOR AFFY DATA END -->
-
       <br>
       <!--CREATE FORM USED FOR SEARCHING AND SORTING THE TISSUE EXPRESSION TABLE START -->
+      <h2 style="color: #d4374a">EXPRESSION IN TISSUES</h2>
       <div id="form" style="position:relative">
-        <h3>Expression for Gene by tissue:</h3>
         <div class="form-inline">
           <label for="search">Search:</label>
           <input type="text" name="search" id="myInput" onkeyup="SearchTable(this.id)" placeholder="Search by Tissue" title="Filter Table" class="form-control" style="margin: 10px">
@@ -703,7 +365,7 @@
       <div style="position: relative; width: 100%; overflow: auto">
 
         <!-- CREATE TABLE TO CONTAIN TISSUE EXPRESSION RESULTS FROM FLYMIN API START -->
-        <table id="myTable" style="width: 100%" class="customers">
+        <table id="myTable" style="width: 100%" class="expression_table">
 
           <!-- GIVE ID's TO TABLE AND FORM ELEMENTS START-->
           <script>
@@ -755,14 +417,13 @@
 
               // Metrics for affy expression graph
               var affy_expression_dataset = [];
-              affy_expression_dataset.push(["Variant", "Affy Count"]);
+              affy_expression_dataset.push(["Mutant", "Expression Count"]);
             </script>
             <!-- CREATE ARRAYS FOR AFFY AND TISSUE EXPRESSION DATA END -->
 
             {{#each [tissue]}}
               <!-- ADD EXPRESSION DATA TO ARRAY START -->
               <script>
-                gene = "{{this.[0]}}";
                 var temp = [];
                 var tissue_type = "{{this.[8]}}";
                 var expression_level = parseFloat("{{this.[3]}}");
@@ -803,11 +464,25 @@
         affy_expression_dataset.push(temp);
       }
 
-      for(let i = 0; i<4; i++){ // Fill description table with sql data from subset of array.
+      for(let i = 0; i<3; i++){ // Fill description table with sql data from subset of array.
         description_table.rows[i].children[1].innerHTML = affy_value[i];
         description_table.rows[i].children[0].style.background = "#4286f4";
         description_table.rows[i].children[0].style.color = "white";
       }
+
+
+      var desc_array = affy_value[3].split('/');  // Replace description / with , for better presentation.
+      desc_array.shift();
+
+      var desc = "";
+      desc_array.forEach(function(element) {
+        desc = desc + element.trim() + ", ";
+      });
+
+      description_table.rows[3].children[1].innerHTML = desc;
+      description_table.rows[3].children[0].style.background = "#4286f4";
+      description_table.rows[3].children[0].style.color = "white";
+
     </script>
     <!-- POPULATE THE AFFY TABLE END -->
 
@@ -823,18 +498,17 @@
 
 <!-- CREATE TABLE TO CONTAIN TISSUE EXPRESSIOJN RESULTS FROM FLYMIN API END -->
 </div>
-<br>
 
   <!--CREATE THE CHART CONTAINER AND TAB BUTTON FOR TISSUE EXPRESSION CHART START -->
   <script>
-    var items = document.querySelectorAll("br");  // Fetch previous table element.
+    var items = document.querySelectorAll("div");  // Fetch previous table element.
     var lastchild = items[items.length - 1];
 
     var chart_button = document.createElement('div'); // Create button.
     var id = gene;
     chart_button.setAttribute("id", id);
     chart_button.classList.add('tab');
-    chart_button.innerHTML = "View Tissue Expression Graph For Gene: " + gene;
+    chart_button.innerHTML = "EXPRESSION BY TISSUE GRAPH FOR GENE: " + gene;
     lastchild.parentNode.insertBefore(chart_button, lastchild.nextSibling);
     document.getElementById(id).onclick = function() {
       test(this.id);
@@ -876,10 +550,10 @@
       legend: 'bottom',
       width: '100%',
       height: 800,
-      title: 'Affimatrix Result',
+      title: 'Microarray Results for Different Mutants',
       colors: ['#4286f4'],
       hAxis: {
-        title: 'Variant',
+        title: 'Mutant',
         slantedText: true,
         slantedTextAngle: 90,
       },
@@ -889,7 +563,7 @@
         height: '60%'
       },
       vAxis: {
-        title: 'Value',
+        title: 'Expression Count',
         format: 'decimal',
         slantedText: true,
         slantedTextAngle: 90,
@@ -898,6 +572,7 @@
     };
 
     let id = "chart_affy_" + gene;
+    console.log("Container id should be: " + id);
     var container = document.getElementById(id)
     var chart_affy = new google.visualization.ColumnChart(container);
     container.style.display = 'block';

@@ -238,6 +238,7 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
           var myQuery = "SELECT * FROM Probe_Annotations WHERE Gene = (" + ("'" + probe + "'") + ")";
 
           conn.query(myQuery, (err, my_res) => {
+            console.log(my_res);
             if (err) throw err;
             else callback(null, my_res);
           });
