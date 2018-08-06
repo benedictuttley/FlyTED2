@@ -1,14 +1,16 @@
 // <--- HEADER START --->
-// Node app Version 1.2
-// Status: Logic complete
+// Node app Version 1.3
+// Status: Logic complete and logging integrated using Winston
 // Author: Benedict Uttley
-// Date: 02/08/2018
+// Date: 04/08/2018
 // Current data credit listing: InterMine, FlyMine.
 // <--- HEADER END --->
 
 // --- MODULE IMPORTS START --- //
 const express = require('express')
 const app = express();
+
+const helmet = require('helmet'); // Used to set and ensure HTTP headers correctly for security of application.
 
 const mysql = require('mysql'); // Import mysql module to interact with FlyTed2 database.
 
@@ -18,6 +20,9 @@ const intermine = require('imjs'); // API to fetch Flymine data.
 
 const handlebars = require('express-handlebars'); // For use in an express environment
 const Handlebars = require('handlebars'); // Used as the HTML templating framework to construct the HTML pages server side.
+
+const morgan = require('morgan'); // Used to log http requests.
+const winston = require('./config/winston'); // Log various actions and store logs in /logs/app.log
 
 const async = require('async'); // Required for multiple asynchronous FlyMine API and mySQL calls where all results are stored in one results array.
 
@@ -34,10 +39,16 @@ app.engine('handlebars', handlebars({
   defaultLayout: 'main'
 }));
 
+app.use(helmet());
+
 app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({
   extended: true
+}));
+
+app.use(morgan('combined', {
+  stream: winston.stream
 }));
 
 app.use(express.static('public')); // Gain access to all static files stored in the 'public' directory.
@@ -47,22 +58,6 @@ app.set('view engine', 'handlebars'); // Create the handlebars engine.
 
 app.listen(3000, () => console.log('App active on port:3000')); // bind application to port 3000;
 // --- APP CONFIGURATION END --- //
-
-// --- SQL CONFIGURATION START --- //
-const conn = mysql.createConnection({ // Create mysql connection to FlyTed database.
-  host: 'localhost',
-  user: 'pmauser', // TODO: Change the username to something more meaningful before release.
-  password: '[*3G4vlSp7', // TODO: Change the password before release.
-  database: 'FlyTed2'
-});
-
-// Form and verify connection.
-conn.connect(err => {
-  if (err) throw err;
-  console.log("Mysql Connection Established");
-});
-// --- SQL CONFIGURATION END --- //
-
 
 
 // MAIN SERVER LOGIC BELOW //
@@ -93,179 +88,114 @@ Handlebars.registerHelper('json', function(context) {
   return JSON.stringify(context);
 });
 
-// Listen for general query post from HTML form:
-app.post('/query', (req, res) => {
-
-  fetchAll((err, result) => {
-    if (err) {
-      throw err;
-    } else {
-      res.send(result);
-    }
-  }, req.body.Group);
-});
-
-// TODO: Export queries and related helper funnctions such as any formatters to their own module
-function createExpressionQueries(probeName) {
-
-  let queries = {
-
-    expression_tissue_query: { // Tissue expresssion query
-      "name": "Gene_FlyAtlas",
-      "title": "Gene --> FlyAtlas expression data",
-      "comment": "06.06.07 updated to work from gene class - Philip",
-      "description": "For a given D. melanogaster gene, show expression data from FlyAtlas.",
-      "constraintLogic": "A and B and C and D and E and F",
-      "from": "Gene",
-      "select": [
-        "secondaryIdentifier",
-        "symbol",
-        "microArrayResults.mRNASignal",
-        "microArrayResults.mRNASignalSEM",
-        "microArrayResults.presentCall",
-        "microArrayResults.enrichment",
-        "microArrayResults.affyCall",
-        "microArrayResults.dataSets.name",
-        "microArrayResults.tissue.name",
-        "primaryIdentifier"
-      ],
-      "orderBy": [{
-        "path": "microArrayResults.tissue.name",
-        "direction": "ASC"
-      }],
-      "where": [{
-          "path": "organism.name",
-          "op": "=",
-          "value": "Drosophila melanogaster",
-          "code": "B",
-          "editable": false,
-          "switched": "LOCKED",
-          "switchable": false
-        },
-        {
-          "path": "microArrayResults",
-          "type": "FlyAtlasResult"
-        },
-        {
-          "path": "Gene",
-          "op": "LOOKUP",
-          "value": probeName,
-          "code": "A",
-          "editable": true,
-          "switched": "LOCKED",
-          "switchable": false
-        },
-        {
-          "path": "microArrayResults.affyCall",
-          "op": "NONE OF",
-          "values": [
-            "None"
-          ],
-          "code": "C",
-          "editable": true,
-          "switched": "ON",
-          "switchable": true
-        }
-      ]
-    },
-
-    expression_stage_query: { // Developmental stage expression query
-      "from": "Gene",
-      "select": [
-        "primaryIdentifier",
-        "symbol",
-        "rnaSeqResults.stage",
-        "rnaSeqResults.expressionScore",
-        "rnaSeqResults.expressionLevel"
-      ],
-      "orderBy": [{
-        "path": "rnaSeqResults.stage",
-        "direction": "ASC"
-      }],
-      "where": [{
-        "path": "Gene",
-        "op": "LOOKUP",
-        "value": probeName,
-        "extraValue": "D. melanogaster",
-        "code": "A",
-        "editable": true,
-        "switched": "LOCKED",
-        "switchable": false
-      }]
-    }
-  }
-  return queries;
-}
+// TODO: Clean below function and if possible modularise.
 
 app.post('/results', (req, res) => { // Listen for incoming probe search requests
-  var isEmpty = false;
-
-  FetchExternalData((probe_list, queries) => { // Fetch SQL and FlyMine data
+  var isEmpty = true;
+  FetchExternalData((probe_list) => { // Fetch SQL and FlyMine data
     var asyncTest = function asyncTest(probe, callback) {
-      var queries = createExpressionQueries(probe); // Fecth the FlyMine API queries objects
+
+      var tissue_query = build_query.createQuery(probe); // Fecth the FlyMine API queries objects
+
       async.parallel({ // Async module method to enable multiple asynchronous calls all returned in one result object
-        tissue: function(callback) { // Fetch tissue expression data for the associated gene.
-          flymine.rows(queries.expression_tissue_query).then(rows => {
-            callback(null, rows);
-          }).catch('error', function(e) {
-            console.log(e); // Check for error with API and log the error.
-          });
-        },
-        probe: function(callback) { // Also include the probe (CG****) for this result object as a reference
+
+        // --- STORE THE PROBE START --- //
+        probe: callback => { // Also include the probe (CG****) for this result object as a reference move to top.
           callback(null, probe);
         },
-        flyted: function(callback) { // Fetch images and annotation for the given gene from the mySQL database.
-          // TODO: Move SQL logic to dedicated functions and possibly own module.
-          var myQuery = "SELECT * FROM Demo WHERE Probe IN (" + ("'" + probe + "'") + ")";
+        // --- STORE THE PROBE END --- //
+
+
+        // --- FETCH TISSUE EXPRESSION DATA START --- //
+        tissue: callback => {
+          flymine.rows(tissue_query).then(rows => {
+            if (rows > 0) isEmpty = false;
+            callback(null, rows);
+          }).catch('error', function(err) {
+            //If flymine API error, then log the error:
+            winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+          });
+        },
+        // --- FETCH TISSUE EXPRESSION DATA END --- //
+
+
+        // --- FETCH IMAGE & ANNOTATION DATA START --- //
+        flyted: callback => {
+          var myQuery = "SELECT * FROM Demo WHERE Probe IN (" + conn.escape(probe) + ")";
 
           // Check if VARIANT has been set.
+          // If yes then Search for entries where the genotypes (a and b)
+          // match the users input for the varient.
           if (!(req.body.Variant === undefined || req.body.Variant == "")) {
-            // Search for entries where the genotypes (a and b) match the users input for the varient.
             myQuery += " AND ( `genotype a` LIKE " + conn.escape('%' + req.body.Variant + '%') +
               " OR `genotype b` LIKE " + conn.escape('%' + req.body.Variant + '%') + ")";
           }
 
           conn.query(myQuery, (err, my_res) => {
-            if (my_res.length == 0) {
-              isEmpty = true;
-              console.log("RESULTS ARE VOID!");
+            if (err) {
+              //If mysql error, then log the error:
+              winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+              callback(null, null);
+            } else {
+              if (my_res.length > 0) isEmpty = false;
+              callback(null, my_res);
             }
-            if (err) throw err;
-            else callback(null, my_res);
           });
         },
-        affy: function(callback) { // Fetch the affy data and annotations from the database.
-          var myQuery = "SELECT * FROM Probe_Annotations WHERE Gene = (" + ("'" + probe + "'") + ")";
+        // --- FETCH IMAGE & ANNOTATION DATA END --- //
+
+        // --- FETCH THE MICROARRAY ANNOTATIONS AND VALUES START --- //
+        affy: function(callback) {
+          var myQuery = "SELECT * FROM Probe_Annotations WHERE Gene = (" + conn.escape(probe) + ")";
 
           conn.query(myQuery, (err, my_res) => {
-            console.log(my_res);
-            if (err) throw err;
-            else callback(null, my_res);
+            if (err) {
+              //If mysql error, then log the error:
+              winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+              callback(null, null);
+            } else {
+              if (my_res.length > 0) isEmpty = false;
+              callback(null, my_res);
+            }
           });
         },
+        // --- FETCH THE MICROARRAY ANNOTATIONS AND VALUES END --- //
 
+        // --- FETCH THE TRANSCRIPT DATA START --- //
         transcript: function(callback) { // Fetch the probe sequence data from the database.
-          var myQuery = "SELECT * FROM Probe_Sequences WHERE Probe IN (" + ("'" + probe + "'") + ")";
+          var myQuery = "SELECT * FROM Probe_Sequences WHERE Probe IN (" + conn.escape(probe) + ")";
 
           conn.query(myQuery, (err, my_res) => {
-            if (err) throw err;
-            else callback(null, my_res);
+            if (err) {
+              //If mysql error, then log the error:
+              winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+              callback(null, null);
+            } else {
+              if (my_res.length > 0) isEmpty = false
+              callback(null, my_res);
+            }
           });
         }
+      },
+      // --- FETCH THE TRANSCRIPT DATA END --- //
 
-      }, (err, results) => { // Return the result of each indivisulal query in one object called results, once all api/db calls have completed.
-        callback(null, results)
+      (err, results) => { // Return result object when all API and SQL functions have executed (all callbacks fired).
+        callback(err, results)
       });
     }
 
     // Async module method to allow async.paralllel method to be placed in for loop so that external data for multiple genes can be required.
     async.map(probe_list, asyncTest, function(err, results) {
-      let data = {
-        flyMineData: results, // Stores the API and SQL query results
+      if (err) {
+        //If async error, then log the error:
+        winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        isEmpty = true; // On error return the 'no results' page, so set isEmpty to true.
       }
-      if (isEmpty) {
-        res.render('none'); // Return dedicated 'no results' page when no data is found (image-wise) NOTE: Could be adapted for other data sets being void instead.
-      } else {
+      if (isEmpty) res.render('none'); // Return dedicated 'no results' page when no data is found.
+      else {
+        let data = {
+          flyMineData: results, // Stores the API and SQL query results
+        }
         res.render('results', data); // Serve Handlebars HTML page.
       }
     });
@@ -275,17 +205,25 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
 // TODO: Add as an option, perhaps only listing a constant amount each time, [page: queries] ratio?
 
 function FetchExternalData(callback, probes) {
-  let probe_list = probes.split(", "); // Create array containing each of the probes entered by the user onto the form.
-  let queries = createExpressionQueries(probe_list); // Fecth the FlyMine API queries objects
-  callback(probe_list, queries);
+  let probe_list = probes.split(", "); // Create array containing each of the probes entered by the user.
+  callback(probe_list);
 }
 
-// Handle 404 errors.
-app.use(function(req, res) { //TODO: REPLACE WITH CUSTOM ERROR PAGE.
-  res.send('404: Page not Found', 404);
+
+// --- STANDARD ERROR HANDLERS START --- //
+// Handle 400 errors.
+app.use((req, res) => {
+  winston.error(`${404} - ${"FILE NOT FOUND"} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+  res.send("404 FLYTED CANNOT FIND WHAT YOU ARE LOOKING FOR.");
 });
 
 // Handle 500 errors.
-app.use(function(error, req, res, next) { //TODO: REPLACE WITH CUSTOM ERROR PAGE.
-  res.send('500: Internal Server Error', 500);
+app.use((err, req, res, next) => {
+  winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
 });
+
+// --- STANDARD ERROR HANDLERS END --- //
+
+// Importing of local modules containing helper functions.
+const build_query = require('./queries'); // Contains options for tissue expression query.
+const conn = require('./mysql_setup'); // Contains the mysql connection object and authentication details.

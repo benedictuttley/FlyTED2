@@ -7,6 +7,10 @@
     "test": "snyk test",
     "snyk-protect": "snyk protect",
     "prepublish": "npm run snyk-protect"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+ a70323679101908d1316c8f0f30a6e94bf483e98
   },
   "repository": {
     "type": "git",
@@ -34,3 +38,9 @@
   },
   "snyk": true
 }
+    "winston": "^3.0.0",
+    "snyk": "^1.90.0"
+  },
+  "snyk": true
+}
+

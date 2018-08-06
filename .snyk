@@ -5,4 +5,8 @@ ignore: {}
 patch:
   'npm:lodash:20180130':
     - nsp > cli-table2 > lodash:
+
         patched: '2018-08-05T09:52:09.569Z'
+
+        patched: '2018-08-04T17:58:18.368Z'
+
