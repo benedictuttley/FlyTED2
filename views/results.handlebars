@@ -18,9 +18,9 @@
   <!-- Load the Bootstrap css files -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
-  
+
   <link rel="stylesheet" href="css/table.css"></link>
   <link rel="stylesheet" href="css/side_bar.css"></link>
   <link rel="stylesheet" href="css/main.css"></link>
@@ -51,13 +51,14 @@
         </div>
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-lg sharp">EXECUTE</button>
+            <button type="submit" class="btn btn-lg sharp" style="width:100%">EXECUTE</button>
           </div>
         </div>
       </form>
     </div>
   </div>
   <!-- SIDE BAR CONTAING QUERY FORM END -->
+
 
   <!-- SIDEBAR TOGGLE SCRIPT START -->
   <script>
@@ -110,6 +111,9 @@
 
   <!-- GLOBAL VARIABLES DECLARATION START -->
   <script>
+    var microarray_data_present = true; // Store whether microarray data has been retrieved or not.
+    var tissue_expression_present = true; // Store whether flymine data has been retrieved or not.
+    var image_data_present = true; // Store whether image data has been retrieved or not.
     var gene = "none"; // Stores gene id of curent loop.
     var data_array = []; // Holds the tissue expression data from flymine.
     var affy_array = []; // Holds the affy data from sql table 'Probe Annotations'.
@@ -118,6 +122,27 @@
 
 
   {{#each flyMineData}}
+
+    <!-- CHECK IF DATA COMPONENTS AVAILABLE START -->
+    <script>
+
+      if ({{{json [affy]}}}.length == 0) {
+        microarray_data_present = false;
+        console.log("NO MICROARRAY DATA");
+      }
+      if ("{{[tissue]}}".length == 0) {
+        tissue_expression_present = false;
+        console.log("NO FLYMINE DATA");
+      }
+      if ("{{[flyted]}}".length == 0) {
+        image_data_present = false;
+        console.log("NO IMAGE DATA");
+      }
+
+    </script>
+    <!-- CHECK IF DATA COMPONENTS AVAILABLE END -->
+
+
     <div class="content">
       <h1 style="background-color:#d4374a; color:white;">RESULT FOR GENE: {{[probe]}} <a href="http://flybase.org/reports/{{this.[tissue].[0].[9]}}" class="gene_link">Link To FlyBase Report For Gene</a></h1>
       <!-- Include flybase page for gene -->
@@ -148,7 +173,7 @@
             transcript_button.setAttribute("id", id);
             transcript_button.classList.add('tab');
             transcript_button.innerHTML =
-              ">> View Transcript Information For Gene: " + "{{[Transcript_ID]}}";
+              ">> VIEW TRANSCRIPT VIEW INFORMATION FOR GENE: " + "{{[Transcript_ID]}}";
 
             transcript_button.onclick = function() { // When tab is clicked toggle view of the respective transcipt information.
               toggle_transcript_view("{{[Transcript_ID]}}" + "_container");
@@ -199,8 +224,7 @@
               "{{[3_Prime_Sequence]}}" + '</span>';
 
             document.getElementById("{{[Transcript_ID]}}").innerHTML = final;
-            document.getElementById("{{[Transcript_ID]}}" + "_container").style.display =
-              "none"; // Initially have transcripts hiddden:
+            document.getElementById("{{[Transcript_ID]}}" + "_container").style.display = "none"; // Initially have transcripts hiddden.
           </script>
           <!-- EDIT STYLE OF SEQUENCES TO SHOW 5' AND 3' PROBES END -->
         {{/with}}
@@ -209,7 +233,15 @@
 
       <br>
 
-      <h2 style="color:#d4374a">IMAGES AND THEIR DESCRIPTIONS</h2>
+      <h2 style="color:#d4374a" id="{{probe}}_image_title">IMAGES AND THEIR DESCRIPTIONS</h2>
+
+      <!-- Handle error when no image values present -->
+      <script>
+        if (!image_data_present) {
+          var image_title = document.getElementById("{{probe}}" + "_image_title");
+          image_title.innerHTML = "NO IMAGE DATA AVAILABLE!";
+        }
+      </script>
 
       <!-- LOOP THGROUGH SQL ANNOTAION ANDS IMAGES DATA START-->
       {{#each [flyted]}}
@@ -287,7 +319,7 @@
         <br>
       {{/each}}
 
-      <h2 style="color:#4286f4">MICROARRAY GRAPH AND ANNOTATIONS</h2>
+      <h2 style="color:#4286f4" id="microarray_{{[probe]}}">MICROARRAY GRAPH AND ANNOTATIONS</h2>
 
       <!-- TABLE TO SHOW ADDITIONAL PROBE ANNOTTAIONS FROM THE 'PROBE_ANNOTATIONS' TABLE IN SQL START -->
       <table id="annotation_for_{{[probe]}}" class="expression_table">
@@ -314,34 +346,36 @@
 
       <!-- CREATE THE CHART CONTAINER AND BUTTON FOR AFFY DATA START -->
       <script>
-        var gene = "{{[probe]}}";
+        if (microarray_data_present) {
+          var gene = "{{[probe]}}";
 
-        // Fetch previous table element:
-        var items = document.querySelectorAll("table");
-        var lastchild = items[items.length - 1];
+          // Fetch previous table element:
+          var items = document.querySelectorAll("table");
+          var lastchild = items[items.length - 1];
 
-        // Create button:
-        var chart_affy_button = document.createElement('div');
-        var id = "button_affy_" + gene;
-        chart_affy_button.setAttribute("id", id);
-        chart_affy_button.classList.add('tab2');
-        chart_affy_button.innerHTML = "VIEW MICROARRAY DATA FOR GENE: " + gene;
-        lastchild.parentNode.insertBefore(chart_affy_button, lastchild.nextSibling);
-        document.getElementById(id).onclick = function() {
-          affy_test(this.id);
-        };
+          // Create button:
+          var chart_affy_button = document.createElement('div');
+          var id = "button_affy_" + gene;
+          chart_affy_button.setAttribute("id", id);
+          chart_affy_button.classList.add('tab2');
+          chart_affy_button.innerHTML = ">> VIEW MICROARRAY DATA FOR GENE: " + gene;
+          lastchild.parentNode.insertBefore(chart_affy_button, lastchild.nextSibling);
+          document.getElementById(id).onclick = function() {
+            affy_test(this.id);
+          };
 
-        // Create chart container:
-        var chart_affy_element = document.createElement('div');
-        var id = "chart_affy_" + gene;
-        chart_affy_element.setAttribute("id", id);
-        chart_affy_button.appendChild(chart_affy_element);
+          // Create chart container:
+          var chart_affy_element = document.createElement('div');
+          var id = "chart_affy_" + gene;
+          chart_affy_element.setAttribute("id", id);
+          chart_affy_button.appendChild(chart_affy_element);
+        }
       </script>
       <!-- CREATE THE CHART CONTAINER AND BUTTON FOR AFFY DATA END -->
-      <br>
+
       <!--CREATE FORM USED FOR SEARCHING AND SORTING THE TISSUE EXPRESSION TABLE START -->
-      <h2 style="color: #d4374a">EXPRESSION IN TISSUES</h2>
-      <div id="form" style="position:relative">
+      <h2 style="color: #d4374a" id="expression_title_{{[probe]}}">EXPRESSION IN TISSUES</h2>
+      <div id="expression_form_{{[probe]}}" style="position:relative">
         <div class="form-inline">
           <label for="search">Search:</label>
           <input type="text" name="search" id="myInput" onkeyup="SearchTable(this.id)" placeholder="Search by Tissue" title="Filter Table" class="form-control" style="margin: 10px">
@@ -449,8 +483,26 @@
           {{/each}}
 
 
+          <!-- Handle error when no table values present -->
+          <script>
+          if(!microarray_data_present){
+            console.log("No microarray data available");
+            var affy_title = document.getElementById("microarray_" + "{{[probe]}}");
+            affy_title.innerHTML = ">> NO MICROARRAY DATA AVAILABLE!";
+            microarray_data_present = false;
+            document.getElementById("annotation_for_" + "{{[probe]}}").remove();
+
+          }
+          </script>
+
+
+
+
+
     <!-- POPULATE THE AFFY TABLE START -->
     <script>
+      if (microarray_data_present) {
+
       var labels = []
       var affy_data = ({{{json [affy]}}}); // Triple brackets used to disable HTML encoding.
       var temp = []
@@ -482,6 +534,7 @@
       description_table.rows[3].children[1].innerHTML = desc;
       description_table.rows[3].children[0].style.background = "#4286f4";
       description_table.rows[3].children[0].style.color = "white";
+    }
 
     </script>
     <!-- POPULATE THE AFFY TABLE END -->
@@ -496,11 +549,27 @@
   {{/with}}
 </table>
 
+
+<!-- Handle error when no table values present -->
+<script>
+if(!tissue_expression_present){
+  console.log("No tissue data available");
+  var tissue_title = document.getElementById("expression_title_"+"{{[probe]}}");
+  tissue_title.innerHTML = "NO EXPRESSION DATA AVAILABLE!";
+  document.getElementById("{{[probe]}}" + "_table").remove(); // Remove tissue expression table.
+  document.getElementById("expression_form_" + "{{[probe]}}").remove(); // Remove tissue expression form
+
+}
+</script>
+
+
+
 <!-- CREATE TABLE TO CONTAIN TISSUE EXPRESSIOJN RESULTS FROM FLYMIN API END -->
 </div>
 
   <!--CREATE THE CHART CONTAINER AND TAB BUTTON FOR TISSUE EXPRESSION CHART START -->
   <script>
+  if(tissue_expression_present){
     var items = document.querySelectorAll("div");  // Fetch previous table element.
     var lastchild = items[items.length - 1];
 
@@ -508,7 +577,7 @@
     var id = gene;
     chart_button.setAttribute("id", id);
     chart_button.classList.add('tab');
-    chart_button.innerHTML = "EXPRESSION BY TISSUE GRAPH FOR GENE: " + gene;
+    chart_button.innerHTML = ">> EXPRESSION BY TISSUE GRAPH FOR GENE: " + gene;
     lastchild.parentNode.insertBefore(chart_button, lastchild.nextSibling);
     document.getElementById(id).onclick = function() {
       test(this.id);
@@ -518,6 +587,7 @@
     var id = "chart_" + gene;
     chart_element.setAttribute("id", id);
     chart_button.appendChild(chart_element);
+  }
   </script>
   <!--CREATE THE CHART CONTAINER AND TAB BUTTON FOR TISSUE EXPRESSION CHART END -->
   <br>
@@ -532,11 +602,15 @@
   google.charts.setOnLoadCallback(drawChart);
 
   function drawChart() {  // For each gene in the original query, draw the respective tissue expression and affy value graph.
-    for (let i = 1; i < data_array.length; i = i + 2) {
-      testing(data_array[i], data_array[i - 1]);
+    if (tissue_expression_present) {
+      for (let i = 1; i < data_array.length; i = i + 2) {
+        testing(data_array[i], data_array[i - 1]);
+      }
     }
-    for (let i = 1; i < affy_array.length; i = i + 2) {
-      query_for_affy_chart(affy_array[i], affy_array[i - 1]);
+    if(microarray_data_present){
+      for (let i = 1; i < affy_array.length; i = i + 2) {
+        query_for_affy_chart(affy_array[i], affy_array[i - 1]);
+      }
     }
   }
 </script>

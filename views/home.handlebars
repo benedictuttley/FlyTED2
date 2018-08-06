@@ -10,355 +10,21 @@
   <title>HOME</title>
 
   <!--Load jquery-->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <!-- Load the Bootstrap js files -->
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"
-    integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
-    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
   <!--Load the API for google charts -->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <!-- Load the Bootstrap css files -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
-    integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
-    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
   <!-- TODO: Create external stylesheets -->
-
-  <!-- Collapsable tab displaying tissue expression chart styling -->
-  <style>
-  .tab {
-    margin-top: 8px;
-    width: 100%;
-    background-color: gray;
-    color: white;
-    cursor: pointer;
-    padding: 5px;
-    height: auto;
-  }
-
-  .tab:hover {
-    background-color: #d4374a;
-  }
-  </style>
-
-  <!--TODO: Change the class name and find a more suitable table design that is reposndive to changes in window size and can have search functionality added to it. -->
-
-  <style>
-  table.table-bordered>tbody>tr>td {
-    border: 1px solid black
-  }
-
-  .customers {
-    position: relative;
-    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-  }
-
-  .customers td,
-  .customers th {
-    border: 2px solid black;
-    padding: 8px;
-    color: black;
-    background-color: white;
-  }
-
-  .customers tr:hover {
-    background-color: #ddd;
-  }
-
-  .customers th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: left;
-    background-color: #d4374a;
-    color: white;
-  }
-
-  .customersTwo {
-    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-  }
-
-  .customersTwo td,
-  .customersTwo th {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-
-  .customersTwo tr:hover {
-    background-color: #ddd;
-  }
-
-  .customersTwo th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: left;
-    background-color: #4CAF50;
-    color: white;
-  }
-
-  .qbox {
-    position: fixed;
-    top: 20px;
-    right: 50px;
-  }
-
-  .sidenav {
-    top: 25%;
-    height: 50%;
-    width: 250px;
-    position: fixed;
-    z-index: 100;
-    left: 0;
-    overflow-x: hidden;
-    transition: 0.5s;
-    padding-top: 60px;
-    background-color: gray;
-    border-top: 2px solid black;
-    border-bottom: 2px solid black;
-    border-right: 2px solid black;
-  }
-
-  .sidenav a {
-    padding: 8px 8px 8px 32px;
-    text-decoration: none;
-    font-size: 25px;
-    color: #818181;
-    display: block;
-    transition: 0.3s;
-  }
-
-  .sidenav a:hover {
-    color: #f1f1f1;
-  }
-
-  .sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-    cursor: pointer;
-  }
-
-  @media screen and (max-height: 450px) {
-    .sidenav {
-      padding-top: 15px;
-    }
-    .sidenav a {
-      font-size: 18px;
-    }
-  }
-
-  .Up {
-    border: solid green;
-    border-width: 0 3px 3px 0;
-    display: inline-block;
-    padding: 3px;
-    transform: rotate(-135deg);
-    -webkit-transform: rotate(-135deg);
-  }
-
-  .Down {
-    border: solid red;
-    border-width: 0 3px 3px 0;
-    display: inline-block;
-    padding: 3px;
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-  }
-
-  .content {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    padding: 5%;
-  }
-
-  .flytedContainer {
-    padding: 5px;
-    width: 100%;
-    height: 75%;
-    background-color: #d4374a;
-  }
-
-  .image {
-    position: relative;
-    float: left;
-    width: 50%;
-    height: 100%;
-    background-color: yellow;
-    border: 2px solid black;
-  }
-
-  .annotation {
-    position: relative;
-    float: right;
-    width: 50%;
-    height: 100%;
-    color: white;
-  }
-
-  .key {
-    font-weight: bold;
-  }
-
-  .form-control:focus {
-    border-color: #d4374a;
-    box-shadow: 0px 1px 1px #d4374a inset, 0px 0px 8px #d4374a;
-  }
-
-  .square {
-    position: relative;
-    width: 100%;
-    border: 3px solid black;
-    height: 40%;
-  }
-
-  .square:after {
-    content: "";
-    display: block;
-    padding-bottom: 40%;
-  }
-
-  .contenta {
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    right: 0%;
-  }
-
-  .contentb {
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    left: 0%;
-  }
-  /**************************
-  DEFAULT BOOTSTRAP STYLES
-**************************/
-
-  .btn {
-    display: inline-block;
-    padding: 6px 12px;
-    margin-bottom: 0;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.42857143;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    background-image: none;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    padding: 10px 16px;
-  }
-
-  .btn-lg {
-    font-size: 18px;
-    line-height: 1.33;
-    border-radius: 6px;
-  }
-
-  .btn-primary {
-    color: white;
-    background-color: white;
-    border-color: white;
-  }
-
-  .btn-primary:hover,
-  .btn-primary:focus,
-  .btn-primary:active,
-  .btn-primary.active,
-  .open .dropdown-toggle.btn-primary {
-    color: white;
-    background-color: white;
-    border-color: white;
-  }
-  /***********************
-  SHARP BUTTONS
-************************/
-
-  .sharp {
-    border-radius: 0;
-  }
-  /***********************
-  CUSTON BTN VALUES
-************************/
-
-  .btn {
-    padding: 14px 24px;
-    border: 0 none;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    outline: none !important;
-  }
-
-  .btn:focus,
-  .btn:active:focus,
-  .btn.active:focus {
-    outline: none !important;
-  }
-
-  .btn {
-    background: white;
-    color: #d4374a;
-    outline: none !important;
-  }
-
-  .btn:hover,
-  .btn-primary:focus,
-  .btn-primary:active,
-  .btn-primary.active,
-  .open>.dropdown-toggle.btn-primary {
-    background: #d4374a;
-    color: white;
-    outline: none !important;
-  }
-
-  .btn:active,
-  .btn.active {
-    outline: none !important;
-    background: black;
-    box-shadow: none;
-  }
-
-  .btn:focus {
-    outline: none !important;
-  }
-
-  .btn-link {
-    padding: 14px 24px;
-    border: 0 none;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    outline: none !important;
-    color: #d4374a;
-  }
-
-  .btn-link:hover {
-    color: #d4374a;
-  }
-
-  .btn:focus,
-  .btn:active {
-    outline: none !important;
-    box-shadow: none !important;
-  }
-  </style>
+  <link rel="stylesheet" href="css/table.css"></link>
+  <link rel="stylesheet" href="css/side_bar.css"></link>
+  <link rel="stylesheet" href="css/main.css"></link>
+  <link rel="stylesheet" href="css/home.css"></link>
 
 </head>
 
@@ -369,24 +35,23 @@
       <a class="closebtn" onclick="closeNav()" style="color: white" onclick="toggleSide()">&times</a>
       <br>
       <form class="form-horizontal" method="post" action="/results">
-        <h3>Query Builder</h3>
+        <h3 style="color:white">Query Builder</h3>
         <div class="form-group">
           <label class="control-label col-sm-2" style="color: white">GENE</label>
           <div class="col-sm-10">
-            <input class="form-control" id="gene" name="Probe" placeholder="Enter gene(s)" data-toggle="tooltip"
-              data-placement="left" title="Seperate multiple genes with commas.">
+            <input class="form-control" id="gene" name="Probe" placeholder="Enter gene(s)" data-toggle="tooltip" data-placement="left" title="Seperate multiple genes with commas.">
           </div>
         </div>
         <div class="form-group">
           <label class="control-label col-sm-2" style="color: white">VARIANT</label>
           <div class="col-sm-10">
-            <input class="form-control" id="variant" name="Variant" placeholder="Enter Variant(s)"
-              data-toggle="tooltip" data-placement="left" title="Seperate multiple genotypes with commas.">
+            <input class="form-control" id="variant" name="Variant" placeholder="Enter Variant(s)" data-toggle="tooltip" data-placement="left" title="Seperate multiple genotypes with commas.">
           </div>
         </div>
+        <br>
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-lg sharp">EXECUTE</button>
+            <button type="submit" class="btn btn-lg sharp" style="width:100%">EXECUTE</button>
           </div>
         </div>
       </form>
@@ -394,25 +59,24 @@
   </div>
 
   <script>
-  function toggleSide() { // Toggle side nav open or closed.
-    let side = document.getElementById("mySidenav");
-    if (side.style.width === "250px") {
-      side.style.width = "0px" // Close the sidenav if it was previously open.
-    } else {
-      side.style.width = "250px" // Open the sidenav if it was previously closed.
-      side.style.borderRight = "2px solid black";
+    function toggleSide() { // Toggle side nav open or closed.
+      let side = document.getElementById("mySidenav");
+      if (side.style.width === "250px") {
+        side.style.width = "0px" // Close the sidenav if it was previously open.
+      } else {
+        side.style.width = "250px" // Open the sidenav if it was previously closed.
+        side.style.borderRight = "2px solid white";
+      }
     }
-  }
 
-  function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
-  }
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+    }
   </script>
 
   <!--Top sticky navigation bar -->
   <nav class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top" style="background-color: gray !important; border-bottom: 2px solid white">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
-      aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
@@ -441,5 +105,16 @@
     </div>
   </nav>
 </body>
+<div id="content" class="content">
+
+  <div class="main_info">
+    <h2 style="color:white">PURPOSE OF THE SITE</h2>
+  </div>
+
+  <div class="data_acquisition_info">
+    <h2 style="color:white">BACKGROUND TO DATA ACQUISITION</h2>
+  </div>
+
+  <div>
 
 </html>
