@@ -1,0 +1,23 @@
+.content {
+  position: absolute;
+  background-color: #d4374a;
+  width: 100%;
+  height: 100%;
+}
+
+.main_info {
+  position: relative;
+  background-color: grey;
+  width: 100%;
+  height: 50%;
+  margin-bottom: 5%;
+  border: 2px solid white;
+}
+
+.data_acquisition_info {
+  position: relative;
+  background-color: grey;
+  width: 100%;
+  height: 30%;
+  border: 2px solid white;
+}
