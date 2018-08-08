@@ -51,7 +51,9 @@ app.use(morgan('combined', {
   stream: winston.stream
 }));
 
-app.use(express.static('public')); // Gain access to all static files stored in the 'public' directory.
+app.use(express.static('public/img'));
+app.use(express.static('public/css'));
+app.use(express.static('public/js')); // Gain access to all static files stored in the 'public' directory.
 // Serve the 'home' handlebars page when a new user connects to the site, home.hanldebars is the landing page.
 
 app.set('view engine', 'handlebars'); // Create the handlebars engine.
