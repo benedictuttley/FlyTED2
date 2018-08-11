@@ -6,7 +6,7 @@ function query_for_affy_chart(affy_data, gene) {
     legend: 'bottom',
     width: '100%',
     height: 800,
-    title: 'Microarray Results for Different Mutants',
+    title: 'Microarray Results For Whole Testes',
     colors: ['#4286f4'],
     hAxis: {
       title: 'Mutant',
@@ -28,7 +28,6 @@ function query_for_affy_chart(affy_data, gene) {
   };
 
   let id = "chart_affy_" + gene;
-  console.log("Container id should be: " + id);
   var container = document.getElementById(id)
   var chart_affy = new google.visualization.ColumnChart(container);
   container.style.display = 'block';
@@ -51,7 +50,7 @@ function testing(data_array, gene) {
     legend: 'bottom',
     width: '100%',
     height: 800,
-    title: 'Gene Expression in Different Drosopilla Tissues',
+    title: 'Gene Expression in Different Drosopilla Tissues - Data From FlyAtlas',
     colors: ['#d4374a'],
     hAxis: {
       title: 'Tissue Type',
@@ -71,7 +70,6 @@ function testing(data_array, gene) {
       sliceVisibilityThreshold: 0
     },
   };
-
   let id = "chart_" + gene;
   var container = document.getElementById(id)
   var chart = new google.visualization.ColumnChart(container);

@@ -1,6 +1,6 @@
 // <--- HEADER START --->
-// Node app Version 1.3
-// Status: Logic complete and logging integrated using Winston
+// Node app Version 1.0
+// Status: Code clean up has been performed.
 // Author: Benedict Uttley
 // Date: 04/08/2018
 // Current data credit listing: InterMine, FlyMine.
@@ -58,7 +58,7 @@ app.use(express.static('public/js')); // Gain access to all static files stored 
 
 app.set('view engine', 'handlebars'); // Create the handlebars engine.
 
-app.listen(3000, () => console.log('App active on port:3000')); // bind application to port 3000;
+app.listen(process.argv[2], () => console.log('App active on port:3000')); // bind application to port 3000;
 // --- APP CONFIGURATION END --- //
 
 
@@ -103,6 +103,7 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
 
         // --- STORE THE PROBE START --- //
         probe: callback => { // Also include the probe (CG****) for this result object as a reference move to top.
+          probe = probe.toUpperCase()
           callback(null, probe);
         },
         // --- STORE THE PROBE END --- //
@@ -130,8 +131,8 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
           // match the users input for the varient.
           if (!(req.body.Variant === undefined || req.body.Variant == "")) {
             myQuery += " AND ( `genotype a` LIKE " + conn.escape('%' + req.body.Variant + '%') +
-              " OR `genotype b` LIKE " + conn.escape('%' + req.body.Variant + '%') + ")";
-          }
+            " OR `genotype b` LIKE " + conn.escape('%' + req.body.Variant + '%') + ")";
+            }
 
           conn.query(myQuery, (err, my_res) => {
             if (err) {
@@ -147,7 +148,7 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
         // --- FETCH IMAGE & ANNOTATION DATA END --- //
 
         // --- FETCH THE MICROARRAY ANNOTATIONS AND VALUES START --- //
-        affy: function(callback) {
+        affy: callback => {
           var myQuery = "SELECT * FROM Probe_Annotations WHERE Gene = (" + conn.escape(probe) + ")";
 
           conn.query(myQuery, (err, my_res) => {
@@ -164,7 +165,7 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
         // --- FETCH THE MICROARRAY ANNOTATIONS AND VALUES END --- //
 
         // --- FETCH THE TRANSCRIPT DATA START --- //
-        transcript: function(callback) { // Fetch the probe sequence data from the database.
+        transcript: callback => { // Fetch the probe sequence data from the database.
           var myQuery = "SELECT * FROM Probe_Sequences WHERE Probe IN (" + conn.escape(probe) + ")";
 
           conn.query(myQuery, (err, my_res) => {
@@ -173,14 +174,13 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
               winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
               callback(null, null);
             } else {
-              if (my_res.length > 0) isEmpty = false
+              if (my_res.length > 0) isEmpty = false;
               callback(null, my_res);
             }
           });
         }
       },
       // --- FETCH THE TRANSCRIPT DATA END --- //
-
       (err, results) => { // Return result object when all API and SQL functions have executed (all callbacks fired).
         callback(err, results)
       });
@@ -193,7 +193,9 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
         winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         isEmpty = true; // On error return the 'no results' page, so set isEmpty to true.
       }
-      if (isEmpty) res.render('none'); // Return dedicated 'no results' page when no data is found.
+      if (isEmpty){
+        res.render('none'); // Return dedicated 'no results' page when no data is found.
+      }
       else {
         let data = {
           flyMineData: results, // Stores the API and SQL query results

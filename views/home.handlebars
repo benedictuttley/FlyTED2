@@ -20,11 +20,15 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
-  <!-- TODO: Create external stylesheets -->
-  <link rel="stylesheet" href="css/table.css"></link>
-  <link rel="stylesheet" href="css/side_bar.css"></link>
-  <link rel="stylesheet" href="css/main.css"></link>
-  <link rel="stylesheet" href="css/home.css"></link>
+
+  <!-- LOAD EXTERNAL JS SCRIPTS -->
+  <script type="text/javascript" src="sidebar.js"></script>
+
+
+  <!-- LOAD CSS SHEETS -->
+  <link rel="stylesheet" href="side_bar.css"></link>
+  <link rel="stylesheet" href="main.css"></link>
+  <link rel="stylesheet" href="home.css"></link>
 
 </head>
 
@@ -57,22 +61,6 @@
       </form>
     </div>
   </div>
-
-  <script>
-    function toggleSide() { // Toggle side nav open or closed.
-      let side = document.getElementById("mySidenav");
-      if (side.style.width === "250px") {
-        side.style.width = "0px" // Close the sidenav if it was previously open.
-      } else {
-        side.style.width = "250px" // Open the sidenav if it was previously closed.
-        side.style.borderRight = "2px solid white";
-      }
-    }
-
-    function closeNav() {
-      document.getElementById("mySidenav").style.width = "0";
-    }
-  </script>
 
   <!--Top sticky navigation bar -->
   <nav class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top" style="background-color: gray !important; border-bottom: 2px solid white">

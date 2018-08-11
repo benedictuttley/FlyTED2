@@ -1,3 +1,13 @@
+var mine = [];
+var affy_mine = [];
+
+// --- INITIATE GOOGLE CHARTS AND CALL DRAWING FUNCTIONS START ---
+google.charts.load('current', {'packages': ['corechart']});
+google.charts.setOnLoadCallback(drawChart);
+window.onload = resize_graphs_on_screen_change;
+window.onresize = resize_graphs_on_screen_change;
+// --- INITIATE GOOGLE CHARTS AND CALL DRAWING FUNCTIONS END ---
+
 // --- FUNCTION TO DRAW CHARTS USING EXPRESSION AND MICROARRAY DATA START ---
 
 
@@ -74,3 +84,9 @@ function resize_graphs_on_screen_change() { // When window is resized, redraw ev
 }
 
 // --- FUNCTIONS TO REDRAW CHART ON WINDOW DIMENSION CHANGE END ---
+function AddExpressionTuple(tissue_type, expression_level, tissue_expression_dataset){
+  let temp = [];
+  temp.push(tissue_type, parseFloat(expression_level));
+  tissue_expression_dataset.push(temp);
+  return tissue_expression_dataset;
+}

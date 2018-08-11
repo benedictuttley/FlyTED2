@@ -1,578 +1,429 @@
 <!-- results.handlebars V.1.2 -->
-
 <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FlyTED2 results page">
+    <meta name="keywords" content="HTML,CSS,XML,JavaScript,Drosophilla,Database">
+    <meta name="author" content="Benedict Uttley, Cardiff University, Biosciences">
+    <title>Query Results</title>
 
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta charset="utf-8">
-  <meta name="description" content="FlyTED2 results page">
-  <meta name="author" content="Benedict Uttley, Cardiff University, Biosciences">
-  <title>RESULTS</title>
-
-  <!--Load jquery-->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-  <!-- Load the Bootstrap js files -->
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"
-    integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
-    crossorigin="anonymous"></script>
-  <!--Load the API for google charts -->
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  <!-- Load the Bootstrap css files -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
-    integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
-    crossorigin="anonymous">
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css"></link>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
-
-  <!-- LOAD EXTERNAL JS SCRIPTS -->
-  <script type="text/javascript" src="sidebar.js"></script>
-  <script type="text/javascript" src="table.js"></script>
-  <script type="text/javascript" src="create_chart_queries.js"></script>
-  <script type="text/javascript" src="draw_graphs.js"></script>
-  <script type="text/javascript" src="create_chart_containers.js"></script>
-  <script type="text/javascript" src="transcripts.js"></script>
-
-  <!-- LOAD CSS SHEETS -->
-  <link rel="stylesheet" href="table.css"></link>
-  <link rel="stylesheet" href="side_bar.css"></link>
-  <link rel="stylesheet" href="main.css"></link>
-
-</head>
-
-<body>
-  <!-- SIDE BAR CONTAING QUERY FORM START -->
-  <div id="mySidenav" class="sidenav">
-    <div class="container">
-      <a class="closebtn" onclick="closeNav()" style="color: white" onclick="toggleSide()">&times</a>
-      <br>
-      <form class="form-horizontal" method="post" action="/results">
-        <h3>Query Builder</h3>
-        <div class="form-group">
-          <label class="control-label col-sm-2" style="color: white">GENE</label>
-          <div class="col-sm-10">
-            <input class="form-control" id="gene" name="Probe" placeholder="Enter gene(s)" data-toggle="tooltip"
-              data-placement="left" title="Seperate multiple genes with commas.">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="control-label col-sm-2" style="color: white">VARIANT</label>
-          <div class="col-sm-10">
-            <input class="form-control" id="variant" name="Variant" placeholder="Enter Variant(s)"
-              data-toggle="tooltip" data-placement="left" title="Seperate multiple genotypes with commas.">
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-lg sharp" style="width:100%">EXECUTE</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-  <!-- SIDE BAR CONTAING QUERY FORM END -->
-
-  <!-- STICKY TOP NAVIGATION BAR START -->
-  <nav class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top" style="background-color: gray !important; border-bottom: 2px solid white">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
-      aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarText">
-      <ul class="nav navbar-nav mr-auto">
-        <li class="nav-item">
-          <h2 style="color: white">FlyTED2</h2>
-        </li>
-      </ul>
-      <ul class="nav navbar-nav">
-        <li class="nav-item">
-          <button type="button" class="btn btn-lg sharp" onclick="toggleSide()">SEARCH</button>
-        </li>
-      </ul>
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="/home">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/credits">Credits</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/cite">Liscence and Citing</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-  <!-- STICKY TOP NAVIGATION BAR END -->
-
-  <!-- GLOBAL VARIABLES DECLARATION START -->
-  <script>
-  var microarray_data_present = true; // Store whether microarray data has been retrieved or not.
-  var tissue_expression_present = true; // Store whether flymine data has been retrieved or not.
-  var image_data_present = true; // Store whether image data has been retrieved or not.
-  var gene = "none"; // Stores gene id of curent loop.
-  var data_array = []; // Holds the tissue expression data from flymine.
-  var affy_array = []; // Holds the affy data from sql table 'Probe Annotations'.
-  </script>
-  <!-- GLOBAL VARIABLES DECLARATION END -->
-
-
-  {{#each flyMineData}}
-
-    <!-- CHECK IF DATA COMPONENTS AVAILABLE START -->
-    <script>
-    if ({{{json [affy]}}}.length == 0) {
-      microarray_data_present = false;
-      console.log("NO MICROARRAY DATA");
-    }
-    if ("{{[tissue]}}".length == 0) {
-      tissue_expression_present = false;
-      console.log("NO FLYMINE DATA");
-    }
-    if ("{{[flyted]}}".length == 0) {
-      image_data_present = false;
-      console.log("NO IMAGE DATA");
-    }
+    <!--Load jquery-->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
     </script>
-    <!-- CHECK IF DATA COMPONENTS AVAILABLE END -->
+    <!-- Load the Bootstrap js files -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous">
+    </script>
+    <!-- Load the jQuery reduced library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
+    <!--Load the API for google charts -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- Load the Bootstrap css files -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    </link>
+    <!-- Load the Fancybox css files -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css"></link>
 
+    <!-- LOAD EXTERNAL JS SCRIPTS -->
+    <script type="text/javascript" src="sidebar.js"></script>
+    <script type="text/javascript" src="table.js"></script>
+    <script type="text/javascript" src="create_chart_queries.js"></script>
+    <script type="text/javascript" src="draw_graphs.js"></script>
+    <script type="text/javascript" src="create_chart_containers.js"></script>
+    <script type="text/javascript" src="transcripts.js"></script>
+    <script type="text/javascript" src="error_handlers.js"></script>
 
-    <div class="content">
-      <h1 style="background-color:#d4374a; color:white;">RESULT FOR GENE: {{[probe]}} <a href="http://flybase.org/reports/{{this.[tissue].[0].[9]}}" class="gene_link">Link To FlyBase Report For Gene</a></h1>
-      <!-- Include flybase page for gene -->
-      <br>
+    <!-- LOAD EXTERNAL CSS SHEETS -->
+    <link rel="stylesheet" href="table.css"></link>
+    <link rel="stylesheet" href="side_bar.css"></link>
+    <link rel="stylesheet" href="main.css"></link>
+  </head>
 
-      <!---DISPLAY TRANSCRIPTS HEADER START -->
-      <script>
-      if ("{{[transcript]}}".length != 0) { // Display transcript title only when not empty.
-        var probe_header = document.getElementsByTagName("div");
-        var transcript_header = document.createElement("h2");
-        var text = document.createTextNode("TRANSCRIPTS");
-        transcript_header.style.color = "#d4374a";
-        transcript_header.appendChild(text);
-        probe_header[probe_header.length - 1].appendChild(transcript_header); // Append transcripts header to repective probe header.
-      }
-      </script>
-      <!---DISPLAY TRANSCRIPTS HEADER END -->
-
-      <!-- LOOP THROUGH TRANSCRIPT DATA START -->
-      {{#each [transcript]}}
-        {{#with this}}
-          <div class="tab" id="temp"></div>
-
-          <!-- CREATE TAB BUTTON FOR TRANSCRIPT START -->
-          <script>
-          var transcript_button = document.getElementById('temp');
-          var id = "{{[Transcript_ID]}}" + "_tab"; // Set the transcript tab equal to the transcript ID.
-          transcript_button.setAttribute("id", id);
-          transcript_button.classList.add('tab');
-          transcript_button.innerHTML =
-            ">> VIEW TRANSCRIPT VIEW INFORMATION FOR GENE: " +
-            "{{[Transcript_ID]}}";
-
-          transcript_button.onclick = function() { // When tab is clicked toggle view of the respective transcipt information.
-            toggle_transcript_view("{{[Transcript_ID]}}" + "_container");
-          };
-          </script>
-          <!-- CREATE TAB BUTTON FOR TRANSCRIPT END -->
-
-          <!-- CREATE TRANSCRIPT CONTENTS CONTAINER START -->
-          <div id="{{[Transcript_ID]}}_container" style="padding:2%; border: 2px solid black">
-            <p>
-              <font color='#d4374a'>Transcript Primary ID: </font> {{[Transcript_ID]}}
-              <a href="http://flybase.org/reports/{{[Transcript_ID]}}" class="btn-link">Link To FlyBase Report For This Transcript</a>
-              <!-- Include link to the FlyBase page dedicated to the repsective transcript -->
-            </p>
-
-            <p>
-              <font color='#d4374a'>5' Sequence: </font>
-              <span style="color: #660066; text-decoration: underline overline; font-weight: bold;">{{[5_Prime_Sequence]}}</span>
-            </p>
-
-            <p>
-              <font color='#d4374a'>3' Sequence: </font>
-              <span style="color: #009933; text-decoration: underline overline; font-weight: bold;">{{[3_Prime_Sequence]}}</span>
-            </p>
-
-            <p>
-              <font color='#d4374a'>Probe Length: </font> {{[Target_Sequence_Length]}}
-            </p>
-
-            <h5 style="color:#d4374a">Probe Sequence</h5>
-            <div id="{{[Transcript_ID]}}" wrap="hard" style="overflow-wrap: break-word; width:100%">
-              {{[Target_Sequence]}}
+  <body>
+    <!-- SIDE BAR CONTAING QUERY FORM START -->
+    <div id="mySidenav" class="sidenav">
+      <div class="container">
+        <a class="closebtn" onclick="closeNav()" style="color: white" onclick="toggleSide()">&times</a>
+        <br>
+        <form class="form-horizontal" method="post" action="/results">
+          <h3>Query Form</h3>
+          <div class="form-group">
+            <label class="control-label col-sm-2" style="color: white">GENE</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="gene" name="Probe" placeholder="Enter gene(s)" data-toggle="tooltip" data-placement="left" title="Seperate multiple genes with commas.">
             </div>
           </div>
-          <!-- CREATE TRANSCRIPT CONTENTS CONTAINER END -->
-
-          <!-- EDIT STYLE OF SEQUENCES TO SHOW 5' AND 3' PROBES START -->
-          <script>
-          show_probes("{{Transcript_ID}}", "{{Three_Prime_Sequence}}", "{{Five_Prime_Sequence}}");
-          </script>
-          <!-- EDIT STYLE OF SEQUENCES TO SHOW 5' AND 3' PROBES END -->
-        {{/with}}
-      {{/each}}
-      <!-- LOOP THROUGH TRANSCRIPT DATA END -->
-
-      <br>
-
-      <h2 style="color:#d4374a" id="{{probe}}_image_title">IMAGES AND THEIR DESCRIPTIONS</h2>
-
-      <!-- Handle error when no image values present -->
-      <script>
-      if (!image_data_present) {
-        var image_title = document.getElementById("{{probe}}" + "_image_title");
-        image_title.innerHTML = "NO IMAGE DATA AVAILABLE!";
-      }
-      </script>
-
-      <!-- LOOP THGROUGH SQL ANNOTAION ANDS IMAGES DATA START-->
-      {{#each [flyted]}}
-        <div class="square">
-          <a class="contenta" data-fancybox="gallery" href="{{[link to file]}}" style="background: url('{{[link to file]}}'), url('img/image_error.bmp'); overflow: hidden; background-size: cover;  background-position: center"></a>
-
-          <!-- Liscence for fancybox can be found on their site -> https://fancyapps.com/fancybox/3
-          It is free to use fancyBox for your personal or non-profit website projects. This website is non-profit.
-          fancybox is released under the GNU General Public License v3.0 -->
-
-          <script>
-          $("[data-fancybox]").fancybox({
-            arrows: false,
-            thumbs: {
-              autoStart: true
-            },
-            buttons: [
-              "close"
-            ],
-          });
-          </script>
-
-          {{#with this}}
-
-            <!-- TABLE TO SHOW IMAGES AND RESPECTIVE ANNOTATIONS START -->
-            <div class="contentb" style="overflow:auto">
-              <table class="table table-bordered" style="position: relative; width:100%; height:100%; margin:0px">
-                <tbody>
-                  <tr>
-                    <td class="key">Probe</td>
-                    <td>{{[probe]}}</td>
-                  </tr>
-                  <tr>
-                    <td class="key">Slide Name</td>
-                    <td>{{[slide name]}}</td>
-                  </tr>
-                  <tr>
-                    <td class="key">Genotype A</td>
-                    <td>{{[genotype a]}}</td>
-                  </tr>
-                  <tr>
-                    <td class="key">Genotype B</td>
-                    <td>{{[genotype b]}}</td>
-                  </tr>
-                  <tr>
-                    <td class="key">Stages Shown</td>
-                    <td>{{[stages shown in picture]}}</td>
-                  </tr>
-                  <tr>
-                    <td class="key">Description</td>
-                    <td>{{[description of staining pattern]}}</td>
-                  </tr>
-                  <tr>
-                    <td class="key">Apical/spermatogonia</td>
-                    <td>{{[Apical/spermatogonia]}}</td>
-                  </tr>
-                  <tr>
-                    <td class="key">Germ-line</td>
-                    <td>{{[Germ-line]}}</td>
-                  </tr>
-                  <tr>
-                    <td class="key">Somatic</td>
-                    <td>{{[Somatic]}}</td>
-                  </tr>
-                  <tr>
-                    <td class="key">Additional Comments</td>
-                    <td>{{[comments]}}</td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="form-group">
+            <label class="control-label col-sm-2" style="color: white">VARIANT</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="variant" name="Variant" placeholder="Enter Variant(s)" data-toggle="tooltip" data-placement="left" title="Seperate multiple genotypes with commas.">
             </div>
-            <!-- TABLE TO SHOW IMAGES AND RESPECTIVE ANNOTATIONS END -->
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="btn btn-lg sharp" style="width:100%">EXECUTE</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- SIDE BAR CONTAING QUERY FORM END -->
+
+    <!-- STICKY TOP NAVIGATION BAR START -->
+    <nav class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top" style="background-color: gray !important; border-bottom: 2px solid white">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="nav navbar-nav mr-auto">
+          <li class="nav-item">
+            <h2 style="color: white">FlyTED2</h2>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav">
+          <li class="nav-item">
+            <button type="button" class="btn btn-lg sharp" onclick="toggleSide()">SEARCH</button>
+          </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="credits">Credits</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="cite">Liscence and Citing</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!-- STICKY TOP NAVIGATION BAR END -->
+
+    <!-- GLOBAL VARIABLES DECLARATION START -->
+    <script>
+    var microarray_data_present = true; // Store whether microarray data has been retrieved or not.
+    var tissue_expression_present = true; // Store whether flymine data has been retrieved or not.
+    var transcipt_expression_present = true; // Store whether flymine data has been retrieved or not.
+    var image_data_present = true; // Store whether image data has been retrieved or not.
+    var gene = "none"; // Stores gene id of curent loop.
+    var data_array = []; // Holds the tissue expression data from flymine.
+    var affy_array = []; // Holds the affy data from sql table 'Probe Annotations'.
+    </script>
+    <!-- GLOBAL VARIABLES DECLARATION END -->
+
+    {{#each flyMineData}}
+
+      <!-- CHECK IF DATA COMPONENTS AVAILABLE START -->
+      <script>
+        Check_For_Data_Components({{{json [affy]}}}, {{{json [tissue]}}}, {{{json [transcript]}}}, {{{json [flyted]}}});
+      </script>
+      <!-- CHECK IF DATA COMPONENTS AVAILABLE END -->
+
+      <div class="content">
+        <!-- INCLUDE FLYBASE LINK FOR GENE -->
+        <h1 style="background-color:#d4374a; color:white;">RESULT FOR GENE: {{[probe]}}
+          <a href="http://flybase.org/reports/{{this.[tissue].[0].[9]}}" class="gene_link">Link To FlyBase Report For Gene
+          </a>
+        </h1>
+        <br>
+
+        <!---DISPLAY TRANSCRIPTS HEADER START -->
+        <script>
+          if (transcipt_expression_present) {
+            Create_Transcript_Header();
+          }
+        </script>
+        <!---DISPLAY TRANSCRIPTS HEADER END -->
+
+        <!-- LOOP THROUGH TRANSCRIPT DATA START -->
+        {{#each [transcript]}}
+          {{#with this}}
+            <div class="tab" id="temp"></div>
+
+            <!-- CREATE TAB BUTTON FOR TRANSCRIPT START -->
+            <script>
+              Create_Transcript_Tab("{{[Transcript_ID]}}");
+            </script>
+            <!-- CREATE TAB BUTTON FOR TRANSCRIPT END -->
+
+            <!-- CREATE TRANSCRIPT CONTENTS CONTAINER START -->
+            <div id="{{[Transcript_ID]}}_container" style="padding:2%; border: 2px solid black">
+              <!-- TRANSCRIPT INFORMATION START -->
+              <p>
+                <font color='#d4374a'>Transcript Primary ID: </font> {{[Transcript_ID]}}
+                <a href="http://flybase.org/reports/{{[Transcript_ID]}}" class="btn-link" style="color:#d4374a">Link To FlyBase Report For This Transcript
+                </a>
+              </p>
+              <p>
+                <font color='#d4374a'>Length of Transcript:</font> {{[Transcript_Sequence_Length]}}
+              </p>
+              <h5 style="color:#d4374a">Transcript Sequence</h5>
+              <div wrap="hard" style="overflow-wrap: break-word; width:100%">
+                {{[Transcript_Sequence]}}
+              </div>
+              <!-- TRANSCRIPT INFORMATION END -->
+              <!-- PROBE INFORMATION START-->
+              <br>
+              <p>
+                <font color='#d4374a'>Probe 5' Sequence: </font>
+                <span style="color: #660066; text-decoration: underline overline; font-weight: bold;">{{[5_Prime_Sequence]}}</span>
+              </p>
+              <p>
+                <font color='#d4374a'>Probe 3' Sequence: </font>
+                <span style="color: #009933; text-decoration: underline overline; font-weight: bold;">{{[3_Prime_Sequence]}}</span>
+              </p>
+              <p>
+                <font color='#d4374a'>Probe Length: </font> {{[Target_Sequence_Length]}}
+              </p>
+              <h5 style="color:#d4374a">Probe Sequence</h5>
+              <div id="{{[Transcript_ID]}}" wrap="hard" style="overflow-wrap: break-word; width:100%">
+                {{[Target_Sequence]}}
+              </div>
+              <!-- PROBE INFORMATION END-->
+            </div>
+            <!-- CREATE TRANSCRIPT CONTENTS CONTAINER END -->
+
+            <!-- EDIT STYLE OF SEQUENCES TO SHOW 5' AND 3' PROBES START -->
+            <script>
+              show_probes("{{Transcript_ID}}", "{{3_Prime_Sequence}}", "{{5_Prime_Sequence}}");
+            </script>
+            <!-- EDIT STYLE OF SEQUENCES TO SHOW 5' AND 3' PROBES END -->
+
           {{/with}}
+        {{/each}}
+        <!-- LOOP THROUGH TRANSCRIPT DATA END -->
+
+        <br>
+        <h2 style="color:#d4374a" id="{{probe}}_image_title">IMAGES AND THEIR DESCRIPTIONS</h2>
+
+        <!-- HANDLE CASE WHERE NO IMAGE DATA PRESENT FOR GENE START -->
+        <script>
+          if (!image_data_present) {
+            Handle_No_Image_Data("{{probe}}");
+          }
+        </script>
+        <!-- HANDLE CASE WHERE NO IMAGE DATA PRESENT FOR GENE END -->
+
+        <!-- LOOP THGROUGH SQL ANNOTAIONS AND IMAGES DATA START-->
+        {{#each [flyted]}}
+          <div class="square">
+            <a class="contenta" data-fancybox="gallery" href="{{[link to file]}}" style="background: url('{{[link to file]}}'), url('img/image_error.bmp'); overflow: hidden; background-size: cover;  background-position: center">
+            </a>
+            <!-- Liscence for fancybox can be found on their site -> https://fancyapps.com/fancybox/3
+            It is free to use fancyBox for your personal or non-profit website projects. This website is non-profit.
+            fancybox is released under the GNU General Public License v3.0 -->
+
+            <script>
+              $("[data-fancybox]").fancybox({
+                arrows: false,
+                thumbs: {
+                  autoStart: true
+                },
+                buttons: [
+                  "close"
+                ],
+              });
+            </script>
+
+            {{#with this}}
+              <!-- TABLE TO SHOW IMAGES AND RESPECTIVE ANNOTATIONS START -->
+              <div class="contentb" style="overflow:auto">
+                <table class="table table-bordered" style="position: relative; width:100%; height:100%; margin:0px">
+                  <tbody>
+                    <tr>
+                      <td class="key">Probe</td>
+                      <td>{{[probe]}}</td>
+                    </tr>
+                    <tr>
+                      <td class="key">Slide Name</td>
+                      <td>{{[slide name]}}</td>
+                    </tr>
+                    <tr>
+                      <td class="key">Genotype A</td>
+                      <td>{{[genotype a]}}</td>
+                    </tr>
+                    <tr>
+                      <td class="key">Genotype B</td>
+                      <td>{{[genotype b]}}</td>
+                    </tr>
+                    <tr>
+                      <td class="key">Stages Shown</td>
+                      <td>{{[stages shown in picture]}}</td>
+                    </tr>
+                    <tr>
+                      <td class="key">Description</td>
+                      <td>{{[description of staining pattern]}}</td>
+                    </tr>
+                    <tr>
+                      <td class="key">Apical/spermatogonia</td>
+                      <td>{{[Apical/spermatogonia]}}</td>
+                    </tr>
+                    <tr>
+                      <td class="key">Germ-line</td>
+                      <td>{{[Germ-line]}}</td>
+                    </tr>
+                    <tr>
+                      <td class="key">Somatic</td>
+                      <td>{{[Somatic]}}</td>
+                    </tr>
+                    <tr>
+                      <td class="key">Additional Comments</td>
+                      <td>{{[comments]}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- TABLE TO SHOW IMAGES AND RESPECTIVE ANNOTATIONS END -->
+            {{/with}}
+          </div>
+          <br>
+        {{/each}}
+        <!-- LOOP THGROUGH SQL ANNOTAIONS AND IMAGES DATA END-->
+        <h2 style="color:#4286f4" id="microarray_{{[probe]}}">MICROARRAY GRAPH AND ANNOTATIONS</h2>
+        <!-- TABLE TO SHOW ADDITIONAL PROBE ANNOTTAIONS FROM THE 'PROBE_ANNOTATIONS' TABLE IN SQL START -->
+        <table id="annotation_for_{{[probe]}}" class="expression_table">
+          <tbody>
+            <tr>
+              <td data-field="key" class="key">Gene</td>
+              <td data-field="value"></td>
+            </tr>
+            <tr>
+              <td data-field="key" class="key">Probe Set ID</td>
+              <td data-field="value">
+            </tr>
+            <tr>
+              <td data-field="key" class="key">Transcript ID</td>
+              <td data-field="value"></td>
+            </tr>
+            <tr>
+              <td data-field="key" class="key">Description</td>
+              <td data-field="value"></td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- TABLE TO SHOW ADDITIONAL PROBE ANNOTTAIONS FROM THE 'PROBE_ANNOTATIONS' TABLE IN SQL END -->
+
+        <!-- CREATE THE CHART CONTAINER AND BUTTON FOR AFFY DATA START -->
+        <script>
+          if (microarray_data_present) {
+            create_affy_container("{{[probe]}}");
+          }
+        </script>
+        <!-- CREATE THE CHART CONTAINER AND BUTTON FOR AFFY DATA END -->
+
+        <!--CREATE FORM USED FOR SEARCHING AND SORTING THE TISSUE EXPRESSION TABLE START -->
+        <h2 style="color: #d4374a" id="expression_title_{{[probe]}}">EXPRESSION IN TISSUES</h2>
+        <div id="expression_form_{{[probe]}}" style="position:relative">
+            <div class="form-inline">
+            <label for="search">Search:</label>
+            <input type="text" name="search" id="myInput" onkeyup="SearchTable(this.id)" placeholder="Search by Tissue" title="Filter Table" class="form-control" style="margin: 10px">
+          </div>
+          <div class="form-inline">
+            <label style="margin:10px">Order:</label>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-lg sharp">
+                <input type="radio" name="options" id="myButton_asc" autocomplete="off" onclick="sortTable(this.id, 'asc')"> Ascending
+              </label>
+              <label class="btn btn-lg sharp">
+                <input type="radio" name="options" id="myButton_desc" autocomplete="off" onclick="sortTable(this.id, 'desc')"> Descending
+              </label>
+            </div>
+          </div>
+        </div>
+        <!--CREATE FORM USED FOR SEARCHING AND SORTING THE TISSUE EXPRESSION TABLE END -->
+        <br>
+        <div style="position: relative; width: 100%; overflow: auto">
+          <!-- CREATE TABLE TO CONTAIN TISSUE EXPRESSION RESULTS FROM FLYMIN API START -->
+          <table id="myTable" style="width: 100%" class="expression_table">
+
+            <!-- SET ID OF TABLE IN RESPECT TO GENE START -->
+            <script>
+              Set_Table_ID("{{[probe]}}");
+            </script>
+            <!-- SET ID OF TABLE IN RESPECT TO GENE END -->
+
+            <!-- DECLARE TABLE HEADERS START -->
+            <tr>
+              <th>Gene Secondary Identifier</th>
+              <th>Gene Symbol</th>
+              <th>mRNA Signal</th>
+              <th>mRNA Signal SEM</th>
+              <th>Present Call</th>
+              <th>Enrichment</th>
+              <th>Affy Call</th>
+              <th>Data Source</th>
+              <th>Tissue Name</th>
+            </tr>
+            <!-- DECLARE TABLE HEADERS END -->
+            {{#with this}}
+
+              <!-- CREATE ARRAYS FOR AFFY AND TISSUE EXPRESSION DATA START -->
+              <script>
+                // Metrics for tissue expression graph.
+                var tissue_expression_dataset = [];
+                tissue_expression_dataset.push(["Tissue Type", "Expression Count"]);
+                // Metrics for affy expression graph
+                var affy_expression_dataset = [];
+                affy_expression_dataset.push(["Mutant", "Expression Count"]);
+              </script>
+              <!-- CREATE ARRAYS FOR AFFY AND TISSUE EXPRESSION DATA END -->
+
+              {{#each [tissue]}}
+
+                <!-- ADD EXPRESSION DATA TO ARRAY START -->
+                <script>
+                  tissue_expression_dataset = AddExpressionTuple("{{this.[8]}}", "{{this.[3]}}", tissue_expression_dataset);
+                </script>
+                <!-- ADD EXPRESSION DATA TO ARRAY END -->
+
+                <!-- DECLARE TABLE BODY START -->
+                <tr>
+                  <td>{{this.[0]}}<i class= {{this.[6]}} style="float: right"></td> <!-- Add class to display up/down arrow in relation to the up/down expression value -->
+                  <td>{{this.[1]}}</td>
+                  <td>{{this.[2]}}</td>
+                  <td>{{this.[3]}}</td>
+                  <td>{{this.[4]}}</td>
+                  <td>{{this.[5]}}</td>
+                  <td>{{this.[6]}}</td>
+                  <td>{{this.[7]}}</td>
+                  <td>{{this.[8]}}</td>
+                </tr>
+                <!-- DECLARE TABLE BODY END -->
+              {{/each}}
+
+              <!-- HANDLE CASE WHEN NO MICROARRAY DATA PRESENT FOR GENE START -->
+              <script>
+                if(!microarray_data_present){
+                    Handle_No_Microarray_Data("{{[probe]}}");
+                }
+                else {
+                  affy_expression_dataset = Populate_Microarray_Table(affy_expression_dataset, {{{json [affy]}}}, "{{[probe]}}");
+                }
+                // STORE GRAPH VALUES FOR USE WHEN RESIZING GOOGLE CHART START
+                affy_array.push("{{[probe]}}", affy_expression_dataset); // Push the gene name and associated affy data.
+                data_array.push("{{[probe]}}", tissue_expression_dataset); // Push the gene name and the asscoiated expression data.
+                  // STORE GRAPH VALUES FOR USE WHEN RESIZING GOOGLE CHART END
+              </script>
+              <!-- HANDLE CASE WHEN NO MICROARRAY DATA PRESENT FOR GENE END -->
+
+            {{/with}}
+          </table>
+
+          <!-- HANDLE CASE WHEN NO TISSUE EXPRESSION DATA PRESENT FOR GENE START -->
+          <script>
+            if(!tissue_expression_present){
+              Handle_No_Tissue_Data("{{[probe]}}");
+            }
+            else{
+              create_tissue_container("{{[probe]}}");
+            }
+          </script>
+          <!-- HANDLE CASE WHEN NO TISSUE EXPRESSION DATA PRESENT FOR GENE END -->
         </div>
         <br>
-      {{/each}}
-
-      <h2 style="color:#4286f4" id="microarray_{{[probe]}}">MICROARRAY GRAPH AND ANNOTATIONS</h2>
-
-      <!-- TABLE TO SHOW ADDITIONAL PROBE ANNOTTAIONS FROM THE 'PROBE_ANNOTATIONS' TABLE IN SQL START -->
-      <table id="annotation_for_{{[probe]}}" class="expression_table">
-        <tbody>
-          <tr>
-            <td data-field="key" class="key">Gene</td>
-            <td data-field="value"></td>
-          </tr>
-          <tr>
-            <td data-field="key" class="key">Probe Set ID</td>
-            <td data-field="value">
-          </tr>
-          <tr>
-            <td data-field="key" class="key">Transcript ID</td>
-            <td data-field="value"></td>
-          </tr>
-          <tr>
-            <td data-field="key" class="key">Description</td>
-            <td data-field="value"></td>
-          </tr>
-        </tbody>
-      </table>
-      <!-- TABLE TO SHOW ADDITIONAL PROBE ANNOTTAIONS FROM THE 'PROBE_ANNOTATIONS' TABLE IN SQL END -->
-
-      <!-- CREATE THE CHART CONTAINER AND BUTTON FOR AFFY DATA START -->
-      <script>
-      if (microarray_data_present) {
-        var gene = "{{[probe]}}";
-        create_affy_container(gene);
-      }
-      </script>
-      <!-- CREATE THE CHART CONTAINER AND BUTTON FOR AFFY DATA END -->
-
-      <!--CREATE FORM USED FOR SEARCHING AND SORTING THE TISSUE EXPRESSION TABLE START -->
-      <h2 style="color: #d4374a" id="expression_title_{{[probe]}}">EXPRESSION IN TISSUES</h2>
-      <div id="expression_form_{{[probe]}}" style="position:relative">
-        <div class="form-inline">
-          <label for="search">Search:</label>
-          <input type="text" name="search" id="myInput" onkeyup="SearchTable(this.id)" placeholder="Search by Tissue"
-            title="Filter Table" class="form-control" style="margin: 10px">
-        </div>
-        <div class="form-inline">
-          <label style="margin:10px">Order:</label>
-          <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-lg sharp">
-              <input type="radio" name="options" id="myButton_asc" autocomplete="off" onclick="sortTable(this.id, 'asc')"> Ascending
-            </label>
-            <label class="btn btn-lg sharp">
-              <input type="radio" name="options" id="myButton_desc" autocomplete="off" onclick="sortTable(this.id, 'desc')"> Descending
-            </label>
-          </div>
-        </div>
       </div>
-      <!--CREATE FORM USED FOR SEARCHING AND SORTING THE TISSUE EXPRESSION TABLE END -->
-
-      <br>
-
-      <div style="position: relative; width: 100%; overflow: auto">
-
-        <!-- CREATE TABLE TO CONTAIN TISSUE EXPRESSION RESULTS FROM FLYMIN API START -->
-        <table id="myTable" style="width: 100%" class="expression_table">
-
-          <!-- GIVE ID's TO TABLE AND FORM ELEMENTS START-->
-          <script>
-          // Change input id to match respective gene:
-          var tochange = document.getElementById('myInput');
-          tochange.id = "{{[probe]}}" + "_input";
-
-          // Change table id to match respective gene:
-          var tochangetwo = document.getElementById('myTable');
-          tochangetwo.id = "{{[probe]}}" + "_table";
-
-          // Change button sort id to match respective gene:
-          var tochangethree = document.getElementById('myButton_asc');
-          tochangethree.id = "{{[probe]}}" + "_button_asc";
-          $("#" + tochangethree.id).change(() => {
-            sortTable('{{[probe]}}', 'asc');
-          });
-
-          // Change button sort id to match respective gene:
-          var tochangefour = document.getElementById('myButton_desc');
-          tochangefour.id = "{{[probe]}}" + "_button_desc";
-          $("#" + tochangefour.id).change(() => {
-            sortTable('{{[probe]}}', 'desc');
-          });
-          </script>
-          <!-- GIVE ID's TO TABLE AND FORM END -->
-
-          <!-- DECLARE TABLE HEADERS START -->
-          <tr>
-            <th>Gene Secondary Identifier</th>
-            <th>Gene Symbol</th>
-            <th>mRNA Signal</th>
-            <th>mRNA Signal SEM</th>
-            <th>Present Call</th>
-            <th>Enrichment</th>
-            <th>Affy Call</th>
-            <th>Data Source</th>
-            <th>Tissue Name</th>
-          </tr>
-          <!-- DECLARE TABLE HEADERS END -->
-
-          {{#with this}}
-
-            <!-- CREATE ARRAYS FOR AFFY AND TISSUE EXPRESSION DATA START -->
-            <script>
-            // Metrics for tissue expression graph.
-            var tissue_expression_dataset = [];
-            tissue_expression_dataset.push(["Tissue Type", "Expression Count"]);
-
-            // Metrics for affy expression graph
-            var affy_expression_dataset = [];
-            affy_expression_dataset.push(["Mutant", "Expression Count"]);
-            </script>
-            <!-- CREATE ARRAYS FOR AFFY AND TISSUE EXPRESSION DATA END -->
-
-            {{#each [tissue]}}
-              <!-- ADD EXPRESSION DATA TO ARRAY START -->
-              <script>
-              var temp = [];
-              var tissue_type = "{{this.[8]}}";
-              var expression_level = parseFloat("{{this.[3]}}");
-
-              temp.push(tissue_type, expression_level);
-              tissue_expression_dataset.push(temp);
-              </script>
-              <!-- ADD EXPRESSION DATA TO ARRAY END -->
-
-              <!-- DECLARE TABLE BODY START -->
-              <tr>
-                <td>{{this.[0]}}<i class= {{this.[6]}} style="float: right"></td> <!-- Add class to display up/down arrow in relation to the rows affinity Property -->
-              <td>{{this.[1]}}</td>
-              <td>{{this.[2]}}</td>
-              <td>{{this.[3]}}</td>
-              <td>{{this.[4]}}</td>
-              <td>{{this.[5]}}</td>
-              <td>{{this.[6]}}</td>
-              <td>{{this.[7]}}</td>
-              <td>{{this.[8]}}</td>
-            </tr>
-            <!-- DECLARE TABLE BODY END -->
-          {{/each}}
-
-
-          <!-- Handle error when no table values present -->
-          <script>
-          if(!microarray_data_present){
-            console.log("No microarray data available");
-            var affy_title = document.getElementById("microarray_" + "{{[probe]}}");
-            affy_title.innerHTML = ">> NO MICROARRAY DATA AVAILABLE!";
-            microarray_data_present = false;
-            document.getElementById("annotation_for_" + "{{[probe]}}").remove();
-
-          }
-          </script>
-
-
-
-
-
-    <!-- POPULATE THE AFFY TABLE START -->
-    <script>
-      if (microarray_data_present) {
-
-      var labels = []
-      var affy_data = ({{{json [affy]}}}); // Triple brackets used to disable HTML encoding.
-      var temp = []
-      var labels = Object.keys(affy_data[0]);
-      var affy_value =  Object.values(affy_data[0]);
-      var description_table = document.getElementById("annotation_for_" + "{{[probe]}}");
-
-      for(let i=4; i<labels.length; i++) {    // Retrieve affy values for graph data from susbset of array.
-        var temp = [];
-        temp.push(labels[i], affy_value[i]);
-        affy_expression_dataset.push(temp);
-      }
-
-      for(let i = 0; i<3; i++){ // Fill description table with sql data from subset of array.
-        description_table.rows[i].children[1].innerHTML = affy_value[i];
-        description_table.rows[i].children[0].style.background = "#4286f4";
-        description_table.rows[i].children[0].style.color = "white";
-      }
-
-
-      var desc_array = affy_value[3].split('/');  // Replace description / with , for better presentation.
-      desc_array.shift();
-
-      var desc = "";
-      desc_array.forEach(function(element) {
-        desc = desc + element.trim() + ", ";
-      });
-
-      description_table.rows[3].children[1].innerHTML = desc;
-      description_table.rows[3].children[0].style.background = "#4286f4";
-      description_table.rows[3].children[0].style.color = "white";
-    }
-
-    </script>
-    <!-- POPULATE THE AFFY TABLE END -->
-
-    <!-- STORE GRAPH VALUES FOR USE WHEN RESIZING GOOGLE CHART START -->
-    <script>
-      affy_array.push(gene, affy_expression_dataset); // Push the gene name and associated affy data.
-      data_array.push(gene, tissue_expression_dataset); // Push the gene name and the asscoiated expression data.
-    </script>
-    <!-- STORE GRAPH VALUES FOR USE WHEN RESIZING GOOGLE CHART END -->
-
-  {{/with}}
-</table>
-
-
-<!-- Handle error when no table values present -->
-<script>
-if(!tissue_expression_present){
-  console.log("No tissue data available");
-  var tissue_title = document.getElementById("expression_title_"+"{{[probe]}}");
-  tissue_title.innerHTML = "NO EXPRESSION DATA AVAILABLE!";
-  document.getElementById("{{[probe]}}" + "_table").remove(); // Remove tissue expression table.
-  document.getElementById("expression_form_" + "{{[probe]}}").remove(); // Remove tissue expression form
-
-}
-</script>
-
-
-
-<!-- CREATE TABLE TO CONTAIN TISSUE EXPRESSIOJN RESULTS FROM FLYMIN API END -->
-</div>
-
-  <!--CREATE THE CHART CONTAINER AND TAB BUTTON FOR TISSUE EXPRESSION CHART START -->
-  <script>
-  if(tissue_expression_present) create_tissue_container(gene);
-  </script>
-  <!--CREATE THE CHART CONTAINER AND TAB BUTTON FOR TISSUE EXPRESSION CHART END -->
-  <br>
-</div>
-{{/each}}
-
-<!-- INITIATE GOOGLE CHARTS AND CALL DRAWING FUNCTIONS START -->
-<script>
-  var mine = [];
-  var affy_mine = [];
-  google.charts.load('current', {'packages': ['corechart']});
-  google.charts.setOnLoadCallback(drawChart);
-</script>
-<!-- INITIATE GOOGLE CHARTS AND CALL DRAWING FUNCTIONS END -->
-
-
-</div>
-</div>
-
-<!-- FUNCTIONS TO TOGGLE DISPLAY OF CHARTS AND REDRAWING OF CHARTS ON PAGE RESIZE -->
-
-<!-- TOGGLE DISPOLAY OF TRANSCRIPT CONTENTS START -->
-  <script>
-  function toggle_transcript_view(transcript_id) {
-    var x = document.getElementById(transcript_id);
-    if (x.style.display === "none") {
-      x.style.display = "block";
-    } else {
-      x.style.display = "none";
-    }
-  }
-  </script>
-<!-- TOGGLE DISPOLAY OF TRANSCRIPT CONTENTS END -->
-
-    </div>
-  </body>
-
-  <script>
-    window.onload = resize_graphs_on_screen_change;
-    window.onresize = resize_graphs_on_screen_change;
-  </script>
+    {{/each}}
+  </div>
+</body>
 </html>

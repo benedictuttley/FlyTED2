@@ -61,3 +61,58 @@ function sortTable(gene, order) {
   }
 }
 // --- SORT THE TABLE IN ASCENDING/DESCENDING ORDER, CREDIT: W3C. END ---
+
+// --- SET TABLE ELEMENT ID'S START ---
+function Set_Table_ID(probe) {
+  // Change input id to match respective gene:
+  var tochange = document.getElementById('myInput');
+  tochange.id = probe + "_input";
+
+  // Change table id to match respective gene:
+  var tochangetwo = document.getElementById('myTable');
+  tochangetwo.id = probe + "_table";
+
+  // Change button sort id to match respective gene:
+  var tochangethree = document.getElementById('myButton_asc');
+  tochangethree.id = probe + "_button_asc";
+  $("#" + tochangethree.id).change(() => {
+    sortTable(probe, 'asc');
+  });
+
+  // Change button sort id to match respective gene:
+  var tochangefour = document.getElementById('myButton_desc');
+  tochangefour.id = probe + "_button_desc";
+  $("#" + tochangefour.id).change(() => {
+    sortTable(probe, 'desc');
+  });
+  // --- SET TABLE ELEMENT ID'S END ---
+}
+
+
+function Populate_Microarray_Table(affy_expression_dataset, affy_data, probe) {
+  var labels = [];
+  var labels = Object.keys(affy_data[0]);
+  var affy_value =  Object.values(affy_data[0]);
+  var description_table = document.getElementById("annotation_for_" + probe);
+  
+  for(let i=4; i<labels.length; i++) {    // Retrieve affy values for graph data from susbset of array.
+    var temp = [];
+    temp.push(labels[i], affy_value[i]);
+    affy_expression_dataset.push(temp);
+  }
+
+  for(let i = 0; i<3; i++){ // Fill description table with sql data from subset of array.
+    description_table.rows[i].children[1].innerHTML = affy_value[i];
+    description_table.rows[i].children[0].style.background = "#4286f4";
+    description_table.rows[i].children[0].style.color = "white";
+  }
+
+
+  let desc_array = affy_value[3].split('/');  // Replace description / with , for better presentation.
+  desc_array.shift();
+  description_table.rows[3].children[1].innerHTML = desc_array[6];
+  description_table.rows[3].children[0].style.background = "#4286f4";
+  description_table.rows[3].children[0].style.color = "white";
+
+  return affy_expression_dataset;
+}
