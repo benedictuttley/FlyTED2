@@ -22,10 +22,9 @@
   <script defer type="text/javascript" src="sidebar.js"></script>
 
   <!-- LOAD CSS SHEETS -->
-  <link rel="stylesheet" href="side_bar.css"></link>
   <link rel="stylesheet" href="main.css"></link>
 
-
+<!-- THE HOME STYING -->
 <style>
 .content {
   position: absolute;
@@ -50,6 +49,53 @@
   height: 30%;
   border: 2px solid white;
 }
+
+</style>
+<style>
+
+    .sidenav {
+      top: 25%;
+      height: 40%;
+      width: 250px;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 15px;
+      background-color: gray;
+      border-top: 2px solid white;
+      border-bottom: 2px solid white;
+      border-right: 2px solid white;
+    }
+
+    .sidenav .closebtn {
+      background-color: black;
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 36px;
+      margin-left: 50px;
+      cursor: pointer;
+    }
+    .sidenav .closebtn:hover {
+      background-color: #d4374a;
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 36px;
+      margin-left: 50px;
+      cursor: pointer;
+    }
+
+    @media screen and (max-height: 450px) {
+      .sidenav {
+        padding-top: 15px;
+      }
+      .sidenav a {
+        font-size: 18px;
+      }
+    }
 
 </style>
 </head>
