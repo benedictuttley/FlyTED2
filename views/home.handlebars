@@ -24,6 +24,264 @@
   <!-- LOAD CSS SHEETS -->
   <link rel="stylesheet" href="main.css"></link>
 
+
+  <style>
+  .tab, .tab2 {
+      margin-top: 8px;
+      width: 100%;
+      background-color: gray;
+      color: white;
+      cursor: pointer;
+      padding: 5px;
+      height: auto;
+    }
+
+    .key {
+      font-weight: bold;
+    }
+
+    .tab:hover {
+      background-color: #d4374a;
+    }
+
+    .tab2:hover {
+      background-color: #4286f4;
+    }
+
+
+  <!--TODO: Change the class name and find a more suitable table design that is reposndive to changes in window size and can have search functionality added to it. -->
+
+
+
+    .qbox {
+      position: fixed;
+      top: 20px;
+      right: 50px;
+    }
+
+
+    .Up {
+      border: solid green;
+      border-width: 0 3px 3px 0;
+      display: inline-block;
+      padding: 3px;
+      transform: rotate(-135deg);
+      -webkit-transform: rotate(-135deg);
+    }
+
+    .Down {
+      border: solid red;
+      border-width: 0 3px 3px 0;
+      display: inline-block;
+      padding: 3px;
+      transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+    }
+
+    .content {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      padding: 5%;
+    }
+
+    .flytedContainer {
+      padding: 5px;
+      width: 100%;
+      height: 75%;
+      background-color: #d4374a;
+    }
+
+    .image {
+      position: relative;
+      float: left;
+      width: 50%;
+      height: 100%;
+      background-color: yellow;
+      border: 2px solid black;
+    }
+
+    .annotation {
+      position: relative;
+      float: right;
+      width: 50%;
+      height: 100%;
+      color: white;
+    }
+
+    .key {
+      font-weight: bold;
+    }
+
+    .form-control:focus {
+      border-color: #d4374a;
+      box-shadow: 0px 1px 1px #d4374a inset, 0px 0px 8px #d4374a;
+    }
+
+    .square {
+      position: relative;
+      width: 100%;
+      border: 3px solid black;
+      height: 40%;
+    }
+
+    .square:after {
+      content: "";
+      display: block;
+      padding-bottom: 40%;
+    }
+
+    .contenta {
+      position: absolute;
+      width: 50%;
+      height: 100%;
+      right: 0%;
+    }
+
+    .contentb {
+      position: absolute;
+      width: 50%;
+      height: 100%;
+      left: 0%;
+    }
+
+    /**************************
+  DEFAULT BOOTSTRAP STYLES
+  **************************/
+
+    .btn {
+      display: inline-block;
+      padding: 6px 12px;
+      margin-bottom: 0;
+      font-size: 14px;
+      font-weight: normal;
+      line-height: 1.42857143;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      background-image: none;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 10px 16px;
+    }
+
+    .btn-lg {
+      font-size: 18px;
+      line-height: 1.33;
+      border-radius: 6px;
+    }
+
+    .btn-primary {
+      color: white;
+      background-color: white;
+      border-color: white;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus,
+    .btn-primary:active,
+    .btn-primary.active,
+    .open .dropdown-toggle.btn-primary {
+      color: white;
+      background-color: white;
+      border-color: white;
+    }
+
+    /***********************
+  SHARP BUTTONS
+  ************************/
+
+    .sharp {
+      border-radius: 0;
+    }
+
+    /***********************
+  CUSTON BTN VALUES
+  ************************/
+
+    .btn {
+      padding: 14px 24px;
+      border: 0 none;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      outline: none !important;
+    }
+
+    .btn:focus,
+    .btn:active:focus,
+    .btn.active:focus {
+      outline: none !important;
+    }
+
+    .btn {
+      background: white;
+      color: #d4374a;
+      outline: none !important;
+    }
+
+    .btn:hover,
+    .btn-primary:focus,
+    .btn-primary:active,
+    .btn-primary.active,
+    .open>.dropdown-toggle.btn-primary {
+      background: #d4374a;
+      color: white;
+      outline: none !important;
+    }
+
+    .btn:active,
+    .btn.active {
+      outline: none !important;
+      background: black;
+      box-shadow: none;
+    }
+
+    .btn:focus {
+      outline: none !important;
+    }
+
+    .btn-link {
+      padding: 14px 24px;
+      border: 0 none;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      outline: none !important;
+      color: white;
+    }
+
+    .btn-link:hover {
+      color: white;
+    }
+
+    .btn:focus,
+    .btn:active {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    .gene_link {
+      color: #d4374a;
+      background-color: white;
+      float: right;
+      height: 100%;
+    }
+
+    .gene_link:hover {
+      color: #d4374a;
+      text-decoration: underline;
+    }
+
+  </style>
+
+
+
 <!-- THE HOME STYING -->
 <style>
 .content {
@@ -96,260 +354,6 @@
         font-size: 18px;
       }
     }
-
-</style>
-<style>
-.tab, .tab2 {
-    margin-top: 8px;
-    width: 100%;
-    background-color: gray;
-    color: white;
-    cursor: pointer;
-    padding: 5px;
-    height: auto;
-  }
-
-  .key {
-    font-weight: bold;
-  }
-
-  .tab:hover {
-    background-color: #d4374a;
-  }
-
-  .tab2:hover {
-    background-color: #4286f4;
-  }
-
-
-<!--TODO: Change the class name and find a more suitable table design that is reposndive to changes in window size and can have search functionality added to it. -->
-
-
-
-  .qbox {
-    position: fixed;
-    top: 20px;
-    right: 50px;
-  }
-
-
-  .Up {
-    border: solid green;
-    border-width: 0 3px 3px 0;
-    display: inline-block;
-    padding: 3px;
-    transform: rotate(-135deg);
-    -webkit-transform: rotate(-135deg);
-  }
-
-  .Down {
-    border: solid red;
-    border-width: 0 3px 3px 0;
-    display: inline-block;
-    padding: 3px;
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-  }
-
-  .content {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    padding: 5%;
-  }
-
-  .flytedContainer {
-    padding: 5px;
-    width: 100%;
-    height: 75%;
-    background-color: #d4374a;
-  }
-
-  .image {
-    position: relative;
-    float: left;
-    width: 50%;
-    height: 100%;
-    background-color: yellow;
-    border: 2px solid black;
-  }
-
-  .annotation {
-    position: relative;
-    float: right;
-    width: 50%;
-    height: 100%;
-    color: white;
-  }
-
-  .key {
-    font-weight: bold;
-  }
-
-  .form-control:focus {
-    border-color: #d4374a;
-    box-shadow: 0px 1px 1px #d4374a inset, 0px 0px 8px #d4374a;
-  }
-
-  .square {
-    position: relative;
-    width: 100%;
-    border: 3px solid black;
-    height: 40%;
-  }
-
-  .square:after {
-    content: "";
-    display: block;
-    padding-bottom: 40%;
-  }
-
-  .contenta {
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    right: 0%;
-  }
-
-  .contentb {
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    left: 0%;
-  }
-
-  /**************************
-DEFAULT BOOTSTRAP STYLES
-**************************/
-
-  .btn {
-    display: inline-block;
-    padding: 6px 12px;
-    margin-bottom: 0;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.42857143;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    background-image: none;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    padding: 10px 16px;
-  }
-
-  .btn-lg {
-    font-size: 18px;
-    line-height: 1.33;
-    border-radius: 6px;
-  }
-
-  .btn-primary {
-    color: white;
-    background-color: white;
-    border-color: white;
-  }
-
-  .btn-primary:hover,
-  .btn-primary:focus,
-  .btn-primary:active,
-  .btn-primary.active,
-  .open .dropdown-toggle.btn-primary {
-    color: white;
-    background-color: white;
-    border-color: white;
-  }
-
-  /***********************
-SHARP BUTTONS
-************************/
-
-  .sharp {
-    border-radius: 0;
-  }
-
-  /***********************
-CUSTON BTN VALUES
-************************/
-
-  .btn {
-    padding: 14px 24px;
-    border: 0 none;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    outline: none !important;
-  }
-
-  .btn:focus,
-  .btn:active:focus,
-  .btn.active:focus {
-    outline: none !important;
-  }
-
-  .btn {
-    background: white;
-    color: #d4374a;
-    outline: none !important;
-  }
-
-  .btn:hover,
-  .btn-primary:focus,
-  .btn-primary:active,
-  .btn-primary.active,
-  .open>.dropdown-toggle.btn-primary {
-    background: #d4374a;
-    color: white;
-    outline: none !important;
-  }
-
-  .btn:active,
-  .btn.active {
-    outline: none !important;
-    background: black;
-    box-shadow: none;
-  }
-
-  .btn:focus {
-    outline: none !important;
-  }
-
-  .btn-link {
-    padding: 14px 24px;
-    border: 0 none;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    outline: none !important;
-    color: white;
-  }
-
-  .btn-link:hover {
-    color: white;
-  }
-
-  .btn:focus,
-  .btn:active {
-    outline: none !important;
-    box-shadow: none !important;
-  }
-
-  .gene_link {
-    color: #d4374a;
-    background-color: white;
-    float: right;
-    height: 100%;
-  }
-
-  .gene_link:hover {
-    color: #d4374a;
-    text-decoration: underline;
-  }
 
 </style>
 
