@@ -99,17 +99,91 @@
 
 </style>
 <style>
+.tab, .tab2 {
+    margin-top: 8px;
+    width: 100%;
+    background-color: gray;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    height: auto;
+  }
+
+  .key {
+    font-weight: bold;
+  }
+
+  .tab:hover {
+    background-color: #d4374a;
+  }
+
+  .tab2:hover {
+    background-color: #4286f4;
+  }
+
+
+<!--TODO: Change the class name and find a more suitable table design that is reposndive to changes in window size and can have search functionality added to it. -->
+
+
 
   .qbox {
     position: fixed;
     top: 20px;
     right: 50px;
   }
+
+
+  .Up {
+    border: solid green;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+  }
+
+  .Down {
+    border: solid red;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+  }
+
   .content {
     position: relative;
     height: 100%;
     width: 100%;
     padding: 5%;
+  }
+
+  .flytedContainer {
+    padding: 5px;
+    width: 100%;
+    height: 75%;
+    background-color: #d4374a;
+  }
+
+  .image {
+    position: relative;
+    float: left;
+    width: 50%;
+    height: 100%;
+    background-color: yellow;
+    border: 2px solid black;
+  }
+
+  .annotation {
+    position: relative;
+    float: right;
+    width: 50%;
+    height: 100%;
+    color: white;
+  }
+
+  .key {
+    font-weight: bold;
   }
 
   .form-control:focus {
@@ -263,6 +337,18 @@ CUSTON BTN VALUES
   .btn:active {
     outline: none !important;
     box-shadow: none !important;
+  }
+
+  .gene_link {
+    color: #d4374a;
+    background-color: white;
+    float: right;
+    height: 100%;
+  }
+
+  .gene_link:hover {
+    color: #d4374a;
+    text-decoration: underline;
   }
 
 </style>
