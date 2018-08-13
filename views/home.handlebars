@@ -3,6 +3,7 @@
 <html lang="en">
 
 <head>
+
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta charset="utf-8">
   <meta name="description" content="FlyTED2 results page">
@@ -10,25 +11,20 @@
   <title>HOME</title>
 
   <!--Load jquery-->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script defer src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <!-- Load the Bootstrap js files -->
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
-  <!--Load the API for google charts -->
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+
   <!-- Load the Bootstrap css files -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
-
-  <!-- LOAD EXTERNAL JS SCRIPTS -->
-  <script type="text/javascript" src="sidebar.js"></script>
-
+ 
+   <!-- LOAD EXTERNAL JS SCRIPTS -->
+  <script defer type="text/javascript" src="sidebar.js"></script>
 
   <!-- LOAD CSS SHEETS -->
   <link rel="stylesheet" href="side_bar.css"></link>
   <link rel="stylesheet" href="main.css"></link>
-  <link rel="stylesheet" href="home.css"></link>
+  <link rel='stylesheet' href="home.css"></link> 
 
 </head>
 
@@ -106,3 +102,14 @@
   <div>
 
 </html>
+
+
+{{#minify removeComments="true"}}
+  {{> header }}
+{{/minify}}
+{{#minify removeEmptyElements="true"}}
+  {{> body }}
+{{/minify}}
+{{#minify removeComments="true"}}
+  {{> footer }}
+{{/minify}}
