@@ -9,5 +9,5 @@ this project is non-profit.
 
 # TODO
 - Liscencing
-- Security checks
-- Optimisation including caching and load balancing in Nginx 
+- Security checks *
+- Optimisation including caching and load balancing in Nginx *
