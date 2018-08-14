@@ -124,7 +124,7 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
 
         // --- FETCH IMAGE & ANNOTATION DATA START --- //
         flyted: callback => {
-          var myQuery = "SELECT * FROM Demo WHERE Probe IN (" + conn.escape(probe) + ")";
+          var myQuery = "SELECT * FROM Image_Data WHERE Probe IN (" + conn.escape(probe) + ")";
 
           // Check if VARIANT has been set.
           // If yes then Search for entries where the genotypes (a and b)
