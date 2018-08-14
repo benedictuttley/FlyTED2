@@ -10,6 +10,8 @@
 const express = require('express')
 const app = express();
 
+const minifyHTML = require('express-minify-html')
+const minify = require('express-minify'); // Minify CSS and JS files.
 const helmet = require('helmet'); // Used to set and ensure HTTP headers correctly for security of application.
 
 const mysql = require('mysql'); // Import mysql module to interact with FlyTed2 database.
@@ -40,6 +42,21 @@ app.engine('handlebars', handlebars({
 }));
 
 app.use(helmet());
+
+app.use(minifyHTML({
+    override:      true,
+    exception_url: false,
+    htmlMinifier: {
+        removeComments:            true,
+        collapseWhitespace:        true,
+        collapseBooleanAttributes: true,
+        removeAttributeQuotes:     true,
+        removeEmptyAttributes:     true,
+        minifyJS:                  true
+    }
+}));
+
+//app.use(minify());
 
 app.use(bodyParser.json());
 
@@ -93,6 +110,7 @@ Handlebars.registerHelper('json', function(context) {
 // TODO: Clean below function and if possible modularise.
 
 app.post('/results', (req, res) => { // Listen for incoming probe search requests
+  console.log(req.body);
   var isEmpty = true;
   FetchExternalData((probe_list) => { // Fetch SQL and FlyMine data
     var asyncTest = function asyncTest(probe, callback) {
