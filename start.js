@@ -8,8 +8,12 @@
 
 // --- MODULE IMPORTS START --- //
 const express = require('express')
-const app = express();
-
+const app = module.exports = express();
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const expressSession = require('express-session');
+const flash = require('express-flash-messages');
+const bcrypt = require('bcrypt');
 const minifyHTML = require('express-minify-html')
 const minify = require('express-minify'); // Minify CSS and JS files.
 const helmet = require('helmet'); // Used to set and ensure HTTP headers correctly for security of application.
@@ -27,14 +31,41 @@ const morgan = require('morgan'); // Used to log http requests.
 const winston = require('./config/winston'); // Log various actions and store logs in /logs/app.log
 
 const async = require('async'); // Required for multiple asynchronous FlyMine API and mySQL calls where all results are stored in one results array.
-
+const formidable = require('formidable');
 //  NOTE: -- CREDIT: The tissue expression API queries below were provided through the Flymine site,
 //  where the respective javascript code for a given user query is generated.
+const fs = require('fs');
+const mkdirp = require('mkdirp');
+const multer = require('multer');
 
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'multerTemp')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+})
+
+
+var testmulter = multer({ storage: storage })
 const flymine = new intermine.Service({ // Require the flymine API to integrate data from multiple sources including FlyBase and FlyAtlas.
   root: 'http://www.flymine.org/query' // WARNING: May be moved to HTTPS in the near future!
 });
 // --- MODULE IMPORTS END --- //
+
+// IN MEMORY USER
+const Users = {
+  Helen: {
+    username: 'Helen',
+    password: 'Cardiff_2018'
+  }
+}
+
+bcrypt.hash(Users.Helen.password, 10, (err, hash) => {
+  // Store the hashed password instead.
+  Users.Helen.password = hash;
+});
 
 // --- APP CONFIGURATION START --- //
 app.engine('handlebars', handlebars({
@@ -44,29 +75,36 @@ app.engine('handlebars', handlebars({
 app.use(helmet());
 
 app.use(minifyHTML({
-    override:      true,
-    exception_url: false,
-    htmlMinifier: {
-        removeComments:            true,
-        collapseWhitespace:        true,
-        collapseBooleanAttributes: true,
-        removeAttributeQuotes:     true,
-        removeEmptyAttributes:     true,
-        minifyJS:                  true
-    }
+  override: true,
+  exception_url: false,
+  htmlMinifier: {
+    removeComments: true,
+    collapseWhitespace: true,
+    collapseBooleanAttributes: true,
+    removeAttributeQuotes: true,
+    removeEmptyAttributes: true,
+    minifyJS: true
+  }
 }));
 
-//app.use(minify());
-
-app.use(bodyParser.json());
-
-app.use(bodyParser.urlencoded({
-  extended: true
+app.use(bodyParser.json({limit: '150mb'}));
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+limit: '150mb',
+extended: true
 }));
-
 app.use(morgan('combined', {
   stream: winston.stream
 }));
+app.use(expressSession({
+  secret: 'mySecretKey',
+  resave: true,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
+
 
 app.use(express.static('public/img'));
 app.use(express.static('public/css'));
@@ -75,9 +113,63 @@ app.use(express.static('public/js')); // Gain access to all static files stored 
 
 app.set('view engine', 'handlebars'); // Create the handlebars engine.
 
-app.listen(process.argv[2], () => console.log('App active on port:3000')); // bind application to port 3000;
-// --- APP CONFIGURATION END --- //
 
+// TEST PASSPORT ROUTE
+app.post('/login', passport.authenticate('login', {
+  successRedirect: '/editor',
+  failureRedirect: '/admin',
+}));
+
+
+// When user attempts login, authenticate with Passport.js
+passport.use("login", new LocalStrategy({
+    passReqToCallback: true // Allow Passport.js to use the request object
+  },
+  (req, username, password, done) => {
+    findUser(username, (err, user) => {
+      if (err)
+        return done(err);
+      if (!user) {
+        return done(null, false)
+      }
+
+      bcrypt.compare(password, user.password, (err, res) => {
+        if(res){
+          console.log("THE PASSWORDS MATCH!");
+          return done(null, user); // On correct credentials
+          }
+        else{
+          console.log("THE PASSWORDS DONT MATCH");
+          return done(null, false, req.flash('error', 'This is a flash message using the express-flash module.'));
+        }
+        });
+
+      });
+    }));
+
+passport.serializeUser((user, done) => {  // Create the user for the session.
+  var liteUser = createLiteUser(user);
+  done(null, liteUser);
+});
+
+passport.deserializeUser((user, done) => { // Remove the user from the session.
+  done(null, user);
+});
+
+function createLiteUser(user){
+  let liteUser = {
+    email: "test"
+  }
+  return liteUser;
+}
+
+function findUser(username, done) {
+  done(null, Users[username]);
+}
+
+
+app.listen(3000, () => console.log('App active on port:3000')); // bind application to port 3000;
+// --- APP CONFIGURATION END --- //
 
 // MAIN SERVER LOGIC BELOW //
 
@@ -93,24 +185,74 @@ app.get('/home', (req, res) => {
   res.render('home');
 })
 
-// Serve the 'credits' handlebars page upon request:
-app.get('/credits', (req, res) => {
-  res.render('credits');
-})
-
 // Serve the 'cite' handlebars page upon request:
 app.get('/cite', (req, res) => {
   res.render('cite');
 })
 
+// Serve the 'credits' handlebars page upon request:
+app.get('/credits', (req, res) => {
+  res.render('credits');
+})
+
+
+function test(file) {
+  console.log(file.name);
+  req.flash('error',file.name);
+}
+
+// app.post('/test', function(req, res) {
+//   console.log("RECIEVED!");
+//   var form = new formidable.IncomingForm();
+//   form.multiples = true; // per their documents
+//   form.maxFileSize = 200 * 1024 * 1024;
+//   form.parse(req, function(err, fields, files) {
+//     console.log(files);
+//     console.log(err);
+//     res.render('home');
+//     res.status(201).end()
+// });
+//
+// form.on('file', function(field, file) {
+//        console.log("---" + file.name);
+//    })
+//
+//    form.on('error', function(err) {
+//      console.log("ihoihoiho");
+// });
+//
+// res.render('home');
+// });
+
+
+
+
+
+// Editor page for admin to make edits to the site.
+app.get('/editor', ensureAuthenticated, function(req, res) {
+  res.render('editor');
+});
+
+// If user is authenticated then dispay the editor page.
+app.get('/admin',ensureAuthenticated,(req, res) => {
+  res.render('editor');
+});
+
+
+app.post('/fileupload', testmulter.any(), function(req, res) {
+  upload.read(req, res, (num_uploaded) => { // Upload submitted image files from admin to correct folder.
+    winston.info(`${num_uploaded} image file(s) have been uploaded`);
+    let flashMessages = res.locals.getMessages();
+    return res.status(200).send(flashMessages);
+  });
+});
+
+
 Handlebars.registerHelper('json', function(context) {
   return JSON.stringify(context);
 });
 
-// TODO: Clean below function and if possible modularise.
-
 app.post('/results', (req, res) => { // Listen for incoming probe search requests
-  console.log(req.body);
   var isEmpty = true;
   FetchExternalData((probe_list) => { // Fetch SQL and FlyMine data
     var asyncTest = function asyncTest(probe, callback) {
@@ -119,89 +261,89 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
 
       async.parallel({ // Async module method to enable multiple asynchronous calls all returned in one result object
 
-        // --- STORE THE PROBE START --- //
-        probe: callback => { // Also include the probe (CG****) for this result object as a reference move to top.
-          probe = probe.toUpperCase()
-          callback(null, probe);
-        },
-        // --- STORE THE PROBE END --- //
+          // --- STORE THE PROBE START --- //
+          probe: callback => { // Also include the probe (CG****) for this result object as a reference move to top.
+            probe = probe.toUpperCase()
+            callback(null, probe);
+          },
+          // --- STORE THE PROBE END --- //
 
 
-        // --- FETCH TISSUE EXPRESSION DATA START --- //
-        tissue: callback => {
-          flymine.rows(tissue_query).then(rows => {
-            if (rows > 0) isEmpty = false;
-            callback(null, rows);
-          }).catch('error', function(err) {
-            //If flymine API error, then log the error:
-            winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-          });
-        },
-        // --- FETCH TISSUE EXPRESSION DATA END --- //
-
-
-        // --- FETCH IMAGE & ANNOTATION DATA START --- //
-        flyted: callback => {
-          var myQuery = "SELECT * FROM Image_Data WHERE Probe IN (" + conn.escape(probe) + ")";
-
-          // Check if VARIANT has been set.
-          // If yes then Search for entries where the genotypes (a and b)
-          // match the users input for the varient.
-          if (!(req.body.Variant === undefined || req.body.Variant == "")) {
-            myQuery += " AND ( `genotype a` LIKE " + conn.escape('%' + req.body.Variant + '%') +
-            " OR `genotype b` LIKE " + conn.escape('%' + req.body.Variant + '%') + ")";
-            }
-
-          conn.query(myQuery, (err, my_res) => {
-            if (err) {
-              //If mysql error, then log the error:
+          // --- FETCH TISSUE EXPRESSION DATA START --- //
+          tissue: callback => {
+            flymine.rows(tissue_query).then(rows => {
+              if (rows > 0) isEmpty = false;
+              callback(null, rows);
+            }).catch('error', function(err) {
+              //If flymine API error, then log the error:
               winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-              callback(null, null);
-            } else {
-              if (my_res.length > 0) isEmpty = false;
-              callback(null, my_res);
+            });
+          },
+          // --- FETCH TISSUE EXPRESSION DATA END --- //
+
+
+          // --- FETCH IMAGE & ANNOTATION DATA START --- //
+          flyted: callback => {
+            var myQuery = "SELECT * FROM Image_Data WHERE Probe IN (" + conn.escape(probe) + ")";
+
+            // Check if VARIANT has been set.
+            // If yes then Search for entries where the genotypes (a and b)
+            // match the users input for the varient.
+            if (!(req.body.Variant === undefined || req.body.Variant == "")) {
+              myQuery += " AND ( `genotype a` LIKE " + conn.escape('%' + req.body.Variant + '%') +
+                " OR `genotype b` LIKE " + conn.escape('%' + req.body.Variant + '%') + ")";
             }
-          });
+
+            conn.query(myQuery, (err, my_res) => {
+              if (err) {
+                //If mysql error, then log the error:
+                winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+                callback(null, null);
+              } else {
+                if (my_res.length > 0) isEmpty = false;
+                callback(null, my_res);
+              }
+            });
+          },
+          // --- FETCH IMAGE & ANNOTATION DATA END --- //
+
+          // --- FETCH THE MICROARRAY ANNOTATIONS AND VALUES START --- //
+          affy: callback => {
+            var myQuery = "SELECT * FROM Probe_Annotations WHERE Gene = (" + conn.escape(probe) + ")";
+
+            conn.query(myQuery, (err, my_res) => {
+              if (err) {
+                //If mysql error, then log the error:
+                winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+                callback(null, null);
+              } else {
+                if (my_res.length > 0) isEmpty = false;
+                callback(null, my_res);
+              }
+            });
+          },
+          // --- FETCH THE MICROARRAY ANNOTATIONS AND VALUES END --- //
+
+          // --- FETCH THE TRANSCRIPT DATA START --- //
+          transcript: callback => { // Fetch the probe sequence data from the database.
+            var myQuery = "SELECT * FROM Probe_Sequences WHERE Probe IN (" + conn.escape(probe) + ")";
+
+            conn.query(myQuery, (err, my_res) => {
+              if (err) {
+                //If mysql error, then log the error:
+                winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+                callback(null, null);
+              } else {
+                if (my_res.length > 0) isEmpty = false;
+                callback(null, my_res);
+              }
+            });
+          }
         },
-        // --- FETCH IMAGE & ANNOTATION DATA END --- //
-
-        // --- FETCH THE MICROARRAY ANNOTATIONS AND VALUES START --- //
-        affy: callback => {
-          var myQuery = "SELECT * FROM Probe_Annotations WHERE Gene = (" + conn.escape(probe) + ")";
-
-          conn.query(myQuery, (err, my_res) => {
-            if (err) {
-              //If mysql error, then log the error:
-              winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-              callback(null, null);
-            } else {
-              if (my_res.length > 0) isEmpty = false;
-              callback(null, my_res);
-            }
-          });
-        },
-        // --- FETCH THE MICROARRAY ANNOTATIONS AND VALUES END --- //
-
-        // --- FETCH THE TRANSCRIPT DATA START --- //
-        transcript: callback => { // Fetch the probe sequence data from the database.
-          var myQuery = "SELECT * FROM Probe_Sequences WHERE Probe IN (" + conn.escape(probe) + ")";
-
-          conn.query(myQuery, (err, my_res) => {
-            if (err) {
-              //If mysql error, then log the error:
-              winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-              callback(null, null);
-            } else {
-              if (my_res.length > 0) isEmpty = false;
-              callback(null, my_res);
-            }
-          });
-        }
-      },
-      // --- FETCH THE TRANSCRIPT DATA END --- //
-      (err, results) => { // Return result object when all API and SQL functions have executed (all callbacks fired).
-        callback(err, results)
-      });
+        // --- FETCH THE TRANSCRIPT DATA END --- //
+        (err, results) => { // Return result object when all API and SQL functions have executed (all callbacks fired).
+          callback(err, results)
+        });
     }
 
     // Async module method to allow async.paralllel method to be placed in for loop so that external data for multiple genes can be required.
@@ -211,10 +353,9 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
         winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         isEmpty = true; // On error return the 'no results' page, so set isEmpty to true.
       }
-      if (isEmpty){
+      if (isEmpty) {
         res.render('none'); // Return dedicated 'no results' page when no data is found.
-      }
-      else {
+      } else {
         let data = {
           flyMineData: results, // Stores the API and SQL query results
         }
@@ -249,3 +390,17 @@ app.use((err, req, res, next) => {
 // Importing of local modules containing helper functions.
 const build_query = require('./queries'); // Contains options for tissue expression query.
 const conn = require('./mysql_setup'); // Contains the mysql connection object and authentication details.
+const upload = require('./upload'); // Local module to save file uploads (currently expression images only);
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  } else{
+    // denied. redirect to login
+    req.flash('error', 'You must be logged in to view this resource.');
+    var flashMessages = res.locals.getMessages(); // Fetch errors sored in flash memory.
+    res.render('admin', {
+      errors: flashMessages
+    });
+  }
+}
