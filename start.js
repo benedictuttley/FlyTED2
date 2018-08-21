@@ -177,6 +177,7 @@ app.listen(3000, () => console.log('App active on port:3000')); // bind applicat
 
 // Serve the 'home' handlebars page when a new user connects to the site, home.hanldebars is the landing page.
 app.get('/', (req, res) => {
+  console.log("why?")
   res.render('home');
 });
 
@@ -201,32 +202,6 @@ function test(file) {
   req.flash('error',file.name);
 }
 
-// app.post('/test', function(req, res) {
-//   console.log("RECIEVED!");
-//   var form = new formidable.IncomingForm();
-//   form.multiples = true; // per their documents
-//   form.maxFileSize = 200 * 1024 * 1024;
-//   form.parse(req, function(err, fields, files) {
-//     console.log(files);
-//     console.log(err);
-//     res.render('home');
-//     res.status(201).end()
-// });
-//
-// form.on('file', function(field, file) {
-//        console.log("---" + file.name);
-//    })
-//
-//    form.on('error', function(err) {
-//      console.log("ihoihoiho");
-// });
-//
-// res.render('home');
-// });
-
-
-
-
 
 // Editor page for admin to make edits to the site.
 app.get('/editor', ensureAuthenticated, function(req, res) {
@@ -244,6 +219,23 @@ app.post('/fileupload', testmulter.any(), function(req, res) {
     winston.info(`${num_uploaded} image file(s) have been uploaded`);
     let flashMessages = res.locals.getMessages();
     return res.status(200).send(flashMessages);
+  });
+});
+
+app.post('/annupload', testmulter.any(), function(req, res) {
+  upload.uploadexcel(req, res, (filepath) =>{
+    annotationuploader.test(conn, filepath, (number_successful, unsuccessful_entrys) =>{
+      winston.info(`${number_successful} new image annotation entries were successfully inserted.`);
+
+      if(number_successful > 0) req.flash('success',`${number_successful} new image annotation entries were successfully inserted.`);
+
+      unsuccessful_entrys.forEach((entry)=> {
+        req.flash('error', `The entry with file name ${entry['file name']} could not be uploaded.`);
+      });
+
+      let flashMessages = res.locals.getMessages();
+      return res.status(200).send(flashMessages);
+    });
   });
 });
 
@@ -391,6 +383,7 @@ app.use((err, req, res, next) => {
 const build_query = require('./queries'); // Contains options for tissue expression query.
 const conn = require('./mysql_setup'); // Contains the mysql connection object and authentication details.
 const upload = require('./upload'); // Local module to save file uploads (currently expression images only);
+const annotationuploader = require('./annotation-uploader');
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
