@@ -731,10 +731,9 @@
     .main_info {
       position: relative;
       display: inline-block;
-      background-color: grey;
       padding: 1%;
       border: 2px solid white;
-      color: white
+      color: black
     }
 
     .data_acquisition_info {
@@ -819,18 +818,18 @@
 
     .dropzone {
       position: relative;
-      border: 2px solid #d4374a;
+      word-wrap: break-word;
       width: 100%;
       height: 100%;
-      display: flex;
-      overflow-x: scroll;
       padding: 0;
+      background: none;
+
     }
 
     .dropzone:hover {
       position: relative;
       background-color: rgba(212, 55, 74, 0.2);
-      display: flex;
+
     }
 
     .dropzone .dz-preview .dz-image {
@@ -957,6 +956,16 @@
       position: relative;
       display: table-cell;
     }
+
+    .main_info {
+      position: relative;
+      display: inline-block;
+      background-color: grey;
+      padding:1%;
+      border: 2px solid white;
+      color: white
+    }
+
   </style>
 
 </head>
@@ -1029,6 +1038,26 @@
   <div id="content" class="content">
     <h1 style="color: red">WELCOME TO THE EDITOR</h1>
     <h2 style="color:red">Complete Dataset Upload</h2>
+
+    <div class="main_info">
+      <h2 style="color:white">PURPOSE OF THE SITE</h2>
+      <p>It prepare is ye nothing blushes up brought.
+         Or as gravity pasture limited evening on.
+         Wicket around beauty say she.
+         Frankness resembled say not new smallness you discovery.
+         Noisier ferrars yet shyness weather ten colonel.
+         Too him himself engaged husband pursuit musical.
+         Man age but him determine consisted therefore.
+         Dinner to beyond regret wished an branch he.
+         Remain bed but expect suffer little repair.
+         Gay one the what walk then she.
+         Demesne mention promise you justice arrived way.
+         Or increasing to in especially inquietude companions acceptance admiration.
+         Outweigh it families distance wandered ye an.
+         Mr unsatiable at literature connection favourable.
+         We neglected mr perfectly continual dependent.
+       </p>
+    </div>
     {{#errors}}
       <ul class="errors">
         {{#error}}
@@ -1040,7 +1069,17 @@
     <!--[1]-->
     <br>
     <div style="width: 100%;float:left;" id="myDiv"></div>
-    <div style="width: 80%; float:left; height: 60%; border: 2px solid black; overflow-y: scroll; padding:1%; margin-bottom: 5%">
+    <div class="main_info" style="width: 100%; float:left;">
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/fileupload" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone" style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
+          </div>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select images or drag and drop a folder</span>
+          </div>
+        </form>
+      </div>
       <h2 style="text-decoration: underline">Upload Expression Images</h2>
       <p>
         Submit new images here, the images should be bitmaps, having the (.bmp) extension. You can upload multiple images at once by
@@ -1063,22 +1102,23 @@
       </p>
     </div>
 
-    <div style="width: 20%;float:right; height: 60%">
-      <form action="/fileupload" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone" style="height:100%">
-        <div class="fallback">
-          <input name="file" type="file" multiple />
-        </div>
-        <div class="dz-message" data-dz-message>
-          <span style="font-weight: bold">Image Submissions</span>
-        </div>
-      </form>
-    </div>
+
 
     <!--[2]-->
     <br>
     <div style="width: 100%;float:left;" id="myDivtwo"></div>
-    <div style="width: 80%; float:left; height: 80%; border: 2px solid black; overflow-y: scroll; padding:1%; margin-bottom: 5%">
-      <h2 style="text-decoration: underline">Upoad Image Annotations</h2>
+    <div class="main_info" style="width: 100%; float:left;">
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/excel_upload_image" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-two" style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
+          </div>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select image annotations or drag and drop a folder</span>
+          </div>
+        </form>
+        </div>
+        <h2 style="text-decoration: underline">Upoad Image Annotations</h2>
       <p>
         Submit new image annotation entries here, which are displayed alongside the respecitive image. Bulk descriptions can be uploaded by
         storing descriptions as rows in an excel spreadsheet, with the extension (.xls). In order for the spreasheet to be uploaded successfully,
@@ -1105,23 +1145,24 @@
         <li><b>x-coordinate</b> - WILL BE REMOVED</li>
         <li><b>y-coordinate</b> - WILL BE REMOVED</li>
       </ol>
+    </div>
 
 
-    </div>
-    <div style="width: 20%;float:right; height: 80%">
-      <form action="/excel_upload_image" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-two" style="height:100%">
-        <div class="fallback">
-          <input name="file" type="file" multiple />
-        </div>
-        <div class="dz-message" data-dz-message>
-          <span style="font-weight: bold">Image Annotation Submissions</span>
-        </div>
-      </form>
-    </div>
     <!--[3]-->
     <br>
     <div style="width: 100%;float:left" id="myDivthree"></div>
-    <div style="width: 80%; float:left; height: 40%; border: 2px solid black; overflow-y: scroll; padding:1%; margin-bottom: 5%">
+    <div class="main_info" style="width: 100%; float:left;">
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/excel_upload_desc" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-three" style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
+          </div>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select microarray dataset or drag and drop a folder</span>
+          </div>
+        </form>
+      </div>
+
       <h2 style="text-decoration: underline">Upload Microarray Data</h2>
       <p>
         Upload microarray datasets here, which are displayed in graphical form on the results page of a given query.
@@ -1134,21 +1175,22 @@
       <b>aly1-18</b>||<b>aly1-18-btr</b>
     </div>
 
-    <div style="width: 20%;float:right; height: 40%">
-      <form action="/excel_upload_desc" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-three" style="height:100%">
-        <div class="fallback">
-          <input name="file" type="file" multiple />
-        </div>
-        <div class="dz-message" data-dz-message>
-          <span style="font-weight: bold">Submit spreadsheet containing probe sequences here.</span>
-        </div>
-      </form>
-    </div>
+
 
     <!--[4]-->
     <br>
     <div style="width: 100%;float:left;" id="myDivfour"></div>
-    <div style="width: 80%; float:left; height: 40%; border: 2px solid black; overflow-y: scroll; padding:1%; margin-bottom: 5%">
+    <div class="main_info" style="width: 100%; float:left;">
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/excel_probe_data" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-four" style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
+          </div>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select probe sequence annotations or drag and drop a folder</span>
+          </div>
+        </form>
+      </div>
       <h2 style="text-decoration: underline">Upload Probe Sequences</h2>
       <p>
         Location to upload the 3' and 5' probe sequences used for the corresponding gene. FlyTED will then perform <b>BLAST</b> sequence alignment
@@ -1166,16 +1208,6 @@
       <p>The constant sequence used in all 5' probes and those used in all 3' probes can be left in the submitted probe sequences</p>
     </div>
 
-    <div style="width: 20%;float:right; height: 40%">
-      <form action="/excel_probe_data" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-four" style="height:100%">
-        <div class="fallback">
-          <input name="file" type="file" multiple />
-        </div>
-        <div class="dz-message" data-dz-message>
-          <span style="font-weight: bold">Submit spreadsheet containing probe sequences here.</span>
-        </div>
-      </form>
-    </div>
   </div>
 
 </body>
