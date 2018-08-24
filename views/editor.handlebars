@@ -961,11 +961,10 @@
       position: relative;
       display: inline-block;
       background-color: grey;
-      padding:1%;
+      padding: 1%;
       border: 2px solid white;
       color: white
     }
-
   </style>
 
 </head>
@@ -1039,25 +1038,6 @@
     <h1 style="color: red">WELCOME TO THE EDITOR</h1>
     <h2 style="color:red">Complete Dataset Upload</h2>
 
-    <div class="main_info">
-      <h2 style="color:white">PURPOSE OF THE SITE</h2>
-      <p>It prepare is ye nothing blushes up brought.
-         Or as gravity pasture limited evening on.
-         Wicket around beauty say she.
-         Frankness resembled say not new smallness you discovery.
-         Noisier ferrars yet shyness weather ten colonel.
-         Too him himself engaged husband pursuit musical.
-         Man age but him determine consisted therefore.
-         Dinner to beyond regret wished an branch he.
-         Remain bed but expect suffer little repair.
-         Gay one the what walk then she.
-         Demesne mention promise you justice arrived way.
-         Or increasing to in especially inquietude companions acceptance admiration.
-         Outweigh it families distance wandered ye an.
-         Mr unsatiable at literature connection favourable.
-         We neglected mr perfectly continual dependent.
-       </p>
-    </div>
     {{#errors}}
       <ul class="errors">
         {{#error}}
@@ -1082,8 +1062,7 @@
       </div>
       <h2 style="text-decoration: underline">Upload Expression Images</h2>
       <p>
-        Submit new images here, the images should be bitmaps, having the (.bmp) extension. You can upload multiple images at once by
-        dragging and dropping the folder into the right hand-side panel. Submitted images need must adhere to the following structure:
+        Submit new images here, the images should be bitmaps, having the (.bmp) extension. You can upload multiple images at once by dragging and dropping the folder into the right hand-side panel. Submitted images need must adhere to the following structure:
         [Gene]_[imageID]_[Date.bmp].
       </p>
       <h4>Acceptable image name examples:</h4>
@@ -1093,12 +1072,10 @@
         <li>CG2750_aly01_19.6.06.bmp</li>
       </ul>
       <p>
-        This is required so that FlyTED can link the images with the other datasets associated with the repective gene,
-        which become unified when the query result is displayed to the viewer.
+        This is required so that FlyTED can link the images with the other datasets associated with the repective gene, which become unified when the query result is displayed to the viewer.
       </p>
       <p>
-        Note: The date part of the image address
-        should correspond to the date the image was taken or aquired rather then the time of submission to FlyTED.
+        Note: The date part of the image address should correspond to the date the image was taken or aquired rather then the time of submission to FlyTED.
       </p>
     </div>
 
@@ -1117,13 +1094,11 @@
             <span style="font-weight: bold">Click to select image annotations or drag and drop a folder</span>
           </div>
         </form>
-        </div>
-        <h2 style="text-decoration: underline">Upoad Image Annotations</h2>
+      </div>
+      <h2 style="text-decoration: underline">Upoad Image Annotations</h2>
       <p>
-        Submit new image annotation entries here, which are displayed alongside the respecitive image. Bulk descriptions can be uploaded by
-        storing descriptions as rows in an excel spreadsheet, with the extension (.xls). In order for the spreasheet to be uploaded successfully,
-        it must follow the expected schema. FlyTED will look for the following columns to display, and will ignore others, the colums must be named
-        as described below:
+        Submit new image annotation entries here, which are displayed alongside the respecitive image. Bulk descriptions can be uploaded by storing descriptions as rows in an excel spreadsheet, with the extension (.xls). In order for the spreasheet to be uploaded
+        successfully, it must follow the expected schema. FlyTED will look for the following columns to display, and will ignore others, the colums must be named as described below:
       </p>
 
       <h4>Image annotation schema:</h4>
@@ -1165,9 +1140,8 @@
 
       <h2 style="text-decoration: underline">Upload Microarray Data</h2>
       <p>
-        Upload microarray datasets here, which are displayed in graphical form on the results page of a given query.
-        They can be uploaded in bulk in an excel(xls) spreadsheet. FlyTED will look for the following columns (which must be named as such)
-        and ignore others.
+        Upload microarray datasets here, which are displayed in graphical form on the results page of a given query. They can be uploaded in bulk in an excel(xls) spreadsheet. FlyTED will look for the following columns (which must be named as such) and ignore
+        others.
       </p>
       <h4>Micorarray data schema:</h4>
       <b>Gene Symbol</b>||<b>Probe Set ID</b>||<b>Transcript ID(Array Design)</b>||<b>Target Description</b>||<b>wt-tin</b>||<b>wt-mip40-excised</b>||<b>wt-white</b>||<b>aly5</b>||<b>comr</b>||
@@ -1193,9 +1167,8 @@
       </div>
       <h2 style="text-decoration: underline">Upload Probe Sequences</h2>
       <p>
-        Location to upload the 3' and 5' probe sequences used for the corresponding gene. FlyTED will then perform <b>BLAST</b> sequence alignment
-        between the probes and all exisitng transcripts for that gene (retrieved externally from FlyMine), and generate the resulting target sequence
-        that the testes expression images are sourced from.
+        Location to upload the 3' and 5' probe sequences used for the corresponding gene. FlyTED will then perform <b>BLAST</b> sequence alignment between the probes and all exisitng transcripts for that gene (retrieved externally from FlyMine), and generate
+        the resulting target sequence that the testes expression images are sourced from.
       </p>
       <p>
         Sequence pairs can be uploaded in bulk in a excel spreadheet (.xls) and must adhere to the following schema:
