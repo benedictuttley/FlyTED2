@@ -33,10 +33,6 @@
     <script type="text/javascript" src="transcripts.js"></script>
     <script type="text/javascript" src="error_handlers.js"></script>
 
-    <!-- LOAD EXTERNAL CSS SHEETS -->
-    <link rel="stylesheet" href="table.css"></link>
-    <link rel="stylesheet" href="side_bar.css"></link>
-    <link rel="stylesheet" href="main.css"></link>
 
     <style>
     :root{--blue:#007bff;--indigo:#6610f2;--purple:#6f42c1;--pink:#e83e8c;--red:#dc3545;--orange:#fd7e14;--yellow:#ffc107;--green:#28a745;--teal:#20c997;--cyan:#17a2b8;--white:#fff;--gray:#6c757d;--gray-dark:#343a40;--primary:#007bff;--secondary:#6c757d;--success:#28a745;--info:#17a2b8;--warning:#ffc107;--danger:#dc3545;--light:#f8f9fa;--dark:#343a40;--breakpoint-xs:0;--breakpoint-sm:576px;--breakpoint-md:768px;--breakpoint-lg:992px;--breakpoint-xl:1200px;--font-family-sans-serif:-apple-syste
@@ -432,6 +428,12 @@
 
   </style>
 
+  <!-- LOAD EXTERNAL CSS SHEETS -->
+  <link rel="stylesheet" href="table.css"></link>
+  <link rel="stylesheet" href="side_bar.css"></link>
+  <link rel="stylesheet" href="main.css"></link>
+
+
   </head>
 
   <body>
@@ -608,7 +610,7 @@
         <!-- LOOP THGROUGH SQL ANNOTAIONS AND IMAGES DATA START-->
         {{#each [flyted]}}
           <div class="square">
-            <a class="contenta" data-fancybox="gallery" href="{{[link to file]}}" style="background: url('{{[link to file]}}'), url('img/image_error.bmp'); overflow: hidden; background-size: cover;  background-position: center">
+            <a class="contenta" data-fancybox="gallery" href="{{[link_to_file]}}" style="background: url('{{[link_to_file]}}'), url('img/image_error.bmp'); overflow: hidden; background-size: cover;  background-position: center">
             </a>
             <!-- Liscence for fancybox can be found on their site -> https://fancyapps.com/fancybox/3
             It is free to use fancyBox for your personal or non-profit website projects. This website is non-profit.
@@ -637,31 +639,31 @@
                     </tr>
                     <tr>
                       <td class="key">Slide Name</td>
-                      <td>{{[slide name]}}</td>
+                      <td>{{[slide_name]}}</td>
                     </tr>
                     <tr>
                       <td class="key">Genotype A</td>
-                      <td>{{[genotype a]}}</td>
+                      <td>{{[genotype_a]}}</td>
                     </tr>
                     <tr>
                       <td class="key">Genotype B</td>
-                      <td>{{[genotype b]}}</td>
+                      <td>{{[genotype_b]}}</td>
                     </tr>
                     <tr>
                       <td class="key">Stages Shown</td>
-                      <td>{{[stages shown in picture]}}</td>
+                      <td>{{[stages_shown_in_picture]}}</td>
                     </tr>
                     <tr>
                       <td class="key">Description</td>
-                      <td>{{[description of staining pattern]}}</td>
+                      <td>{{[description_of_staining_pattern]}}</td>
                     </tr>
                     <tr>
                       <td class="key">Apical/spermatogonia</td>
-                      <td>{{[Apical/spermatogonia]}}</td>
+                      <td>{{[Apical_spermatogonia]}}</td>
                     </tr>
                     <tr>
                       <td class="key">Germ-line</td>
-                      <td>{{[Germ-line]}}</td>
+                      <td>{{[Germ_line]}}</td>
                     </tr>
                     <tr>
                       <td class="key">Somatic</td>
