@@ -39,16 +39,18 @@ const mkdirp = require('mkdirp');
 const multer = require('multer');
 
 var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: function(req, file, cb) {
     cb(null, 'multerTemp')
   },
-  filename: function (req, file, cb) {
+  filename: function(req, file, cb) {
     cb(null, file.originalname)
   }
 })
 
 
-var testmulter = multer({ storage: storage })
+var testmulter = multer({
+  storage: storage
+})
 const flymine = new intermine.Service({ // Require the flymine API to integrate data from multiple sources including FlyBase and FlyAtlas.
   root: 'http://www.flymine.org/query' // WARNING: May be moved to HTTPS in the near future!
 });
@@ -87,10 +89,12 @@ app.use(minifyHTML({
   }
 }));
 
-app.use(bodyParser.json({limit: '150mb'}));
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-limit: '150mb',
-extended: true
+app.use(bodyParser.json({
+  limit: '150mb'
+}));
+app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
+  limit: '150mb',
+  extended: true
 }));
 app.use(morgan('combined', {
   stream: winston.stream
@@ -134,20 +138,19 @@ passport.use("login", new LocalStrategy({
       }
 
       bcrypt.compare(password, user.password, (err, res) => {
-        if(res){
-          console.log("THE PASSWORDS MATCH!");
+        if (res) {
+          winston.info(`User authentication accepted for pasword ${user.password}`);
           return done(null, user); // On correct credentials
-          }
-        else{
-          console.log("THE PASSWORDS DONT MATCH");
+        } else {
+          winston.info(`User authentication failed for pasword ${user.password}`);
           return done(null, false, req.flash('error', 'This is a flash message using the express-flash module.'));
         }
-        });
-
       });
-    }));
 
-passport.serializeUser((user, done) => {  // Create the user for the session.
+    });
+  }));
+
+passport.serializeUser((user, done) => { // Create the user for the session.
   var liteUser = createLiteUser(user);
   done(null, liteUser);
 });
@@ -156,7 +159,7 @@ passport.deserializeUser((user, done) => { // Remove the user from the session.
   done(null, user);
 });
 
-function createLiteUser(user){
+function createLiteUser(user) {
   let liteUser = {
     email: "test"
   }
@@ -168,7 +171,7 @@ function findUser(username, done) {
 }
 
 
-app.listen(3000, () => console.log('App active on port:3000')); // bind application to port 3000;
+app.listen(3000, () => console.log(`FlyTED2 node app is running on port 3000.`)); // bind application to port 3000;
 // --- APP CONFIGURATION END --- //
 
 // MAIN SERVER LOGIC BELOW //
@@ -177,7 +180,6 @@ app.listen(3000, () => console.log('App active on port:3000')); // bind applicat
 
 // Serve the 'home' handlebars page when a new user connects to the site, home.hanldebars is the landing page.
 app.get('/', (req, res) => {
-  console.log("why?")
   res.render('home');
 });
 
@@ -197,19 +199,13 @@ app.get('/credits', (req, res) => {
 })
 
 
-function test(file) {
-  console.log(file.name);
-  req.flash('error',file.name);
-}
-
-
 // Editor page for admin to make edits to the site.
 app.get('/editor', ensureAuthenticated, function(req, res) {
   res.render('editor');
 });
 
 // If user is authenticated then dispay the editor page.
-app.get('/admin',ensureAuthenticated,(req, res) => {
+app.get('/admin', ensureAuthenticated, (req, res) => {
   res.render('editor');
 });
 
@@ -222,20 +218,55 @@ app.post('/fileupload', testmulter.any(), function(req, res) {
   });
 });
 
-app.post('/annupload', testmulter.any(), function(req, res) {
-  upload.uploadexcel(req, res, (filepath) =>{
-    annotationuploader.test(conn, filepath, (number_successful, unsuccessful_entrys) =>{
+app.post('/excel_upload_desc', testmulter.any(), function(req, res) {
+  upload.uploadexcel(req, res, (filepath) => {
+    annotationuploader.test(conn, filepath, "description", (number_successful, unsuccessful_entrys) => {
+      winston.info(`${number_successful} new description entries were successfully inserted.`);
+
+      if (number_successful > 0) req.flash('success', `${number_successful} new image annotation entries were successfully inserted.`);
+
+      unsuccessful_entrys.forEach((entry) => {
+        req.flash('error', `The entry with Gene ID ${entry['Gene Symbol']} could not be uploaded.`);
+      });
+
+      let flashMessages = res.locals.getMessages();
+      return res.status(200).send(flashMessages);
+    });
+  });
+});
+
+
+app.post('/excel_upload_image', testmulter.any(), function(req, res) {
+  console.log("test");
+  upload.uploadexcel(req, res, (filepath) => {
+    annotationuploader.test(conn, filepath, "image_annotations", (number_successful, unsuccessful_entrys) => {
+      console.log("----------------");
       winston.info(`${number_successful} new image annotation entries were successfully inserted.`);
+      console.log(unsuccessful_entrys);
+      if (number_successful > 0) req.flash('success', `${number_successful} new image annotation entries were successfully inserted.`);
 
-      if(number_successful > 0) req.flash('success',`${number_successful} new image annotation entries were successfully inserted.`);
-
-      unsuccessful_entrys.forEach((entry)=> {
+      unsuccessful_entrys.forEach((entry) => {
         req.flash('error', `The entry with file name ${entry['file name']} could not be uploaded.`);
       });
 
       let flashMessages = res.locals.getMessages();
       return res.status(200).send(flashMessages);
     });
+  });
+});
+
+
+app.post('/excel_probe_data', testmulter.any(), function(req, res) {
+  BlastUploader.generate_probe_data(req.files[0].path, (number_successful, unsuccessful_entrys) => {
+    winston.info(`${number_successful} new probe sequence entries were successfully inserted.`);
+
+    if (number_successful > 0) req.flash('success', `${number_successful} new probe sequence entries were successfully inserted.`);
+    unsuccessful_entrys.forEach((entry) => {
+      req.flash('error', `The entry with file name ${entry['PROBE']} could not be uploaded.`);
+    });
+
+    let flashMessages = res.locals.getMessages();
+    return res.status(200).send(flashMessages);
   });
 });
 
@@ -384,11 +415,12 @@ const build_query = require('./queries'); // Contains options for tissue express
 const conn = require('./mysql_setup'); // Contains the mysql connection object and authentication details.
 const upload = require('./upload'); // Local module to save file uploads (currently expression images only);
 const annotationuploader = require('./annotation-uploader');
+const BlastUploader = require('./blast-upload');
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
-  } else{
+  } else {
     // denied. redirect to login
     req.flash('error', 'You must be logged in to view this resource.');
     var flashMessages = res.locals.getMessages(); // Fetch errors sored in flash memory.
