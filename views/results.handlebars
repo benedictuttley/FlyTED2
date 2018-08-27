@@ -311,37 +311,13 @@
         outline: none !important;
       }
 
-      .btn-link {
-
-        border: 0 none;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        outline: none !important;
-        color: white;
-      }
-
-      .btn-link:hover {
-        color: white;
-      }
-
       .btn:focus,
       .btn:active {
         outline: none !important;
         box-shadow: none !important;
       }
 
-      .gene_link {
-        color: #d4374a;
-        background-color: white;
-        float: right;
-        height: 100%;
-      }
 
-      .gene_link:hover {
-        color: #d4374a;
-        text-decoration: underline;
-      }
 
     </style>
 
@@ -413,19 +389,6 @@
         cursor: pointer;
       }
 
-      @media screen and (max-height: 450px) {
-        .sidenav {
-          padding-top: 15px;
-        }
-        .sidenav a {
-          font-size: 18px;
-        }
-      }
-      a:hover {
-         color: #fff !important;
-       }
-
-
   </style>
 
   <!-- LOAD EXTERNAL CSS SHEETS -->
@@ -433,6 +396,34 @@
   <link rel="stylesheet" href="side_bar.css"></link>
   <link rel="stylesheet" href="main.css"></link>
 
+<style>
+.gene_link {
+  color: white;
+  background-color: #d4374a;
+  height: 100%;
+}
+
+.gene_link:hover {
+  color: white;
+  text-decoration: underline;
+  background-color: #d4374a;
+}
+
+.btn-link {
+  float: right;
+  border: 0 none;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  outline: none !important;
+  color:#d4374a;
+}
+
+.btn-link:hover {
+  color:#d4374a;
+  text-decoration: underline;
+}
+</style>
 
   </head>
 
@@ -501,7 +492,6 @@
       </div>
     </nav>
 
-
     <!-- GLOBAL VARIABLES DECLARATION START -->
     <script>
     var microarray_data_present = true; // Store whether microarray data has been retrieved or not.
@@ -525,9 +515,11 @@
       <div class="content">
         <!-- INCLUDE FLYBASE LINK FOR GENE -->
         <h1 style="background-color:#d4374a; color:white;">RESULT FOR GENE: {{[probe]}}
-          <a href="http://flybase.org/reports/{{this.[tissue].[0].[9]}}" class="gene_link">Link To FlyBase Report For Gene
-          </a>
+
         </h1>
+        <a href="http://flybase.org/reports/{{this.[tissue].[0].[9]}}" class="gene_link">Link To FlyBase Report For Gene
+        </a>
+        <br>
         <br>
 
         <!---DISPLAY TRANSCRIPTS HEADER START -->
@@ -554,7 +546,7 @@
               <!-- TRANSCRIPT INFORMATION START -->
               <p>
                 <font color='#d4374a'>Transcript Primary ID: </font> {{[Transcript_ID]}}
-                <a href="http://flybase.org/reports/{{[Transcript_ID]}}" class="btn-link" style="color:#d4374a">Link To FlyBase Report For This Transcript
+                <a href="http://flybase.org/reports/{{[Transcript_ID]}}" class="btn-link">Link To FlyBase Report For This Transcript
                 </a>
               </p>
               <p>
