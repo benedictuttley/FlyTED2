@@ -106,8 +106,9 @@
   </nav>
 
   <div id="content" class="content">
-    <h1 style="color: red">WELCOME TO THE EDITOR</h1>
-    <h2 style="color:red">Complete Dataset Upload</h2>
+
+    <h1 style="color: #d4374a">WELCOME TO THE EDITOR</h1>
+    <h2 style="color: #d4374a">Complete Dataset Upload</h2>
 
     {{#errors}}
       <ul class="errors">
@@ -274,291 +275,88 @@
     </div>
 
 
-    <!-- QUICK EDIT START -->
-    <h2>Quick Edit</h2>
-    <h4>
-      Enter a gene to retrieve all data components that FlyTED2 holds on that gene,
-      which can then be edited here, and FlyTED's databse will be uploaded immediately.
-    </h4>
+    <!-- Collection of custom functions -->
+    <script>
 
-    <form id="gene_for_change">
-      <input type="text" name="gene" class="input" id="quick_edit_gene" placeholder="Enter Gene for Retrieval">
-      <button id="testnew" class="btn" type="submit">Fetch Data</button>
-    </form>
-    <br>
+    // Toggle display of the image addition form:
+    function displayAdditionContainer(id, type) {
+      let tab = document.getElementById(id);
+      let addition_container = document.getElementById(id.replace('_tab',''));
+      let current_display = addition_container.style.display;
 
-    <div class="tab2" id="image_addition_container_tab" onclick="displayAdditionContainer()">
-      (+) ADD AN IMAGE
-    </div>
-    <br>
+      if(type == 'toggle'){
+        if (current_display == "block") {
+          addition_container.style.display = "none";
+          tab.innerHTML = tab.innerHTML.replace('(-)', '(+)');
 
-
-    <div class="quick_change_container">
-      <h3 style="text-decoration: underline">{3} Image Metadata</h3>
-      <button type="button" id="prev_slider" class="btn">&#x21E6; Previous Image</button>
-      <button type="button" id="next_slider" class="btn">Next Image &#x21E8;</button>
-      <h4>
-        Edit the metadata and image shown for the respective gene.
-        To delete the image and the associated metadata, select the
-        'DELETE' button. Changes will only be made if the 'UPDATE DATASET'
-        button is pressed.
-     </h4>
-      <div style="width: 100%;float:left;" id="myDivseven"></div>
-      <div class="your-class" id="pls"></div>
-    </div>
-
-
-
-    <!-- CONTAINER WITH FORM FOR MICROARRAY DATASET EDIT-->
-
-    <div class="quick_change_container">
-      <h3 style="text-decoration: underline">{1} Microarray Data</h3>
-      <h4>
-        Retrieve the microarray results for a given gene, note there is no option to add
-        multiple microarray datasets for the same gene. This is a 1:1 relationship.
-      </h4>
-      <div id="myDivfive"></div>
-      <form id="second" class="quick_change_form">
-        <div class="form-group row">
-          <div class="col-xs-2">
-            <label for="ex1">Probe_Set</label>
-            <input class="form-control" id="Probe_Set" name="Probe_Set" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">Transcript_ID</label>
-            <input class="form-control" id="Transcript_ID" name="Transcript_ID" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">Target_Description</label>
-            <input class="form-control" id="Target_Description" name="Target_Description" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">wt(tin)</label>
-            <input class="form-control" id="wt(tin)" name="wt(tin)" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">wt(mip40)(excised)</label>
-            <input class="form-control" id="wt(mip40)(excised)" name="wt(mip40)(excised)" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">wt(white)</label>
-            <input class="form-control" id="wt(white)" name="wt(white)" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">aly5</label>
-            <input class="form-control" id="aly5" name="aly5" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">comr</label>
-            <input class="form-control" id="comr" name="comr" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">tomb</label>
-            <input class="form-control" id="tomb" name="tomb" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">nxt1</label>
-            <input class="form-control" id="nxt1" name="nxt1" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">mip40(sh2)(bsc)</label>
-            <input class="form-control" id="mip40(sh2)(bsc)" name="mip40(sh2)(bsc)" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">mip40(ey)</label>
-            <input class="form-control" id="mip40(ey)" name="mip40(ey)" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">mip40(ey)(bg4)</label>
-            <input class="form-control" id="mip40(ey)(bg4)" name="mip40(ey)(bg4)" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">wucRNAi</label>
-            <input class="form-control" id="wucRNAi" name="wucRNAi" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">wucRNAi_aly</label>
-            <input class="form-control" id="wucRNAi_aly" name="wucRNAi_aly" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">mip40(sh2)(comr)</label>
-            <input class="form-control" id="mip40(sh2)(comr)" name="mip40(sh2)(comr)" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">mip40(ey)(aly)</label>
-            <input class="form-control" id="mip40(ey)(aly)" name="mip40(ey)(aly)" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">aly1(27)</label>
-            <input class="form-control" id="aly1(27)" name="aly1(27)" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">aly1(18)</label>
-            <input class="form-control" id="aly1(18)" name="aly1(18)" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">aly1(18)(btr)</label>
-            <input class="form-control" id="aly1(18)(btr)" name="aly1(18)(btr)" type="text">
-          </div>
-
-          <div class="col-xs-2">
-            <input type="hidden" class="form-control" id="Gene" name="gene" type="text">
-          </div>
-        </div>
-
-        <button id="send_changes" class="btn" type="submit">submit</button>
-      </form>
-    </div>
-    <br>
-    <div class="quick_change_container">
-      <h3 style="text-decoration: underline">{2} Probe Data</h3>
-      <div style="width: 100%;float:left;" id="myDivsix"></div>
-      <form id="really" class="quick_change_form">
-        <div class="form-group row">
-
-          <div class="col-xs-2">
-            <label for="ex1">Probe</label>
-            <input class="form-control" id="Probe" name="Probe" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">3_Prime_Sequence</label>
-            <input class="form-control" id="3_Prime_Sequence" name="3_Prime_Sequence" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">5_Prime_Sequence</label>
-            <input class="form-control" id="5_Prime_Sequence" name="5_Prime_Sequence" type="text">
-          </div>
-        </div>
-        <button id="send_changes" class="btn" type="submit">submit</button>
-      </form>
-    </div>
-    <br>
-    <!-- Image and image metadata addition upload container -->
-    <div id="image_addition_container" class="quick_change_container">
-      <h3 style="text-decoration: underline">Image Metadata</h3>
-      <h4>ENTER DESCRIPTION HERE</h4>
-      <div style="width: 100%; float:left;" id="image_addition_notifier"></div>
-      <form id="image_addition_form" class="quick_change_form_addition" enctype='multipart/form-data'>
-        <div class="form-group row">
-          <div class="col-xs-2">
-            <label for="ex1">File_Name</label>
-            <input class="form-control" id="File_Name" name="File_Name" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">Link_To_File</label>
-            <input class="form-control" id="Link_To_File" name="Link_To_File" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">Slide_Name</label>
-            <input class="form-control" id="Slide_Name" name="Slide_Name" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">date</label>
-            <input class="form-control" id="date" name="date" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">user</label>
-            <input class="form-control" id="user" name="user" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">probe</label>
-            <input class="form-control" id="probe" name="probe" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">probe_concentration</label>
-            <input class="form-control" id="probe_concentration" name="probe_concentration" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">genotype_a</label>
-            <input class="form-control" id="genotype_a" name="genotype_a" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">genotype_b</label>
-            <input class="form-control" id="genotype_b" name="genotype_b" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">objective</label>
-            <input class="form-control" id="objective" name="objective" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">optivar</label>
-            <input class="form-control" id="optivar" name="optivar" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">cmount</label>
-            <input class="form-control" id="cmount" name="cmount" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">stages_shown_in_picture</label>
-            <input class="form-control" id="stages_shown_in_picture" name="stages_shown_in_picture"
-              type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">description_of_staining_pattern</label>
-            <input class="form-control" id="description_of_staining_pattern" name="description_of_staining_pattern"
-              type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">comments</label>
-            <input class="form-control" id="comments" name="comments" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">x-coordinate</label>
-            <input class="form-control" id="xcoordinate" name="xcoordinate" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">y-coordinate</label>
-            <input class="form-control" id="ycoordinate" name="ycoordinate" type="text">
-          </div>
-          <div class="col-xs-2">
-            <label for="ex1">image</label>
-            <input class="form-control" id="image" name="image" type="file">
-          </div>
-        </div>
-        <button id="send_changes" class="btn" type="submit">submit</button>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    document.getElementById('image_addition_container').style.display = "none";
-  </script>
-
-
-</body>
-
-<!-- Collection of custom functions -->
-<script>
-
-  // Toggle display of the image addition form:
-  function displayAdditionContainer() {
-    let tab = document.getElementById('image_addition_container_tab');
-    let current_display = addition_container.style.display;
-
-    if (current_display == "block") {
-      tab.innerHTML = "(+) ADD AN IMAGE";
-      addition_container.style.display = "none";
-    } else {
-      tab.innerHTML = "(-) ADD AN IMAGE";
-      addition_container.style.display = "block";
-    }
-  }
-
-  // Delete image and it's metadata
-  function delImgAndData(image_name) {
-    $.ajax({
-      type: 'post',
-      url: '/removeImageAndData',
-      data: {
-        "image_name": image_name
-      },
-      success: function(response) {
-        console.log("DELETE IS DONE!");
+        } else {
+          addition_container.style.display = "block";
+          tab.innerHTML = tab.innerHTML.replace('(+)', '(-)');
+        }
       }
-    });
-  }
-</script>
-<script type="text/javascript" src="io.js"></script>
-<script type="text/javascript" src="po.js"></script>
+
+      if(type == true){
+        addition_container.style.display = "block";
+        tab.innerHTML = tab.innerHTML.replace('(+)', '(-)');
+      }
+
+      else if (type == false){
+      addition_container.style.display = "none";
+      tab.innerHTML = tab.innerHTML.replace('(-)', '(+)');
+
+      }
+    }
+
+    // Delete image and it's metadata
+    function delImgAndData(image_name) {
+      $.ajax({
+        type: 'post',
+        url: '/removeImageAndData',
+        data: {
+          "image_name": image_name
+        },
+        success: function(response) {
+          console.log("DELETE IS DONE!"); // Add confirm and confirmation
+        }
+      });
+    }
+    </script>
+
+    <h1>NAVBAR WOULD GO HERE</h1>
+    <button class="tablink" onclick="openPage('Home', this, 'red')">Home</button>
+    <button class="tablink" onclick="openPage('News', this, 'green')" id="defaultOpen">News</button>
+
+    <div id="Home" class="tabcontent">
+      <h3>Home</h3>
+      <p>Home is where the heart is..</p>
+    </div>
+
+    <div id="News" class="tabcontent">
+      <h3>News</h3>
+      <p>Some news this fine day!</p>
+    </div>
+
+    <script>
+    function openPage(pageName,elmnt,color) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablink");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].style.backgroundColor = "";
+        }
+        document.getElementById(pageName).style.display = "block";
+        elmnt.style.backgroundColor = color;
+
+    }
+    // Get the element with id="defaultOpen" and click on it
+    document.getElementById("defaultOpen").click();
+    </script>
+  </body>
+
+  <script type="text/javascript" src="formListeners.js"></script>
+  <script type="text/javascript" src="dropzoneConfigurations.js"></script>
 
 </html>
