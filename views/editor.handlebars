@@ -24,8 +24,9 @@
 
   <!-- CSS LINKS -->
   <link href="dropzone.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"
+  />
   <link rel="stylesheet" type="text/css" href="component.css" />
   <link rel="stylesheet" type="text/css" href="editor.css" />
 
@@ -39,33 +40,34 @@
 </head>
 <style>
 /* Style tab links */
+
 .tablink {
-    margin-top: 1%;
-    background-color: #555;
-    float: left;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 14px 16px;
-    width: 50%;
-    border: 2px solid black;
-    color: white;
+  margin-top: 1%;
+  background-color: #555;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  width: 50%;
+  border: 2px solid black;
+  color: white;
 }
 
 .tablink:hover {
-    background-color: #777;
+  background-color: gray;
 }
+
 
 /* Style the tab content (and add height:100% for full page content) */
+
 .tabcontent {
-
-    display: none;
-    padding: 100px 20px;
-    height: 100%;
+  display: none;
+  padding: 100px 20px;
+  height: 100%;
 }
-
-
 </style>
+
 <body>
   <!--Side bar containing query bulder form -->
   <div id="mySidenav" class="sidenav">
@@ -137,66 +139,64 @@
 
 
 
-    <!-- Collection of custom functions -->
-    <script>
+  <!-- Collection of custom functions -->
+  <script>
+  // Toggle display of the image addition form:
+  function displayAdditionContainer(id, type) {
+    let tab = document.getElementById(id);
+    let addition_container = document.getElementById(id.replace('_tab', ''));
+    let current_display = addition_container.style.display;
 
-    // Toggle display of the image addition form:
-    function displayAdditionContainer(id, type) {
-      let tab = document.getElementById(id);
-      let addition_container = document.getElementById(id.replace('_tab',''));
-      let current_display = addition_container.style.display;
+    if (type == 'toggle') {
+      if (current_display == "block") {
+        addition_container.style.display = "none";
+        tab.innerHTML = tab.innerHTML.replace('(-)', '(+)');
 
-      if(type == 'toggle'){
-        if (current_display == "block") {
-          addition_container.style.display = "none";
-          tab.innerHTML = tab.innerHTML.replace('(-)', '(+)');
-
-        } else {
-          addition_container.style.display = "block";
-          tab.innerHTML = tab.innerHTML.replace('(+)', '(-)');
-        }
-      }
-
-      if(type == true){
+      } else {
         addition_container.style.display = "block";
         tab.innerHTML = tab.innerHTML.replace('(+)', '(-)');
       }
+    }
 
-      else if (type == false){
+    if (type == true) {
+      addition_container.style.display = "block";
+      tab.innerHTML = tab.innerHTML.replace('(+)', '(-)');
+    } else if (type == false) {
       addition_container.style.display = "none";
       tab.innerHTML = tab.innerHTML.replace('(-)', '(+)');
 
+    }
+  }
+
+  // Delete image and it's metadata
+  function delImgAndData(image_name) {
+    $.ajax({
+      type: 'post',
+      url: '/removeImageAndData',
+      data: {
+        "image_name": image_name
+      },
+      success: function(response) {
+        console.log("DELETE IS DONE!"); // Add confirm and confirmation
       }
-    }
+    });
+  }
+  </script>
 
-    // Delete image and it's metadata
-    function delImgAndData(image_name) {
-      $.ajax({
-        type: 'post',
-        url: '/removeImageAndData',
-        data: {
-          "image_name": image_name
-        },
-        success: function(response) {
-          console.log("DELETE IS DONE!"); // Add confirm and confirmation
-        }
-      });
-    }
-    </script>
+  <button class="tablink" onclick="openPage('Quick', this, '#d4374a')">Quick Edit</button>
+  <button class="tablink" onclick="openPage('Bulk', this, '#d4374a')" id="defaultOpen">Bulk Upload</button>
 
-    <button class="tablink" onclick="openPage('Quick', this, '#d4374a')">Quick Edit</button>
-    <button class="tablink" onclick="openPage('Bulk', this, '#d4374a')" id="defaultOpen">Bulk Upload</button>
+  <div id="Quick" class="tabcontent">
 
-    <div id="Quick" class="tabcontent">
+    <!-- QUICK EDIT START -->
 
-      <!-- QUICK EDIT START -->
-
-      <div style="padding:10%;">
-        <h2 style="color: #d4374a">Quick Edit</h2>
-        <h4>
-          Enter a gene to retrieve all data components that FlyTED2 holds on that gene,
-          which can then be edited here, and FlyTED's databse will be uploaded immediately.
-        </h4>
+    <div>
+      <h1 style="color: #d4374a">QUICK EDIT</h1>
+      <h4>
+        Enter a gene to retrieve each data component that FlyTED holds on that gene,
+        which can then be edited or removed. Please note that changes will be made
+        immediately and will be irreversable.
+      </h4>
       <div style="width: 100%;float:left;" id="myDivGeneInput"></div>
       <form id="gene_for_change">
         <input type="text" name="gene" class="input" id="quick_edit_gene" placeholder="Enter Gene for Retrieval">
@@ -208,7 +208,7 @@
         style="margin-bottom: 0">
         (+) IMAGE METADATA
       </div>
-      <div id="image_container" class="quick_change_container"  style="border-top: none; margin-top: none; display: none">
+      <div id="image_container" class="quick_change_container" style="border-top: none; margin-top: none; display: none">
         <h3 style="text-decoration: underline">{1} Image Metadata</h3>
         <div style="width: 100%;float:left;" id="myDivseven"></div>
         <button type="button" id="prev_slider" class="btn">&#x21E6; Previous Image</button>
@@ -450,207 +450,216 @@
           <button id="send_changes" class="btn" type="submit">submit</button>
         </form>
       </div>
-      </div>
-      <br>
     </div>
+    <br>
+  </div>
 
-    <div id="Bulk" class="tabcontent" style="color: black">
+  <div id="Bulk" class="tabcontent" style="color: black">
 
-        <h1 style="color: #d4374a">WELCOME TO THE EDITOR</h1>
-        <h2 style="color: #d4374a">Complete Dataset Upload</h2>
+    <h1 style="color: #d4374a">BULK FILE UPLOAD</h1>
 
-        {{#errors}}
-          <ul class="errors">
-            {{#error}}
-              <li>{{.}}</li>
-            {{/error}}
-          </ul>
-        {{/errors}}
-        <br>
-        <!-- Bulk image upload notification container -->
-        <div style="width: 100%;float:left;" id="myDiv"></div>
-        <!-- Bulk image upload container -->
-        <div class="main_info" style="width: 100%; float:left;">
-          <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
-            <form action="/fileupload" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone"
-              style="height:100%">
-              <div class="fallback">
-                <input name="file" type="file" multiple />
-              </div>
-              <div class="dz-message" data-dz-message>
-                <span style="font-weight: bold">Click to select images or drag and drop a folder</span>
-              </div>
-            </form>
+    <h4>
+      Here you can add new data to FlyTED, each data component can be submitted
+      separately and will be linked together to generate the complete data unit for a
+      particular gene.
+      <br>
+      <br>
+      Although it is preferred that each section for the gene dataset be submitted, to maintain the completeness of the database,
+      it is not enforced. Therefore a section e.g. 'Microarray Data' can be added at a later date if and when it becomes available.
+    </h4>
+
+    {{#errors}}
+      <ul class="errors">
+        {{#error}}
+          <li>{{.}}</li>
+        {{/error}}
+      </ul>
+    {{/errors}}
+    <br>
+    <!-- Bulk image upload notification container -->
+    <div style="width: 100%;float:left;" id="myDiv"></div>
+    <!-- Bulk image upload container -->
+    <div class="main_info" style="width: 100%; float:left;">
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/fileupload" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone"
+          style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
           </div>
-          <h2 style="text-decoration: underline">Upload Expression Images</h2>
-          <p>
-            Submit new images here, the images should be bitmaps, having the (.bmp) extension.
-            You can upload multiple images at once by dragging and dropping the folder
-            into the right hand-side panel. Submitted images need must adhere to the
-            following structure: [Gene]_[imageID]_[Date.bmp].
-          </p>
-          <h4>Acceptable image name examples:</h4>
-          <ul>
-            <li>CG3494_comr01_5.11.07.bmp</li>
-            <li>betaTub85D_wt01_24.3.07.bmp</li>
-            <li>CG2750_aly01_19.6.06.bmp</li>
-          </ul>
-          <p>
-            This is required so that FlyTED can link the images with the other datasets associated
-            with the repective gene, which become unified when the query result is displayed
-            to the viewer.
-          </p>
-          <p>
-            Note: The date part of the image address should correspond to the date the image
-            was taken or aquired rather then the time of submission to FlyTED.
-          </p>
-        </div>
-        <br>
-
-        <!--Bulk image annotation upload notification container -->
-        <div style="width: 100%;float:left;" id="myDivtwo"></div>
-        <!-- Bulk image annotation upload container -->
-        <div class="main_info" style="width: 100%; float:left;">
-          <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
-            <form action="/excel_upload_image" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-two"
-              style="height:100%">
-              <div class="fallback">
-                <input name="file" type="file" multiple />
-              </div>
-              <div class="dz-message" data-dz-message>
-                <span style="font-weight: bold">Click to select image annotations or drag and drop a folder</span>
-              </div>
-            </form>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select images or drag and drop a folder</span>
           </div>
-          <h2 style="text-decoration: underline">Upoad Image Annotations</h2>
-          <p>
-            Submit new image annotation entries here, which are displayed alongside the respecitive
-            image. Bulk descriptions can be uploaded by storing descriptions as rows
-            in an excel spreadsheet, with the extension (.xls). In order for the spreasheet
-            to be uploaded successfully, it must follow the expected schema. FlyTED will
-            look for the following columns to display, and will ignore others, the colums
-            must be named as described below:
-          </p>
+        </form>
+      </div>
+      <h2 style="text-decoration: underline; color: #d4374a;">Upload Expression Images</h2>
+      <p>
+        Submit new images here, the images should be bitmaps, having the (.bmp) extension.
+        You can upload multiple images at once by dragging and dropping the folder
+        into the right hand-side panel. Submitted images need must adhere to the
+        following structure: [Gene]_[imageID]_[Date.bmp].
+      </p>
+      <h4>Acceptable image name examples:</h4>
+      <ul>
+        <li>CG3494_comr01_5.11.07.bmp</li>
+        <li>betaTub85D_wt01_24.3.07.bmp</li>
+        <li>CG2750_aly01_19.6.06.bmp</li>
+      </ul>
+      <p>
+        This is required so that FlyTED can link the images with the other datasets associated
+        with the repective gene, which become unified when the query result is displayed
+        to the viewer.
+      </p>
+      <p>
+        Note: The date part of the image address should correspond to the date the image
+        was taken or aquired rather then the time of submission to FlyTED.
+      </p>
+    </div>
+    <br>
 
-          <h4>Image annotation schema:</h4>
-          <ol>
-            <li><b>date</b> - The date the image was taken.</li>
-            <li><b>file name</b> - The name of the image.</li>
-            <li><b>slide name</b> - The name of the slide used for the image acquisition.</li>
-            <li><b>user</b> - WILL BE REMOVED</li>
-            <li><b>probe</b> - The name of the gene.</li>
-            <li><b>probe concentration</b> - The concentration of the probe that used.</li>
-            <li><b>genotype a</b> - Variant being used.</li>
-            <li><b>genotype b</b> - Variant being used (may be void if not only one variant
-              present).
-            </li>
-            <li><b>objective</b> - WILL BE REMOVED </li>
-            <li><b>optivar</b> - Resolution of image.</li>
-            <li><b>c-mount</b> - WILL BE REMOVED</li>
-            <li><b>stages shown in picture</b> - Nature of image e.g) whole testes, 2 whole
-              testes </li>
-            <li><b>description of staining pattern<b> - What does the expression pattern indicate.</li>
+    <!--Bulk image annotation upload notification container -->
+    <div style="width: 100%;float:left;" id="myDivtwo"></div>
+    <!-- Bulk image annotation upload container -->
+    <div class="main_info" style="width: 100%; float:left;">
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/excel_upload_image" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-two"
+          style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
+          </div>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select image annotations or drag and drop a folder</span>
+          </div>
+        </form>
+      </div>
+      <h2 style="text-decoration: underline; color: #d4374a;">Upoad Image Annotations</h2>
+      <p>
+        Submit new image annotation entries here, which are displayed alongside the subject
+        image. Bulk descriptions can be uploaded by storing the descriptions as <span style="background-color:#d4374a; font-weight:bold">rows
+        in an excel spreadsheet</span> with the file extension <span style="background-color:#d4374a; font-weight:bold">(.xls)</span>. In order for the spreasheet
+        to be uploaded successfully, it must follow the expected schema. FlyTED will
+        look for the following columns to display, and will ignore others, the colums
+        must be named as described below:
+      </p>
+
+      <h4>Image annotation schema:</h4>
+      <ol>
+        <li><b>date</b> - The date the image was taken.</li>
+        <li><b>file name</b> - The name of the image.</li>
+        <li><b>slide name</b> - The name of the slide used for the image acquisition.</li>
+        <li><b>user</b> - WILL BE REMOVED</li>
+        <li><b>probe</b> - The name of the gene.</li>
+        <li><b>probe concentration</b> - The concentration of the probe that used.</li>
+        <li><b>genotype a</b> - Variant being used.</li>
+        <li><b>genotype b</b> - Variant being used (may be void if not only one variant
+          present).
+        </li>
+        <li><b>objective</b> - WILL BE REMOVED </li>
+        <li><b>optivar</b> - Resolution of image.</li>
+        <li><b>c-mount</b> - WILL BE REMOVED</li>
+        <li><b>stages shown in picture</b> - Nature of image e.g) whole testes, 2 whole
+          testes </li>
+        <li><b>description of staining pattern<b> - What does the expression pattern indicate.</li>
             <li><b>comments<b> - Any additional information.</li>
             <li><b>x-coordinate</b> - WILL BE REMOVED</li>
-            <li><b>y-coordinate</b> - WILL BE REMOVED</li>
-          </ol>
-        </div>
-        <br>
+        <li><b>y-coordinate</b> - WILL BE REMOVED</li>
+      </ol>
+    </div>
+    <br>
 
-        <!-- Bulk microarray upload notification container -->
-        <div style="width: 100%;float:left" id="myDivthree"></div>
-        <!-- Bulk microarray upload container -->
-        <div class="main_info" style="width: 100%; float:left;">
-          <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
-            <form action="/excel_upload_desc" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-three"
-              style="height:100%">
-              <div class="fallback">
-                <input name="file" type="file" multiple />
-              </div>
-              <div class="dz-message" data-dz-message>
-                <span style="font-weight: bold">Click to select microarray dataset or drag and drop a folder</span>
-              </div>
-            </form>
+    <!-- Bulk microarray upload notification container -->
+    <div style="width: 100%;float:left" id="myDivthree"></div>
+    <!-- Bulk microarray upload container -->
+    <div class="main_info" style="width: 100%; float:left;">
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/excel_upload_desc" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-three"
+          style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
           </div>
-
-          <h2 style="text-decoration: underline">Upload Microarray Data</h2>
-          <p>
-            Upload microarray datasets here, which are displayed in graphical form on the results
-            page of a given query. They can be uploaded in bulk in an excel(xls) spreadsheet.
-            FlyTED will look for the following columns (which must be named as such)
-            and ignore others.
-          </p>
-          <h4>Micorarray data schema:</h4>
-          <p style="word-wrap: break-word">
-            <b>Gene Symbol</b>||<b>Probe Set ID</b>||<b>Transcript ID(Array Design)</b>||<b>Target Description</b>||<b>wt-tin</b>||<b>wt-mip40-excised</b>||<b>wt-white</b>||<b>aly5</b>||<b>comr</b>||
-            <b>tomb</b>||<b>nht</b>||<b>Nxt1</b>||<b>mip40(sh2/bsc)</b>||<b>mip40(ey)</b>||<b>mip40(ey);bg4</b>||<b>wucRNAi</b>||<b>wucRNAi;aly</b>||<b>mip40(sh2), comr</b>||<b>mip40(ey);aly</b>||<b>aly1-27</b>||
-            <b>aly1-18</b>||<b>aly1-18-btr</b>
-          </p>
-        </div>
-        <br>
-
-        <!-- Bulk probe sequence upload notification container -->
-        <div style="width: 100%;float:left;" id="myDivfour"></div>
-        <div class="main_info" style="width: 100%; float:left;">
-          <!-- Bulk probe sequence upload container -->
-          <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
-            <form action="/excel_probe_data" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-four"
-              style="height:100%">
-              <div class="fallback">
-                <input name="file" type="file" multiple />
-              </div>
-              <div class="dz-message" data-dz-message>
-                <span style="font-weight: bold">Click to select probe sequence annotations or drag and drop a folder</span>
-              </div>
-            </form>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select microarray dataset or drag and drop a folder</span>
           </div>
-          <h2 style="text-decoration: underline">Upload Probe Sequences</h2>
-          <p>
-            Location to upload the 3' and 5' probe sequences used for the corresponding gene.
-            FlyTED will then perform <b>BLAST</b> sequence alignment between
-            the probes and all exisitng transcripts for that gene (retrieved externally
-            from FlyMine), and generate the resulting target sequence that the testes
-            expression images are sourced from.
-          </p>
-          <p>
-            Sequence pairs can be uploaded in bulk in a excel spreadheet (.xls) and must adhere
-            to the following schema:
-          </p>
+        </form>
+      </div>
 
-          <ul>
-            <li>3_GeneID|| Sequence</li>
-            <li>5_GeneID|| Sequence</li>
-          </ul>
-          <p>The constant sequence used in all 5' probes and those used in all 3' probes
-            can be left in the submitted probe sequences</p>
-        </div>
+      <h2 style="text-decoration: underline; color: #d4374a;">Upload Microarray Data</h2>
+      <p>
+        Upload microarray datasets here, which are displayed in graphical form on the results
+        page of a given query. They can be uploaded in bulk in an excel(xls) spreadsheet.
+        FlyTED will look for the following columns (which must be named as such)
+        and ignore others.
+      </p>
+      <h4>Micorarray data schema:</h4>
+      <p style="word-wrap: break-word">
+        <b>Gene Symbol</b>||<b>Probe Set ID</b>||<b>Transcript ID(Array Design)</b>||<b>Target Description</b>||<b>wt-tin</b>||<b>wt-mip40-excised</b>||<b>wt-white</b>||<b>aly5</b>||<b>comr</b>||
+        <b>tomb</b>||<b>nht</b>||<b>Nxt1</b>||<b>mip40(sh2/bsc)</b>||<b>mip40(ey)</b>||<b>mip40(ey);bg4</b>||<b>wucRNAi</b>||<b>wucRNAi;aly</b>||<b>mip40(sh2), comr</b>||<b>mip40(ey);aly</b>||<b>aly1-27</b>||
+        <b>aly1-18</b>||<b>aly1-18-btr</b>
+      </p>
+    </div>
+    <br>
+
+    <!-- Bulk probe sequence upload notification container -->
+    <div style="width: 100%;float:left;" id="myDivfour"></div>
+    <div class="main_info" style="width: 100%; float:left;">
+      <!-- Bulk probe sequence upload container -->
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/excel_probe_data" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-four"
+          style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
+          </div>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select probe sequence annotations or drag and drop a folder</span>
+          </div>
+        </form>
+      </div>
+      <h2 style="text-decoration: underline; color: #d4374a;">Upload Probe Sequences</h2>
+      <p>
+        Location to upload the 3' and 5' probe sequences used for the corresponding gene.
+        FlyTED will then perform <b>BLAST</b> sequence alignment between
+        the probes and all exisitng transcripts for that gene (retrieved externally
+        from FlyMine), and generate the resulting target sequence that the testes
+        expression images are sourced from.
+      </p>
+      <p>
+        Sequence pairs can be uploaded in bulk in a excel spreadheet (.xls) and must adhere
+        to the following schema:
+      </p>
+
+      <ul>
+        <li>3_GeneID|| Sequence</li>
+        <li>5_GeneID|| Sequence</li>
+      </ul>
+      <p>The constant sequence used in all 5' probes and those used in all 3' probes
+        can be left in the submitted probe sequences</p>
+    </div>
 
     <script>
-    function openPage(pageName,elmnt,color) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
-        tablinks = document.getElementsByClassName("tablink");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].style.backgroundColor = "";
-        }
-        document.getElementById(pageName).style.display = "block";
-        elmnt.style.backgroundColor = color;
+    function openPage(pageName, elmnt, color) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablink");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].style.backgroundColor = "";
+      }
+      document.getElementById(pageName).style.display = "block";
+      elmnt.style.backgroundColor = color;
 
     }
     // Get the element with id="defaultOpen" and click on it
     document.getElementById("defaultOpen").click();
     </script>
     <script>
-    $(document).ready(function(){
-    $('.your-another').slick();
+    $(document).ready(function() {
+      $('.your-another').slick();
     });
     </script>
-  </body>
+</body>
 
-  <script type="text/javascript" src="formListeners.js"></script>
-  <script type="text/javascript" src="dropzoneConfigurations.js"></script>
+<script type="text/javascript" src="formListeners.js"></script>
+<script type="text/javascript" src="dropzoneConfigurations.js"></script>
 
 </html>
