@@ -38,6 +38,21 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const multer = require('multer');
 
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const csvWriter = createCsvWriter({
+  path: 'this_test.csv',
+  header: [{
+      id: 'probe',
+      title: 'PROBE'
+    },
+    {
+      id: 'sequence',
+      title: 'SEQUENCE'
+    }
+  ],
+  append: true
+});
+
 var storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, 'multerTemp')
@@ -63,6 +78,7 @@ const Users = {
     password: 'Cardiff_2018'
   }
 }
+var rc = require('reverse-complement');
 
 bcrypt.hash(Users.Helen.password, 10, (err, hash) => {
   // Store the hashed password instead.
@@ -235,26 +251,20 @@ app.post('/excel_upload_desc', testmulter.any(), function(req, res) {
   });
 });
 
-
+// Listen for bulk image upload and store containing image files in correct directories:
 app.post('/excel_upload_image', testmulter.any(), function(req, res) {
-  console.log("test");
   upload.uploadexcel(req, res, (filepath) => {
     annotationuploader.test(conn, filepath, "image_annotations", (number_successful, unsuccessful_entrys) => {
-      console.log("----------------");
       winston.info(`${number_successful} new image annotation entries were successfully inserted.`);
-      console.log(unsuccessful_entrys);
       if (number_successful > 0) req.flash('success', `${number_successful} new image annotation entries were successfully inserted.`);
-
       unsuccessful_entrys.forEach((entry) => {
         req.flash('error', `The entry with file name ${entry['file name']} could not be uploaded.`);
       });
-
       let flashMessages = res.locals.getMessages();
       return res.status(200).send(flashMessages);
     });
   });
 });
-
 
 app.post('/excel_probe_data', testmulter.any(), function(req, res) {
   BlastUploader.generate_probe_data(req.files[0].path, (number_successful, unsuccessful_entrys) => {
@@ -270,7 +280,7 @@ app.post('/excel_probe_data', testmulter.any(), function(req, res) {
   });
 });
 
-
+// Helper function for handlebars template creation:
 Handlebars.registerHelper('json', function(context) {
   return JSON.stringify(context);
 });
@@ -307,7 +317,7 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
 
           // --- FETCH IMAGE & ANNOTATION DATA START --- //
           flyted: callback => {
-            var myQuery = "SELECT * FROM Image_Data WHERE Probe IN (" + conn.escape(probe) + ")";
+            var myQuery = "SELECT * FROM Demo WHERE Probe IN (" + conn.escape(probe) + ")";
 
             // Check if VARIANT has been set.
             // If yes then Search for entries where the genotypes (a and b)
@@ -385,7 +395,7 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
         res.render('results', data); // Serve Handlebars HTML page.
       }
     });
-  }, req.body.Probe, req.body.Variant); // Arguments passed in from user to the async method, these are the keywords of the query.
+  }, conn.escape(req.body.Probe), conn.escape(req.body.Variant)); // Arguments passed in from user to the async method, these are the keywords of the query.
 });
 
 // TODO: Add as an option, perhaps only listing a constant amount each time, [page: queries] ratio?
@@ -395,8 +405,207 @@ function FetchExternalData(callback, probes) {
   callback(probe_list);
 }
 
+// Fetch the microarray data:
+app.post('/quick_change_microarray_fetch', (req, res) => {
+  let myQuery = "SELECT * FROM Probe_Annotations WHERE Gene = (" + conn.escape(req.body.gene) + ")";
 
-// --- STANDARD ERROR HANDLERS START --- //
+  conn.query(myQuery, (err, my_res) => {
+    if (err) winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+    return res.status(200).send(my_res);
+  });
+});
+
+// Fetch the probe data:
+app.post('/quick_change_probe_fetch', (req, res) => {
+  let query = "SELECT * FROM Probe_Sequences WHERE Probe = (" + conn.escape(req.body.gene) + ")";
+
+  conn.query(query, (err, my_res) => {
+    let sequence = my_res[0]['3_Prime_Sequence'];
+    my_res[0]['3_Prime_Sequence'] = rc.reverse_complement(sequence);
+    if (err) winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+    return res.status(200).send(my_res[0]);
+  });
+});
+
+// Update changes to microarray data made by admin:
+app.post('/quick_change_microarray_edit', (req, res) => {
+
+  let query = "UPDATE Probe_Annotations SET " +
+    "`Probe_Set` = " + conn.escape(req.body['Probe_Set']) +
+    ",`Transcript_ID` = " + conn.escape(req.body['Transcript_ID']) +
+    ",`Target_Description` = " + conn.escape(req.body['Target_Description']) +
+    ",`wt(tin)` = " + conn.escape(req.body['wt(tin)']) +
+    ",`wt(mip40)(excised)` = " + conn.escape(req.body['wt(mip40)(excised)']) +
+    ",`wt(white)` = " + conn.escape(req.body['wt(mip40)(excised)']) +
+    ",`aly5` = " + conn.escape(req.body['aly5']) +
+    ",`comr` = " + conn.escape(req.body['comr']) +
+    ",`tomb` = " + conn.escape(req.body['tomb']) +
+    ",`nxt1` = " + conn.escape(req.body['nxt1']) +
+    ",`mip40(sh2)(bsc)` = " + conn.escape(req.body['mip40(sh2)(bsc)']) +
+    ",`mip40(ey)` = " + conn.escape(req.body['mip40(ey)']) +
+    ",`mip40(ey)(bg4)` = " + conn.escape(req.body['mip40(ey)(bg4)']) +
+    ",`wucRNAi` = " + conn.escape(req.body['wucRNAi']) +
+    ",`wucRNAi_aly` = " + conn.escape(req.body['wucRNAi_aly']) +
+    ",`mip40(sh2)(comr)` = " + conn.escape(req.body['mip40(sh2)(comr)']) +
+    ",`mip40(ey)(aly)` = " + conn.escape(req.body['mip40(ey)(aly)']) +
+    ",`aly1(27)` = " + conn.escape(req.body['aly1(27)']) +
+    ",`aly1(18)` = " + conn.escape(req.body['aly1(18)']) +
+    ",`aly1(18)(btr)` = " + conn.escape(req.body['aly1(18)(btr)']) +
+    " WHERE Gene = " + conn.escape(req.body['gene']) + ";";
+
+  // Upload new microarray to mysql:
+  conn.query(query, (err, my_res) => {
+    if (err) {
+      //If mysql error, then log the error:
+      req.flash('error', `Quick edit failed: ${err.message}`);
+      let flashMessages = res.locals.getMessages();
+      winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+      return res.status(200).send(flashMessages);
+    } else {
+      req.flash('success', `Quick edit was successful.`);
+      let flashMessages = res.locals.getMessages();
+      return res.status(200).send(flashMessages);
+    }
+  });
+});
+
+// Update changes to image metadata made by admin:
+app.post('/quick_change_img_edit', testmulter.any(), (req, res) => {
+  // Upload image files, if present:
+  if (req.files[0] != undefined) {
+    upload.copyImage(req.files[0], req.body.hidden_original_link, () => {
+      winston.info(`Image update completed at path: ${req.body.hidden_original_link}`);
+    });
+  }
+
+  // Upload new metadata to mysql:
+  let query = "UPDATE Demo SET " +
+    "`file_name` = " + conn.escape(req.body['file_name']) +
+    ",`link_to_file` = " + conn.escape(req.body['link_to_file']) +
+    ",`slide_name` = " + conn.escape(req.body['slide_name']) +
+    ",`date` = " + conn.escape(req.body['date']) +
+    ",`user` = " + conn.escape(req.body['user']) +
+    ",`probe` = " + conn.escape(req.body['probe']) +
+    ",`probe_concentration` = " + "'" + conn.escape(req.body['probe_concentration']) +
+    ",`genotype_a` = " + conn.escape(req.body['genotype_a']) +
+    ",`genotype_b` = " + conn.escape(req.body['genotype_b']) +
+    ",`objective` = " + conn.escape(req.body['objective']) +
+    ",`optivar` = " + conn.escape(req.body['optivar']) +
+    ",`cmount` = " + conn.escape(req.body['cmount']) +
+    ",`stages_shown_in_picture` = " + conn.escape(req.body['stages_shown_in_picture']) + "'" +
+    ",`description_of_staining_pattern` = " + conn.escape(req.body['description_of_staining_pattern']) + "'" +
+    ",`comments` = " + conn.escape(req.body['comments']) +
+    ",`xcoordinate` = " + conn.escape(req.body['xcoordinate']) +
+    ",`ycoordinate` = " + conn.escape(req.body['ycoordinate']) +
+    ",`Apical_spermatogonia` = " + "'" + conn.escape(req.body['Apical_spermatogonia']) +
+    ",`Germ_line` = " + conn.escape(req.body['Germ_line']) +
+    ",`Somatic` = " + conn.escape(req.body['Somatic']) +
+    ",`TARGET_SEQUENCE` = " + conn.escape(req.body['TARGET_SEQUENCE']) +
+    " WHERE probe =" + conn.escape(req.body['hidden_original_probe']) + "' AND link_to_file =" +
+    +conn.escape(req.body['hidden_original_link']) + ";";
+
+  conn.query(query, (err, my_res) => {
+
+    if (err) {
+      //If mysql error, then log the error:
+      req.flash('error', `Quick edit failed: ${err.message}`);
+      let flashMessages = res.locals.getMessages();
+      winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+      return res.status(200).send(flashMessages);
+    } else {
+      req.flash('success', `Quick edit was successful.`);
+      let flashMessages = res.locals.getMessages();
+      return res.status(200).send(flashMessages);
+    }
+  });
+});
+
+/* When admin uploads probe sequences, add them to the database
+after formating and analyis with python script: */
+
+app.post('/quick_change_probe_edit', (req, res) => {
+  var records = [{
+      probe: "3_" + conn.escape(req.body.Probe),
+      sequence: conn.escape(req.body['3_Prime_Sequence'])
+    },
+    {
+      probe: "5_" + conn.escape(req.body.Probe),
+      sequence: conn.escape(req.body['5_Prime_Sequence'])
+    }
+  ];
+  csvWriter.writeRecords(records).then(() => {
+    BlastUploader.generate_probe_data("this_test.csv", (number_successful, unsuccessful_entrys) => {
+      winston.info(`${number_successful} new probe sequence entries were successfully inserted.`);
+
+      if (number_successful > 0) req.flash('success', `${number_successful} new probe sequence entries were successfully inserted.`);
+      // unsuccessful_entrys.forEach((entry) => {
+      req.flash('error', `Probes could not be uploaded.`);
+      // });
+      let flashMessages = res.locals.getMessages();
+      return res.status(200).send(flashMessages);
+    });
+  });
+});
+
+// Fetch image metadata to be edited:
+app.post('/quick_change_image_fetch', (req, res) => {
+  let query = "SELECT * FROM Demo WHERE probe = (" + conn.escape(req.body.gene) + ")";
+  conn.query(query, (err, my_res) => {
+    if (err) winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+    return res.status(200).send(my_res);
+  });
+});
+
+// Add new image form entry to mysql.
+app.post('/QuickImageAddition', testmulter.any(), (req, res) => {
+
+  // Add Metadata:
+  let row_to_upload = [];
+  let row = conn.escape(req.body);
+  row_to_upload.push(conn.escape(row['date']), conn.escape(row['Link_To_File']), conn.escape(row['Slide_Name']), conn.escape(row['date']), conn.escape(row['user']),
+    conn.escape(row['probe']), conn.escape(row['probe_concentration']), conn.escape(row['genotype_a']), conn.escape(row['genotype_b']),
+    conn.escape(row['objective']), conn.escape(row['optivar']), conn.escape(row['cmount']), conn.escape(row['stages_shown_in_picture']),
+    conn.escape(row['description_of_staining_pattern']), conn.escape(row['comments']), conn.escape(row['xcoordinate']),
+    conn.escape(row['ycoordinate']));
+
+  // Add image to correct path on the file system:
+  annotationuploader.quickAdditionImageUpload(row_to_upload, (err) => {
+    upload.read(req, res, (num_uploaded) => {
+      if (err) {
+        winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        req.flash('error', `The deletion was bad`)
+      } else req.flash('success', `The deletion was good`);
+      let flashMessages = res.locals.getMessages();
+      return res.status(200).send(flashMessages);
+    });
+  });
+});
+
+// Listen for when admin deletes a image/metadata pair:
+app.post('/removeImageAndData', (req, res) => {
+  //Mysql to delete image and metadata.
+  var img_name = conn.escape(req.body.image_name);
+  let query = ("DELETE FROM Demo WHERE link_to_file = " + img_name);
+  conn.query(query, (err, res) => {
+      if (err) winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+      else winston.info(`Metadata for image with file name ${img_name} has been successfully deleted.`);
+
+      // Need to now remove the image:
+      let file_to_remove = ("/home/benedict/Desktop/FlyTED2/public/img/" + img_name);
+      fs.unlink(file_to_remove, (err) => {
+          if (err) {
+            winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+            req.flash('error', `The deletion was bad`)
+          }
+          else req.flash('success', `The deletion was good`);
+
+        let flashMessages = res.locals.getMessages();
+        return res.status(200).send(flashMessages);
+      });
+    });
+  });
+
+// --- STANDARD ERROR HANDLERS START ---
 // Handle 400 errors.
 app.use((req, res) => {
   winston.error(`${404} - ${"FILE NOT FOUND"} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
@@ -407,25 +616,27 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
 });
-
-// --- STANDARD ERROR HANDLERS END --- //
+// --- STANDARD ERROR HANDLERS END ---
 
 // Importing of local modules containing helper functions.
 const build_query = require('./queries'); // Contains options for tissue expression query.
 const conn = require('./mysql_setup'); // Contains the mysql connection object and authentication details.
 const upload = require('./upload'); // Local module to save file uploads (currently expression images only);
-const annotationuploader = require('./annotation-uploader');
-const BlastUploader = require('./blast-upload');
+const annotationuploader = require('./annotation-uploader'); // Upload new annotation data
+const BlastUploader = require('./blast-upload'); // module that interacts with py script to perform BLAST analysis on subitted probe sequences
 
+// Check if user is authenticated before serving the editor page:
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
-    return next();
+    return next(); // Successful authentication so executed callback
   } else {
-    // denied. redirect to login
+    // Access denied, user is redirected back to login:
     req.flash('error', 'You must be logged in to view this resource.');
-    var flashMessages = res.locals.getMessages(); // Fetch errors sored in flash memory.
     res.render('admin', {
-      errors: flashMessages
+      errors: res.locals.getMessages()
     });
   }
 }
+
+
+process.on('warning', e => console.warn(e.stack));
