@@ -5,13 +5,13 @@ const conn = require('./mysql_setup');
 
 module.exports.generate_probe_data = function(filename, callback) {
   var tracker = "";
-  number_successful = 0;
-  unsuccessful_entrys = [];
-
+  var number_successful = 0;
+  var unsuccessful_entrys = [];
   var spawn = require('child_process').spawn;
   var pythonProcesstwo = spawn('python3', ["/home/benedict/test.py", filename]);
 
   pythonProcesstwo.stdout.on('data', (data) => {
+    console.log("DATA HAS BEEN RECIEVED");
     tracker += String.fromCharCode.apply(null, data);
   });
 
@@ -19,6 +19,7 @@ module.exports.generate_probe_data = function(filename, callback) {
     number_successful = 0;
     unsuccessful_entrys = [];
     tracker = JSON.parse(tracker);
+    console.log(tracker);
     async.map(tracker, blast_mysql, function(err, results) {
       results.forEach(result => {
         if (result[0]) number_successful = number_successful + 1;
@@ -30,26 +31,51 @@ module.exports.generate_probe_data = function(filename, callback) {
   });
 }
 
-// Function to upload probe data returned form python script into the Probe_Sequences mysql database.
+// Function to upload probe data returned form python script into the Probe_Sequences table:
 var blast_mysql = function(row, callback) {
   var values = []
   for (var column in row) {
     if (row.hasOwnProperty(column)) {
-      values.push("'" + row[column] + "'");
+      values.push(conn.escape(row[column]));
     }
   }
+
+  let query = "UPDATE Probe_Sequences SET " +
+    "`3_Prime_Sequence` = " + conn.escape(row['3-PRIME-SEQUENCE']) +
+    ",`5_Prime_Sequence` = " + conn.escape(row['5-PRIME-SEQUENCE']) +
+    ",`Target_Sequence_Length` = " + conn.escape(row['TARGET-SEQUENCE-LENGTH']) +
+    ",`Target_Sequence` = " + conn.escape(row['TARGET-SEQUENCE']) +
+    ",`Transcript_Sequence` = " + conn.escape(row['TRANSCRIPT-SEQUENCE']) +
+    ",`Transcript_Sequence_Length` = " + conn.escape(row['TRANSCRIPT-SEQUENCE-LENGTH']) +
+    " WHERE Probe = " + conn.escape(row['PROBE']) + "AND Transcript_ID = " + conn.escape(row['TRANSCRIPT']) + ";";
+     //console.log(query);
 
   var myQuery = "INSERT INTO Probe_Sequences(Probe, Transcript_ID, 3_Prime_Sequence," +
     " 5_Prime_Sequence, Target_Sequence_Length, Target_Sequence, Transcript_Sequence," +
     " Transcript_Sequence_Length) VALUES (" + values + ")";
 
-  conn.query(myQuery, (err, res) => {
-    if (!err) callback(null, [true, row]);
-    else if (err.code == "ER_DUP_ENTRY") {
-      winston.error("Duplicate Demo data entered.");
-      callback(null, [false, row]);
-    } else {
-      callback(err, [false, row])
-    };
+    conn.query(query, (err, res) => {
+      // If rows dont exists then create them:
+      if (res.affectedRows == 0) {
+        conn.query(myQuery, (err, my_res) => {
+          if (!err) callback(null, [true, row]);
+          else if (err.code == "ER_DUP_ENTRY") {
+            winston.error("Duplicate Demo data entered.");
+            callback(null, [false, row]);
+          } else {
+            callback(err, [false, row])
+          };
+        });
+      }
+
+      else{
+        if (!err) callback(null, [true, row]);
+        else if (err.code == "ER_DUP_ENTRY") {
+        winston.error("Duplicate Demo data entered.");
+        callback(null, [false, row]);
+      } else {
+        callback(err, [false, row]);
+      }
+    }
   });
 }
