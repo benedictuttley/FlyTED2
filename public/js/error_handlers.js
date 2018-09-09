@@ -17,6 +17,7 @@ function Handle_No_Image_Data(probe) {
 }
 
 function Check_For_Data_Components(microarray_data, tissue_data, transcript_data, flyted_data) {
+  console.log(flyted_data);
   if (microarray_data === undefined || microarray_data.length == 0) microarray_data_present = false; //CHECK IF MICROARRAY DATA EXIST FOR THIS GENE.
   if (tissue_data === undefined || tissue_data.length == 0) tissue_expression_present = false; //CHECK IF TISSUE EXPRESSION DATA EXIST FOR THIS GENE.
   if (transcript_data === undefined || transcript_data.length == 0) transcipt_expression_present = false; //CHECK IF TRANSCRIPT DATA EXIST FOR THIS GENE.
