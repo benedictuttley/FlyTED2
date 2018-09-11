@@ -31,7 +31,6 @@ var logger = winston.createLogger({
   ),
 
   transports: [
-    new winston.transports.File(options.file),
     new winston.transports.Console(),
   ],
   exitOnError: false, // do not exit on handled exceptions
@@ -45,3 +44,5 @@ logger.stream = {
 };
 
 module.exports = logger;
+
+// new winston.transports.File(options.file)
