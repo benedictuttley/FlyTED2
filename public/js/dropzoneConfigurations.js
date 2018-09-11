@@ -147,17 +147,17 @@ Dropzone.options.myAwesomeDropzoneThree = {
 
       if (response.error != undefined && response.error.length > 0) {
         $('#myDivthree').append(
-          "<ul id='errorList' class='errors'></ul>");
+          "<ul id='three_errorList' class='errors'></ul>");
         for (let i = 0; i < response.error.length; i++) {
-          $("#errorList").append("<li>" + response.error[i] + "</li>");
+          $("#three_errorList").append("<li>" + response.error[i] + "</li>");
         }
       }
 
       if (response.success != undefined && response.success.length > 0) {
         $('#myDivthree').append(
-          "<ul id='successList' class='success'></ul>");
+          "<ul id='three_successList' class='success'></ul>");
         for (let i = 0; i < response.success.length; i++) {
-          $("#successList").append("<li>" + response.success[i] +
+          $("#three_successList").append("<li>" + response.success[i] +
             "</li>");
         }
       }

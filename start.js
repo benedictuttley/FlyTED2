@@ -55,7 +55,7 @@ const rc = require('reverse-complement');
 // --- EXTERNAL MODULE IMPORTS END --- //
 
 
-
+// --- EXTERNAL MODULE CONFIGURATIONS START -- //
 var storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, 'multerTemp')
@@ -77,8 +77,8 @@ const Users = {
   }
 }
 
+// Hash admin password:
 bcrypt.hash(Users.Helen.password, 10, (err, hash) => {
-  // Store the hashed password instead.
   Users.Helen.password = hash;
 });
 
@@ -121,10 +121,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-// Permit access to all static files stored in the 'public' directory.
+// Permit access to all static files:
 app.use(express.static('public/img'));
 app.use(express.static('public/css'));
 app.use(express.static('public/js'));
+app.use(express.static('public/schema'));
 
 app.set('view engine', 'handlebars'); // Create the handlebars engine.
 
@@ -180,7 +181,7 @@ function findUser(username, done) {
 }
 // --- EXTERNAL MODULE CONFIGURATIONS END -- //
 
-app.listen(3000, () => console.log(`FlyTED2 node app is running on port 3000.`)); // bind application to port 3000;
+app.listen(3000, () => winston.info(`FlyTED2 node app is running on port 3000.`)); // bind application to port 3000;
 // --- APP CONFIGURATION END --- //
 
 // MAIN SERVER LOGIC BELOW //
@@ -222,12 +223,20 @@ app.get('/admin', ensureAuthenticated, (req, res) => {
 app.post('/fileupload', testmulter.any(), function(req, res) {
   upload.read(req, res, (num_uploaded) => { // Upload submitted image files from admin to correct folder.
     winston.info(`${num_uploaded} image file(s) have been uploaded`);
+    if(num_uploaded > 0){
+      req.flash('success', `Success: ${num_uploaded} image file(s) have been uploaded`);
+
+    } else{
+      req.flash('error', `Error: ${num_uploaded} image file(s) already exist.`);
+    }
     let flashMessages = res.locals.getMessages();
     return res.status(200).send(flashMessages);
   });
 });
 
+
 app.post('/excel_upload_desc', testmulter.any(), function(req, res) {
+
   upload.uploadexcel(req, res, (filepath) => {
     annotationuploader.test(conn, filepath, "description", (number_successful, unsuccessful_entrys) => {
       winston.info(`${number_successful} new description entries were successfully inserted.`);
@@ -235,7 +244,7 @@ app.post('/excel_upload_desc', testmulter.any(), function(req, res) {
       if (number_successful > 0) req.flash('success', `${number_successful} new image annotation entries were successfully inserted.`);
 
       unsuccessful_entrys.forEach((entry) => {
-        req.flash('error', `The entry with Gene ID ${entry['Gene Symbol']} could not be uploaded.`);
+        req.flash('error', `The entry for Gene: ${entry['Gene Symbol']} already exists.`);
       });
 
       let flashMessages = res.locals.getMessages();
@@ -251,7 +260,7 @@ app.post('/excel_upload_image', testmulter.any(), function(req, res) {
       winston.info(`${number_successful} new image annotation entries were successfully inserted.`);
       if (number_successful > 0) req.flash('success', `${number_successful} new image annotation entries were successfully inserted.`);
       unsuccessful_entrys.forEach((entry) => {
-        req.flash('error', `The entry with file name ${entry['file name']} could not be uploaded.`);
+        req.flash('error', `The entry for image with link: [${entry['link_to_file']}] already exists.`);
       });
       let flashMessages = res.locals.getMessages();
       return res.status(200).send(flashMessages);
@@ -261,7 +270,7 @@ app.post('/excel_upload_image', testmulter.any(), function(req, res) {
 
 app.post('/excel_probe_data', testmulter.any(), function(req, res) {
   BlastUploader.generate_probe_data(req.files[0].path, (number_successful, unsuccessful_entrys) => {
-    winston.info(`${number_successful} new probe sequence entries were successfully inserted.`);
+    winston.info(`${number_successful/2} new probe sequence set(s) were successfully inserted.`);
 
     if (number_successful > 0) req.flash('success', `${number_successful} new probe sequence entries were successfully inserted.`);
     unsuccessful_entrys.forEach((entry) => {
@@ -404,15 +413,12 @@ app.post('/quick_change_microarray_fetch', (req, res) => {
 
   conn.query(myQuery, (err, my_res) => {
     if (err) winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    console.log("THE NEW RESULT IS: ");
-    console.log(my_res);
     return res.status(200).send(my_res);
   });
 });
 
 // Fetch the probe data:
 app.post('/quick_change_probe_fetch', (req, res) => {
-  console.log("FIRRRRRRRED")
   let query = "SELECT * FROM Probe_Sequences WHERE Probe = (" + conn.escape(req.body.gene) + ")";
 
   conn.query(query, (err, my_res) => {
@@ -430,8 +436,7 @@ app.post('/quick_change_probe_fetch', (req, res) => {
 
 // Update changes to microarray data made by admin:
 app.post('/quick_change_microarray_edit', (req, res) => {
-  console.log("$$$$$$$$");
-  console.log(req.body['gene']);
+
   let query = "UPDATE Probe_Annotations SET " +
     "`Probe_Set` = " + conn.escape(req.body['Probe_Set']) +
     ",`Transcript_ID` = " + conn.escape(req.body['Transcript_ID']) +
@@ -457,7 +462,7 @@ app.post('/quick_change_microarray_edit', (req, res) => {
 
   // Upload new microarray to mysql:
   conn.query(query, (err, my_res) => {
-    console.log(my_res.affectedRows); // if 0 then add the entry
+     // If no rows were affected by update query, then insert data as new rows into table:
     if (my_res.affectedRows == 0) {
       var values = [];
       values.push(
@@ -489,8 +494,6 @@ app.post('/quick_change_microarray_edit', (req, res) => {
         "tomb,nht,nxt1,`mip40(sh2)(bsc)`,`mip40(ey)`,`mip40(ey)(bg4)`,wucRNAi," +
         "wucRNAi_aly,`mip40(sh2)(comr)`,`mip40(ey)(aly)`,`aly1(27)`,`aly1(18)`," +
         "`aly1(18)(btr)`)" + "VALUES (" + values + ")";
-
-      console.log(aquery);
 
       conn.query(aquery, (err, my_res) => {
         if (err) {
@@ -559,7 +562,7 @@ app.post('/quick_change_img_edit', testmulter.any(), (req, res) => {
     ",`TARGET_SEQUENCE` = " + conn.escape(req.body['TARGET_SEQUENCE']) +
     " WHERE probe = " + conn.escape(req.body['hidden_original_probe']) + " AND link_to_file = " +
     conn.escape(req.body['hidden_original_link']) + ";";
-  console.log(query);
+
   conn.query(query, (err, my_res) => {
 
     if (err) {
@@ -580,7 +583,6 @@ app.post('/quick_change_img_edit', testmulter.any(), (req, res) => {
 after formating and analyis with python script: */
 
 app.post('/quick_change_probe_edit', (req, res) => {
-  // --- EXTERNAL MODULE CONFIGURATIONS START -- //
   const csvWriter = createCsvWriter({
     path: 'this_test.csv',
     header: [{

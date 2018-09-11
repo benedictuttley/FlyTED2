@@ -25,8 +25,9 @@
   <!-- CSS LINKS -->
   <link href="dropzone.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"
-  />
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+  <!-- Add icon library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="component.css" />
   <link rel="stylesheet" type="text/css" href="editor.css" />
 
@@ -65,6 +66,26 @@
   display: none;
   padding: 100px 20px;
   height: 100%;
+}
+
+
+.schema_download{
+  position: relative;
+  background-color: white;
+  border: 2px solid #d4374a;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.625rem 1.25rem;
+  color: black;
+  display: inline-block;
+  height: auto;
+}
+
+.schema_download:hover{
+  background-color: rgba(212, 55, 74, 0.2);
 }
 </style>
 
@@ -564,7 +585,6 @@
   </div>
 
   <div id="Bulk" class="tabcontent" style="color: black">
-
     <h1 style="color: #d4374a">BULK FILE UPLOAD</h1>
 
     <h4>
@@ -643,6 +663,7 @@
         </form>
       </div>
       <h2 style="text-decoration: underline; color: #d4374a;">Upoad Image Annotations</h2>
+
       <p>
         Submit new image annotation entries here, which are displayed alongside the subject
         image. Bulk descriptions can be uploaded by storing the descriptions as
@@ -655,7 +676,8 @@
       </p>
 
       <h4>Image annotation schema:</h4>
-      <ol>
+      <a class="schema_download" href="a.xls">Download Image Annotation Data Schema  <i class="fa fa-download"></i></a>
+      <!-- <ol>
         <li><b>date</b> - The date the image was taken.</li>
         <li><b>file name</b> - The name of the image.</li>
         <li><b>slide name</b> - The name of the slide used for the image acquisition.</li>
@@ -675,7 +697,7 @@
             <li><b>comments<b> - Any additional information.</li>
             <li><b>x-coordinate</b> - WILL BE REMOVED</li>
         <li><b>y-coordinate</b> - WILL BE REMOVED</li>
-      </ol>
+      </ol> -->
     </div>
     <br>
 
@@ -704,11 +726,7 @@
         others.
       </p>
       <h4>Micorarray data schema:</h4>
-      <p style="word-wrap: break-word">
-        <b>Gene Symbol</b>||<b>Probe Set ID</b>||<b>Transcript ID(Array Design)</b>||<b>Target Description</b>||<b>wt-tin</b>||<b>wt-mip40-excised</b>||<b>wt-white</b>||<b>aly5</b>||<b>comr</b>||
-        <b>tomb</b>||<b>nht</b>||<b>Nxt1</b>||<b>mip40(sh2/bsc)</b>||<b>mip40(ey)</b>||<b>mip40(ey);bg4</b>||<b>wucRNAi</b>||<b>wucRNAi;aly</b>||<b>mip40(sh2), comr</b>||<b>mip40(ey);aly</b>||<b>aly1-27</b>||
-        <b>aly1-18</b>||<b>aly1-18-btr</b>
-      </p>
+      <a class="schema_download" href="a.xls">Download Microarray Data Schema  <i class="fa fa-download"></i></a>
     </div>
     <br>
 
@@ -728,6 +746,7 @@
         </form>
       </div>
       <h2 style="text-decoration: underline; color: #d4374a;">Upload Probe Sequences</h2>
+      <a class="schema_download" href="a.xls">Download Probe Sequence Data Schema  <i class="fa fa-download"></i></a>
       <p>
         Location to upload the 3' and 5' probe sequences used for the corresponding gene.
         FlyTED will then perform BLAST sequence alignment between the probes and
@@ -735,9 +754,8 @@
         and generate the resulting target sequence.
       </p>
       <p>
-        Sequence pairs can be
-        <span style="background-color:#d4374a; font-weight:bold">uploaded in bulk in a excel spreadheet (.xls)</span> and must adhere to the
-        following schema:
+        Sequence pairs can be <span style="background-color:#d4374a; font-weight:bold">uploaded in bulk in a comma seperated value file(.csv)</span>
+        and must adhere to the following schema:
       </p>
 
       <ul>
