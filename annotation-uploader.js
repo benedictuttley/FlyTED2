@@ -1,4 +1,4 @@
-// Module to read in annotations associated with new image uploads.
+// MODULE TO READ. FORMAT AND UPLOAD ANNOTATION DATA SUBMITTED BY AN ADMIN:
 const xlstojson = require('xls-to-json');
 const mysql = require('mysql');
 const conn = require('./mysql_setup');
@@ -59,7 +59,10 @@ var upload_mysql = function(row, cb) {
     else if (err.code == "ER_DUP_ENTRY") {
       winston.error("Duplicate Demo data entered.");
       cb(null, [false, row]);
-    } else cb(err, [false, row]);
+    } else{
+      winston.error(`${err.status || 500} - ${err.message}`);
+      cb(err, [false, row]);
+    }
   });
 }
 
@@ -80,19 +83,20 @@ var upload_mysql_desc = function(row, callback) {
   });
 }
 
+// Extract submitted probe data, preprocessing for mysql upload:
 function extract_data_for_probe_sequences_array(row) {
 
   let row_to_upload = [];
-  row_to_upload.push(conn.escape(row['date']), conn.escape(row['file name']), conn.escape(row['slide name']),
-  conn.escape(row['date']), conn.escape(row['user']), conn.escape(row['probe']), conn.escape(row['probe concentration']),
-  conn.escape(row['genotype a']), conn.escape(row['genotype b']),
-  conn.escape(row['objective']), row['optivar'], row['c-mount'], row['stages shown in picture'],
-  conn.escape(row['description of staining pattern']), conn.escape(row['comments']), conn.escape(row['x-coordinate']),
-  conn.escape(row['y-coordinate']));
-
+  row_to_upload.push(conn.escape(row['file_name']),conn.escape(row['link_to_file']),
+  conn.escape(row['slide_name']),conn.escape(row['date']),conn.escape(row['user']),conn.escape(row['probe']),
+  conn.escape(row['probe_concentration']),conn.escape(row['genotype_a']),
+  conn.escape(row['genotype_b']),conn.escape(row['objective']),conn.escape(row['optivar']),conn.escape(row['cmount']),
+  conn.escape(row['stages_shown_in_picture']),conn.escape(row['description_of_staining_pattern']), conn.escape(row['comments']),
+  conn.escape(row['xcoordinate']), conn.escape(row['ycoordinate']));
   return row_to_upload;
 }
 
+// Extract submitted image metadata, preprocessing for mysql upload:
 function extract_data_for_description(row) {
 
   let row_to_upload = [];
