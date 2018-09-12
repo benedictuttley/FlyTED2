@@ -125,6 +125,7 @@ app.use(flash());
 app.use(express.static('public/img'));
 app.use(express.static('public/css'));
 app.use(express.static('public/js'));
+app.use(express.static('public/schema'));
 
 app.set('view engine', 'handlebars'); // Create the handlebars engine.
 
@@ -222,6 +223,12 @@ app.get('/admin', ensureAuthenticated, (req, res) => {
 app.post('/fileupload', testmulter.any(), function(req, res) {
   upload.read(req, res, (num_uploaded) => { // Upload submitted image files from admin to correct folder.
     winston.info(`${num_uploaded} image file(s) have been uploaded`);
+    if(num_uploaded > 0){
+     req.flash('success', `Success: ${num_uploaded} image file(s) have been uploaded`);
+    } else{
+      req.flash('error', `Error: ${num_uploaded} image file(s) already uploaded.`);
+    }   
+
     let flashMessages = res.locals.getMessages();
     return res.status(200).send(flashMessages);
   });
@@ -230,14 +237,13 @@ app.post('/fileupload', testmulter.any(), function(req, res) {
 app.post('/excel_upload_desc', testmulter.any(), function(req, res) {
   upload.uploadexcel(req, res, (filepath) => {
     annotationuploader.test(conn, filepath, "description", (number_successful, unsuccessful_entrys) => {
-      winston.info(`${number_successful} new description entries were successfully inserted.`);
-
-      if (number_successful > 0) req.flash('success', `${number_successful} new image annotation entries were successfully inserted.`);
-
-      unsuccessful_entrys.forEach((entry) => {
-        req.flash('error', `The entry with Gene ID ${entry['Gene Symbol']} could not be uploaded.`);
+    winston.info(`${number_successful} new description entries were successfully inserted.`);
+    
+ if (number_successful > 0) req.flash('success', `${number_successful} new image annotation entries were successfully inserted.`);
+	unsuccessful_entrys.forEach((entry) => {
+        req.flash('error', `The entry for Gene: ${entry['Gene Symbol']} already exists.`);
       });
-
+      
       let flashMessages = res.locals.getMessages();
       return res.status(200).send(flashMessages);
     });
@@ -247,27 +253,26 @@ app.post('/excel_upload_desc', testmulter.any(), function(req, res) {
 // Listen for bulk image upload and store containing image files in correct directories:
 app.post('/excel_upload_image', testmulter.any(), function(req, res) {
   upload.uploadexcel(req, res, (filepath) => {
-    annotationuploader.test(conn, filepath, "image_annotations", (number_successful, unsuccessful_entrys) => {
-      winston.info(`${number_successful} new image annotation entries were successfully inserted.`);
-      if (number_successful > 0) req.flash('success', `${number_successful} new image annotation entries were successfully inserted.`);
-      unsuccessful_entrys.forEach((entry) => {
-        req.flash('error', `The entry with file name ${entry['file name']} could not be uploaded.`);
+  annotationuploader.test(conn, filepath, "image_annotations", (number_successful, unsuccessful_entrys) => {
+   winston.info(`${number_successful} new image annotation entries were successfully inserted.`);
+   if (number_successful > 0) req.flash('success', `${number_successful} new image annotation entries were successfully inserted.`);
+    unsuccessful_entrys.forEach((entry) => {
+     req.flash('error', `The entry for image with link: [${entry['link_to_file']}] already exists.`);
       });
-      let flashMessages = res.locals.getMessages();
-      return res.status(200).send(flashMessages);
+   let flashMessages = res.locals.getMessages();
+   return res.status(200).send(flashMessages);
     });
   });
 });
 
 app.post('/excel_probe_data', testmulter.any(), function(req, res) {
   BlastUploader.generate_probe_data(req.files[0].path, (number_successful, unsuccessful_entrys) => {
-    winston.info(`${number_successful} new probe sequence entries were successfully inserted.`);
+  winston.info(`${number_successful/2} new probe sequence set(s) were successfully inserted.`);
 
     if (number_successful > 0) req.flash('success', `${number_successful} new probe sequence entries were successfully inserted.`);
     unsuccessful_entrys.forEach((entry) => {
       req.flash('error', `The entry with file name ${entry['PROBE']} could not be uploaded.`);
-    });
-
+    });   
     let flashMessages = res.locals.getMessages();
     return res.status(200).send(flashMessages);
   });
@@ -310,7 +315,7 @@ app.post('/results', (req, res) => { // Listen for incoming probe search request
 
           // --- FETCH IMAGE & ANNOTATION DATA START --- //
           flyted: callback => {
-            var myQuery = "SELECT * FROM Demo WHERE Probe IN (" + conn.escape(probe) + ")";
+            var myQuery = "SELECT * FROM Image_Data WHERE Probe IN (" + conn.escape(probe) + ")";
 
             // Check if VARIANT has been set.
             // If yes then Search for entries where the genotypes (a and b)
@@ -413,7 +418,7 @@ app.post('/quick_change_microarray_fetch', (req, res) => {
 // Fetch the probe data:
 app.post('/quick_change_probe_fetch', (req, res) => {
   console.log("FIRRRRRRRED")
-  let query = "SELECT * FROM Probe_Sequences WHERE Probe = (" + conn.escape(req.body.gene) + ")";
+  let query = "SELECT Probe, 3_Prime_Sequence , 5_Prime_Sequence FROM Probe_Sequences WHERE Probe = (" + conn.escape(req.body.gene) + ")";
 
   conn.query(query, (err, my_res) => {
     if (!err && my_res.length > 0) {
@@ -535,7 +540,7 @@ app.post('/quick_change_img_edit', testmulter.any(), (req, res) => {
   }
 
   // Upload new metadata to mysql:
-  let query = "UPDATE Demo SET " +
+  let query = "UPDATE Image_Data SET " +
     "`file_name` = " + conn.escape(req.body['file_name']) +
     ",`link_to_file` = " + conn.escape(req.body['link_to_file']) +
     ",`slide_name` = " + conn.escape(req.body['slide_name']) +
@@ -618,7 +623,7 @@ app.post('/quick_change_probe_edit', (req, res) => {
 
 // Fetch image metadata to be edited:
 app.post('/quick_change_image_fetch', (req, res) => {
-  let query = "SELECT * FROM Demo WHERE probe = (" + conn.escape(req.body.gene) + ")";
+  let query = "SELECT * FROM Image_Data WHERE probe = (" + conn.escape(req.body.gene) + ")";
   conn.query(query, (err, my_res) => {
     if (err) winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     return res.status(200).send(my_res);
@@ -658,19 +663,22 @@ app.post('/removeImageAndData', (req, res) => {
 
   //Mysql to delete image and metadata:
   var img_name = conn.escape(req.body.image_name);
-  let query = ("DELETE FROM Demo WHERE link_to_file = " + img_name);
+  let query = ("DELETE FROM Image_Data WHERE link_to_file = " + img_name);
 
   conn.query(query, (err, my_res) => {
     if (err) winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    else winston.info(`Metadata for image with file name ${img_name} has been successfully deleted.`);
+    else {
+      req.flash('success', `Metadata for image: ${img_name} has been successfully deleted`);
+      winston.info(`Metadata for image with file name ${img_name} has been successfully deleted.`);
+     }
 
     // Need to now remove the image:
-    let file_to_remove = ("/home/benedict/Desktop/FlyTED2/public/img" + req.body.image_name);
+    let file_to_remove = ("/var/www/html/FlyTED2/public/img" + req.body.image_name);
     fs.unlink(file_to_remove, (err) => {
       if (err) {
         winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-        req.flash('error', `The deletion was bad`)
-      } else req.flash('success', `The deletion was good`);
+        req.flash('error', `The image ${'img_name'} could not be removed.`);
+      } else req.flash('success', `The image ${'img_name'} has been sucessfully removed.`);
 
       let flashMessages = res.locals.getMessages();
       return res.status(200).send(flashMessages);
