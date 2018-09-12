@@ -85,17 +85,17 @@ Dropzone.options.myAwesomeDropzoneTwo = {
       document.getElementById('myDivtwo').innerHTML = "";
 
       if (response.error != undefined && response.error.length > 0) {
-        $('#myDivtwo').append("<ul id='errorList' class='errors'></ul>");
+        $('#myDivtwo').append("<ul id='two_errorList' class='errors'></ul>");
         for (let i = 0; i < response.error.length; i++) {
-          $("#errorList").append("<li>" + response.error[i] + "</li>");
+          $("#two_errorList").append("<li>" + response.error[i] + "</li>");
         }
       }
 
       if (response.success != undefined && response.success.length > 0) {
         $('#myDivtwo').append(
-          "<ul id='successList' class='success'></ul>");
+          "<ul id='two_successList' class='success'></ul>");
         for (let i = 0; i < response.success.length; i++) {
-          $("#successList").append("<li>" + response.success[i] +
+          $("#two_successList").append("<li>" + response.success[i] +
             "</li>");
         }
       }
@@ -106,8 +106,8 @@ Dropzone.options.myAwesomeDropzoneTwo = {
       document.getElementById('my-awesome-dropzone-two').innerHTML =
         '<span style="font-weight: bold">Submit Expression Images Here: Read the Descripton</span></div>';
       document.getElementById('myDivtwo').innerHTML = "";
-      $('#myDivtwo').append("<ul id='errorList' class='errors'></ul>");
-      $("#errorList").append("<li>" +
+      $('#myDivtwo').append("<ul id='two_errorList' class='errors'></ul>");
+      $("#two_errorList").append("<li>" +
         "Error connecting to server, it may be down" + "</li>");
 
 
@@ -169,8 +169,8 @@ Dropzone.options.myAwesomeDropzoneThree = {
       document.getElementById('my-awesome-dropzone-three').innerHTML =
         '<span style="font-weight: bold">Submit Description spreadsheets here.</span></div>';
       document.getElementById('#myDivthree').innerHTML = "";
-      $('#myDivthree').append("<ul id='errorList' class='errors'></ul>");
-      $("#errorList").append("<li>" +
+      $('#myDivthree').append("<ul id='three_errorList' class='errors'></ul>");
+      $("#three_errorList").append("<li>" +
         "Error connecting to server, it may be down" + "</li>");
     });
   }
@@ -207,17 +207,17 @@ Dropzone.options.myAwesomeDropzoneFour = {
 
       if (response.error != undefined && response.error.length > 0) {
         $('#myDivfour').append(
-          "<ul id='errorList' class='errors'></ul>");
+          "<ul id='four_errorList' class='errors'></ul>");
         for (let i = 0; i < response.error.length; i++) {
-          $("#errorList").append("<li>" + response.error[i] + "</li>");
+          $("#four_errorList").append("<li>" + response.error[i] + "</li>");
         }
       }
 
       if (response.success != undefined && response.success.length > 0) {
         $('#myDivfour').append(
-          "<ul id='successList' class='success'></ul>");
+          "<ul id='five_successList' class='success'></ul>");
         for (let i = 0; i < response.success.length; i++) {
-          $("#successList").append("<li>" + response.success[i] +
+          $("#five_successList").append("<li>" + response.success[i] +
             "</li>");
         }
       }
@@ -229,8 +229,8 @@ Dropzone.options.myAwesomeDropzoneFour = {
       document.getElementById('my-awesome-dropzone-four').innerHTML =
         '<span style="font-weight: bold">Submit Description spreadsheets here.</span></div>';
       document.getElementById('#myDivfour').innerHTML = "";
-      $('#myDivfour').append("<ul id='errorList' class='errors'></ul>");
-      $("#errorList").append("<li>" +
+      $('#myDivfour').append("<ul id='four_errorList' class='errors'></ul>");
+      $("#four_errorList").append("<li>" +
         "Error connecting to server, it may be down" + "</li>");
     });
   }
