@@ -50,14 +50,14 @@ module.exports.test = function(conn, filename, spreadsheetContent, callback) {
 
 var upload_mysql = function(row, cb) {
   var values = extract_data_for_probe_sequences_array(row);
-  let query = "INSERT INTO Demo(file_name, link_to_file, slide_name, date," +
+  let query = "INSERT INTO Image_Data(file_name, link_to_file, slide_name, date," +
     "user, probe, probe_concentration, genotype_a, genotype_b, objective," +
     "optivar, cmount, stages_shown_in_picture, description_of_staining_pattern," +
     "comments, xcoordinate, ycoordinate) VALUES (" + values + ")";
   conn.query(query, (err, res) => {
     if (!err) cb(null, [true, row]);
     else if (err.code == "ER_DUP_ENTRY") {
-      winston.error("Duplicate Demo data entered.");
+      winston.error("Duplicate Image metadata entered.");
       cb(null, [false, row]);
     } else{
       winston.error(`${err.status || 500} - ${err.message}`);
@@ -77,7 +77,7 @@ var upload_mysql_desc = function(row, callback) {
   conn.query(query, (err, res) => {
     if (!err) callback(null, [true, row]);
     else if (err.code == "ER_DUP_ENTRY") {
-      winston.error("Duplicate Demo data entered.");
+      winston.error("Duplicate probe data entered.");
       callback(null, [false, row]);
     } else callback(err, [false, row]);
   });
@@ -112,7 +112,7 @@ function extract_data_for_description(row) {
 
 
 module.exports.quickAdditionImageUpload = function(values, cb) {
-  let query = "INSERT INTO Demo(file_name, link_to_file, slide_name, date," +
+  let query = "INSERT INTO Image_Data(file_name, link_to_file, slide_name, date," +
     "user, probe, probe_concentration, genotype_a, genotype_b, objective," +
     "optivar, cmount, stages_shown_in_picture, description_of_staining_pattern," +
     "comments, xcoordinate, ycoordinate) VALUES (" + values + ")";
@@ -120,7 +120,7 @@ module.exports.quickAdditionImageUpload = function(values, cb) {
     if (!err) {
       cb(null);
     } else if (err.code == "ER_DUP_ENTRY") {
-      winston.error("Duplicate Demo data entered.");
+      winston.error("Duplicate Image uploaded.");
       cb(err);
     } else {
       winston.error(`${err.status || 500} - ${err.message}`);
