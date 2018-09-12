@@ -22,11 +22,12 @@ module.exports.read = function (req, res, callback) {
   files.forEach((file) => {
     // Assign the image descriptors
     var descriptors = file.originalname.split("_");
+   console.log(descriptors);
     var image_gene = descriptors[0];
     var image_date = descriptors[2].split('.').join('-').replace("-bmp", "");
-    var parent_directory = ("/home/benedict/Desktop/FlyTED2/public"+ "/" + image_date + "/" + image_gene);  // Root directory for all uploaded images.
+    var parent_directory = ("/var/www/html/FlyTED2/public/img/" + image_date + "/" + image_gene);  // Root directory for all uploaded images.
     var complete_file_location = parent_directory + "/" + file.originalname;  // Target directory for file.
-
+    console.log(complete_file_location);
     mkdirp(parent_directory, err => { // Make correct directory based on file name
 
     if (err) winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
@@ -88,4 +89,9 @@ function copyImage(file, complete_file_location, callback) {
   if(err) callback(err);
   else callback(null);
   });
+}
+
+
+module.exports.uploadexcel = function (req, res, callback) {
+  callback(req.files[0].path);
 }
