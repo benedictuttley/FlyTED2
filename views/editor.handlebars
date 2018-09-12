@@ -1,0 +1,802 @@
+<!-- editor.handlebars -->
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="utf-8">
+  <meta name="description" content="FlyTED2 home page">
+  <meta name="author" content="Benedict Uttley, Cardiff University, Biosciences">
+  <title>Editor</title>
+
+  <!--Load jquery-->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <!-- Load the Bootstrap js files -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"
+    integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
+    crossorigin="anonymous"></script>
+  <script src="dropzone.js"></script>
+  <!-- LOAD EXTERNAL JS SCRIPTS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="sidebar.js"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+
+  <!-- CSS LINKS -->
+  <link href="dropzone.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+  <!-- Add icon library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="component.css" />
+  <link rel="stylesheet" type="text/css" href="editor.css" />
+
+  <!-- Config for file input CREDIT: By Osvaldas Valutis, www.osvaldas.info MIT liscence-->
+  <script>
+  (function(e, t, n) {
+    var r = e.querySelectorAll("html")[0];
+    r.className = r.className.replace(/(^|\s)no-js(\s|$)/, "$1js$2")
+  })(document, window, 0);
+  </script>
+</head>
+<style>
+/* Style tab links */
+
+.tablink {
+  margin-top: 1%;
+  background-color: #555;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  width: 50%;
+  border: 2px solid black;
+  color: white;
+}
+
+.tablink:hover {
+  background-color: gray;
+}
+
+
+/* Style the tab content (and add height:100% for full page content) */
+
+.tabcontent {
+  display: none;
+  padding: 100px 20px;
+  height: 100%;
+}
+
+
+.schema_download{
+  position: relative;
+  background-color: white;
+  border: 2px solid #d4374a;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.625rem 1.25rem;
+  color: black;
+  display: inline-block;
+  height: auto;
+}
+
+.schema_download:hover{
+  background-color: rgba(212, 55, 74, 0.2);
+}
+</style>
+
+<body>
+  <!--Side bar containing query bulder form -->
+  <div id="mySidenav" class="sidenav">
+    <div class="container">
+      <a class="closebtn" onclick="closeNav()" style="color: white" onclick="toggleSide()">&times</a>
+      <br>
+      <form class="form-horizontal" method="post" action="/results">
+        <h3 style="color:white">Query Builder</h3>
+        <div class="form-group">
+          <label class="control-label col-sm-2" style="color: white">GENE</label>
+          <div class="col-sm-10">
+            <input class="form-control" id="gene" name="Probe" placeholder="Enter gene(s)" data-toggle="tooltip"
+              data-placement="left" title="Seperate multiple genes with commas.">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" style="color: white">VARIANT</label>
+          <div class="col-sm-10">
+            <input class="form-control" id="variant" name="Variant" placeholder="Enter Variant(s)"
+              data-toggle="tooltip" data-placement="left" title="Seperate multiple genotypes with commas.">
+          </div>
+        </div>
+        <br>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-lg sharp" style="width:100%">EXECUTE</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!--Top sticky navigation bar -->
+  <nav class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top" style="background-color: gray !important; border-bottom: 2px solid white">
+    <button class="btn btn-info navbar-btn" onclick="toggleSide()">New Query</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+      aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="nav navbar-nav mr-auto">
+        <li class="nav-item">
+          <a style="color: white" class="nav-link">FlyTED2</a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav">
+        <li class="nav-item">
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/credits">Credits</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/cite">Liscence and Citing</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/cite">Admin</a>
+          <span class="sr-only">(current)</span>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+
+
+
+
+  <!-- Collection of custom functions -->
+  <script>
+  // Toggle display of the image addition form:
+  function displayAdditionContainer(id, type) {
+    if (current_gene != undefined) {
+      let tab = document.getElementById(id);
+      let addition_container = document.getElementById(id.replace('_tab', ''));
+      let current_display = addition_container.style.display;
+
+      if (type == 'toggle') {
+        if (current_display == "block") {
+          addition_container.style.display = "none";
+          tab.innerHTML = tab.innerHTML.replace('(-)', '(+)');
+
+        } else {
+          addition_container.style.display = "block";
+          tab.innerHTML = tab.innerHTML.replace('(+)', '(-)');
+        }
+      }
+
+      if (type == true) {
+        addition_container.style.display = "block";
+        tab.innerHTML = tab.innerHTML.replace('(+)', '(-)');
+      } else if (type == false) {
+        addition_container.style.display = "none";
+        tab.innerHTML = tab.innerHTML.replace('(-)', '(+)');
+
+      }
+    }
+  }
+
+  // Delete image and associated metadata entry:
+  // NOTE: WORKING
+  function delImgAndData(image_name) {
+    $.ajax({
+      type: 'post',
+      url: '/removeImageAndData',
+      data: {
+        "image_name": image_name
+      },
+      success: function(response) {
+        document.getElementById('myDivseven').innerHTML = "";
+
+        if (response.error != undefined && response.error.length > 0) {
+          $('#myDivseven').append(
+            "<ul id='errorListFive' class='errors'></ul>");
+
+          for (let i = 0; i < response.error.length; i++) {
+            $("#errorListFive").append("<li>" + response.error[i] +
+              "</li>");
+          }
+        }
+
+        if (response.success != undefined && response.success.length > 0) {
+          $('#myDivseven').append(
+            "<ul id='successListFive' class='success'></ul>");
+
+          for (let i = 0; i < response.success.length; i++) {
+            $("#successListSeven").append("<li>" + response.success[i] +
+              "</li>");
+          }
+        }
+      }
+    });
+  }
+
+  // Delete probe entry:
+  function delProbeData() {
+    $.ajax({
+      type: 'post',
+      url: '/removeProbeData',
+      data: {
+        "gene": current_gene
+      },
+      success: function(response) {
+        document.getElementById('myDivsix').innerHTML = "";
+
+        if (response.error != undefined && response.error.length > 0) {
+          $('#myDivsix').append(
+            "<ul id='errorListSix' class='errors'></ul>");
+
+          for (let i = 0; i < response.error.length; i++) {
+            $("#errorListSix").append("<li>" + response.error[i] +
+              "</li>");
+          }
+        }
+        if (response.success != undefined && response.success.length > 0) {
+          $('#myDivsix').append(
+            "<ul id='successListSix' class='success'></ul>");
+
+          for (let i = 0; i < response.success.length; i++) {
+            $("#successListSix").append("<li>" + response.success[i] +
+              "</li>");
+          }
+        }
+      }
+    });
+  }
+
+  // Delete microarray entry:
+  function delMicroarrayData() {
+    $('#microarray_form')[0].reset();
+    $.ajax({
+      type: 'post',
+      url: '/removeMicroarrayData',
+      data: {
+        "gene": current_gene
+      },
+      success: function(response) {
+        document.getElementById('myDivfive').innerHTML = "";
+
+        if (response.error != undefined && response.error.length > 0) {
+          $('#myDivfive').append(
+            "<ul id='errorListFive' class='errors'></ul>");
+
+          for (let i = 0; i < response.error.length; i++) {
+            $("#errorListFive").append("<li>" + response.error[i] +
+              "</li>");
+          }
+        }
+
+        if (response.success != undefined && response.success.length > 0) {
+          $('#myDivfive').append(
+            "<ul id='successListFive' class='success'></ul>");
+
+          for (let i = 0; i < response.success.length; i++) {
+            $("#successListFive").append("<li>" + response.success[i] +
+              "</li>");
+          }
+        }
+      }
+    });
+  }
+  </script>
+
+  <button class="tablink" onclick="openPage('Quick', this, '#d4374a')">Quick Edit</button>
+  <button class="tablink" onclick="openPage('Bulk', this, '#d4374a')" id="defaultOpen">Bulk Upload</button>
+
+  <div id="Quick" class="tabcontent">
+
+    <!-- QUICK EDIT START -->
+
+    <div>
+      <h1 style="color: #d4374a">QUICK EDIT</h1>
+      <h4>
+        Enter a gene to retrieve each data component that FlyTED holds on that gene,
+        which can then be edited or removed. Please note that changes will be made immediately and will be irreversible.
+        <br>
+        <br>
+        The image metadata editor allows for new images and metadata to be added and FlyTED will associate this with the
+        current gene which results are being displayed.
+        For the other categories, only one instance is permitted per gene, e.g. a single set of probe sequences. The addition
+        option is only available to these sections when the data does not already exist.
+      </h4>
+
+      <div style="width: 100%;float:left;" id="myDivGeneInput"></div>
+      <form id="gene_for_change">
+        <input type="text" name="gene" class="input" id="quick_edit_gene" placeholder="Enter Gene for Retrieval">
+        <button id="testnew" class="btn" type="submit">Fetch Data</button>
+      </form>
+      <br>
+
+      <div class="tab" id="image_container_tab" onclick="displayAdditionContainer(this.id, 'toggle')"
+        style="margin-bottom: 0">
+        (+) IMAGE METADATA
+      </div>
+      <div id="image_container" class="quick_change_container" style="border-top: none; margin-top: none; display: none">
+        <h3 style="text-decoration: underline">{1} Image Metadata</h3>
+        <div style="width: 100%;float:left;" id="myDivseven"></div>
+        <button type="button" id="prev_slider" class="btn">&#x21E6; Previous Image</button>
+        <button type="button" id="next_slider" class="btn">Next Image &#x21E8;</button>
+        <h4>
+          Edit the metadata and image shown for the respective gene.
+          To delete the image and the associated metadata, select the
+          'DELETE' button. Changes will only be made if the 'UPDATE DATASET'
+          button is pressed.
+       </h4>
+
+        <div class="your-class" id="pls"></div>
+
+        <!-- Image additon tab and container -->
+        <div class="tab2" id="image_addition_container_tab" onclick="displayAdditionContainer(this.id, 'toggle')"
+          style="margin-bottom: 0">
+          (+) ADD AN IMAGE
+        </div>
+        <br>
+        <!-- Image and image metadata addition upload container -->
+        <div id="image_addition_container" class="quick_change_container" style="border-top: none; margin-top: none; display: none">
+          <h3 style="text-decoration: underline">Image Metadata</h3>
+          <h4>ENTER DESCRIPTION HERE</h4>
+          <div style="width: 100%; float:left;" id="image_addition_notifier"></div>
+          <form id="image_addition_form" class="quick_change_form_addition" enctype='multipart/form-data'>
+            <div class="form-group row">
+              <div class="col-xs-2">
+                <label for="ex1">File_Name</label>
+                <input class="form-control" id="File_Name" name="File_Name" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">Link_To_File</label>
+                <input class="form-control" id="Link_To_File" name="Link_To_File" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">Slide_Name</label>
+                <input class="form-control" id="Slide_Name" name="Slide_Name" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">date</label>
+                <input class="form-control" id="date" name="date" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">user</label>
+                <input class="form-control" id="user" name="user" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">probe</label>
+                <input class="form-control" id="probe" name="probe" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">probe_concentration</label>
+                <input class="form-control" id="probe_concentration" name="probe_concentration" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">genotype_a</label>
+                <input class="form-control" id="genotype_a" name="genotype_a" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">genotype_b</label>
+                <input class="form-control" id="genotype_b" name="genotype_b" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">objective</label>
+                <input class="form-control" id="objective" name="objective" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">optivar</label>
+                <input class="form-control" id="optivar" name="optivar" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">cmount</label>
+                <input class="form-control" id="cmount" name="cmount" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">stages_shown_in_picture</label>
+                <input class="form-control" id="stages_shown_in_picture" name="stages_shown_in_picture"
+                  type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">description_of_staining_pattern</label>
+                <input class="form-control" id="description_of_staining_pattern" name="description_of_staining_pattern"
+                  type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">comments</label>
+                <input class="form-control" id="comments" name="comments" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">x-coordinate</label>
+                <input class="form-control" id="xcoordinate" name="xcoordinate" type="text">
+              </div>
+              <div class="col-xs-2">
+                <label for="ex1">y-coordinate</label>
+                <input class="form-control" id="ycoordinate" name="ycoordinate" type="text">
+              </div>
+              <div class="col-xs-2">
+
+                <input type="file" name="ok_image" id="ok_image" class="inputfile">
+                <label for="ok_image">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17">
+                    <path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4
+                2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6
+                1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6
+                0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z" />
+                  </svg>
+                  <span>Select Image File &hellip;</span>
+                </label>
+              </div>
+            </div>
+            <button id="send_changes" class="btn" type="submit">submit</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Microarray tab and container -->
+      <div class="tab" id="microarray_container_tab" onclick="displayAdditionContainer(this.id, 'toggle')"
+        style="margin-bottom: 0">
+        (+) MICROARRAY DATA
+      </div>
+      <br>
+      <!-- CONTAINER WITH FORM FOR MICROARRAY DATASET EDIT -->
+      <div id="microarray_container" class="quick_change_container" style="border-top: none; margin-top: none; display: none">
+        <h3 style="text-decoration: underline">{2} Microarray Data</h3>
+        <div id="myDivfive"></div>
+        <h4>
+          Retrieve the microarray results for a given gene, note there is no option to add
+          multiple microarray datasets for the same gene. This is a 1:1 relationship.
+        </h4>
+        <form id="microarray_form" class="quick_change_form">
+          <button id="microarray_delete" class="btn" type="button" onclick="delMicroarrayData(this.id)">Delete Dataset</button>
+          <div class="form-group row">
+            <div class="col-xs-2">
+              <label for="ex1">Probe_Set</label>
+              <input class="form-control" id="Probe_Set" name="Probe_Set" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">Transcript_ID</label>
+              <input class="form-control" id="Transcript_ID" name="Transcript_ID" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">Target_Description</label>
+              <input class="form-control" id="Target_Description" name="Target_Description" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">wt(tin)</label>
+              <input class="form-control" id="wt(tin)" name="wt(tin)" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">wt(mip40)(excised)</label>
+              <input class="form-control" id="wt(mip40)(excised)" name="wt(mip40)(excised)" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">wt(white)</label>
+              <input class="form-control" id="wt(white)" name="wt(white)" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">aly5</label>
+              <input class="form-control" id="aly5" name="aly5" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">comr</label>
+              <input class="form-control" id="comr" name="comr" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">tomb</label>
+              <input class="form-control" id="tomb" name="tomb" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">nxt1</label>
+              <input class="form-control" id="nxt1" name="nxt1" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">mip40(sh2)(bsc)</label>
+              <input class="form-control" id="mip40(sh2)(bsc)" name="mip40(sh2)(bsc)" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">mip40(ey)</label>
+              <input class="form-control" id="mip40(ey)" name="mip40(ey)" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">mip40(ey)(bg4)</label>
+              <input class="form-control" id="mip40(ey)(bg4)" name="mip40(ey)(bg4)" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">wucRNAi</label>
+              <input class="form-control" id="wucRNAi" name="wucRNAi" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">wucRNAi_aly</label>
+              <input class="form-control" id="wucRNAi_aly" name="wucRNAi_aly" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">mip40(sh2)(comr)</label>
+              <input class="form-control" id="mip40(sh2)(comr)" name="mip40(sh2)(comr)" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">mip40(ey)(aly)</label>
+              <input class="form-control" id="mip40(ey)(aly)" name="mip40(ey)(aly)" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">aly1(27)</label>
+              <input class="form-control" id="aly1(27)" name="aly1(27)" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">aly1(18)</label>
+              <input class="form-control" id="aly1(18)" name="aly1(18)" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">aly1(18)(btr)</label>
+              <input class="form-control" id="aly1(18)(btr)" name="aly1(18)(btr)" type="text">
+            </div>
+
+            <div class="col-xs-2">
+              <input type="hidden" class="form-control" id="test_Gene" name="gene" type="text">
+            </div>
+          </div>
+
+          <button id="send_changes" class="btn" type="submit">submit</button>
+        </form>
+      </div>
+
+      <div class="tab" id="probe_container_tab" onclick="displayAdditionContainer(this.id, 'toggle')"
+        style="margin-bottom: 0">
+        (+) PROBE DATA
+      </div>
+      <div id="probe_container" class="quick_change_container" style="border-top: none; margin-top: none; display: none">
+        <h3 style="text-decoration: underline">{3} Probe Data</h3>
+        <div style="width: 100%;float:left;" id="myDivsix"></div>
+        <h4>
+          Change the 5' and 3' probe sequences, note that these sequences will be analyzed with Blast to calculate the target sequence for all transcripts of the given gene.
+          Performing this is computationally expensive and make take some time.
+        </h4>
+        <form id="probe_form" class="quick_change_form">
+
+          <button id="probe_delete" class="btn" type="button" onclick="delProbeData()">Delete Dataset</button>
+          <div class="form-group row">
+            <div class="col-xs-2">
+              <label for="ex1">Probe</label>
+              <input class="form-control" id="Probe" name="Probe" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">3_Prime_Sequence</label>
+              <input class="form-control" id="3_Prime_Sequence" name="3_Prime_Sequence" type="text">
+            </div>
+            <div class="col-xs-2">
+              <label for="ex1">5_Prime_Sequence</label>
+              <input class="form-control" id="5_Prime_Sequence" name="5_Prime_Sequence" type="text">
+            </div>
+          </div>
+          <button id="send_changes" class="btn" type="submit">submit</button>
+        </form>
+      </div>
+    </div>
+    <br>
+  </div>
+
+  <div id="Bulk" class="tabcontent" style="color: black">
+    <h1 style="color: #d4374a">BULK FILE UPLOAD</h1>
+
+    <h4>
+      Here you can add new data to FlyTED, each data component can be submitted
+      separately and will be linked together to generate the complete data unit for a
+      particular gene.
+      <br>
+      <br>
+      Although it is preferred that each section for the gene dataset be submitted, to maintain the completeness of the database,
+      it is not enforced. Therefore a section e.g. 'Microarray Data' can be added at a later date if and when it becomes available.
+    </h4>
+
+    {{#errors}}
+      <ul class="errors">
+        {{#error}}
+          <li>{{.}}</li>
+        {{/error}}
+      </ul>
+    {{/errors}}
+    <br>
+    <!-- Bulk image upload notification container -->
+    <div style="width: 100%;float:left;" id="myDiv"></div>
+    <!-- Bulk image upload container -->
+    <div class="main_info" style="width: 100%; float:left;">
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/fileupload" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone"
+          style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
+          </div>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select images or drag and drop a folder</span>
+          </div>
+        </form>
+      </div>
+      <h2 style="text-decoration: underline; color: #d4374a;">Upload Expression Images</h2>
+      <p>
+        Submit new images here, the images should be
+        <span style="background-color:#d4374a; font-weight:bold">bitmaps, having the (.bmp) extension.</span>
+        You can upload multiple images at once by dragging and dropping the folder into the
+        right hand-side panel. Submitted images need must adhere to the following
+        structure:
+        <span style="background-color:#d4374a; font-weight:bold">[Gene]_[imageID]_[Date.bmp].</span>
+      </p>
+      <h4>Acceptable image name examples:</h4>
+      <ul>
+        <li>CG3494_comr01_5.11.07.bmp</li>
+        <li>betaTub85D_wt01_24.3.07.bmp</li>
+        <li>CG2750_aly01_19.6.06.bmp</li>
+      </ul>
+      <p>
+        This is required so that FlyTED can link the images with the other datasets associated
+        with the repective gene, which unite to form the results page displayed to
+        the user.
+      </p>
+      <p>
+        Note: The date part of the image address should correspond to the date the image
+        was taken or aquired rather then the time of submission to FlyTED.
+      </p>
+    </div>
+    <br>
+
+    <!--Bulk image annotation upload notification container -->
+    <div style="width: 100%;float:left;" id="myDivtwo"></div>
+    <!-- Bulk image annotation upload container -->
+    <div class="main_info" style="width: 100%; float:left;">
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/excel_upload_image" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-two"
+          style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
+          </div>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select image annotations or drag and drop a folder</span>
+          </div>
+        </form>
+      </div>
+      <h2 style="text-decoration: underline; color: #d4374a;">Upoad Image Annotations</h2>
+
+      <p>
+        Submit new image annotation entries here, which are displayed alongside the subject
+        image. Bulk descriptions can be uploaded by storing the descriptions as
+        <span style="background-color:#d4374a; font-weight:bold">rows in an excel spreadsheet</span> with the file extension
+        <span style="background-color:#d4374a; font-weight:bold">(.xls)</span>. In order for the spreadsheet to be uploaded successfully,
+        it
+        <span style="background-color:#d4374a; font-weight:bold">must follow the expected schema.</span> FlyTED will look for the following
+        columns to display, and will ignore others, the colums must be named as described
+        below:
+      </p>
+
+      <h4>Image annotation schema:</h4>
+      <a class="schema_download" href="a.xls">Download Image Annotation Data Schema  <i class="fa fa-download"></i></a>
+      <!-- <ol>
+        <li><b>date</b> - The date the image was taken.</li>
+        <li><b>file name</b> - The name of the image.</li>
+        <li><b>slide name</b> - The name of the slide used for the image acquisition.</li>
+        <li><b>user</b> - WILL BE REMOVED</li>
+        <li><b>probe</b> - The name of the gene.</li>
+        <li><b>probe concentration</b> - The concentration of the probe that used.</li>
+        <li><b>genotype a</b> - Variant being used.</li>
+        <li><b>genotype b</b> - Variant being used (may be void if not only one variant
+          present).
+        </li>
+        <li><b>objective</b> - WILL BE REMOVED </li>
+        <li><b>optivar</b> - Resolution of image.</li>
+        <li><b>c-mount</b> - WILL BE REMOVED</li>
+        <li><b>stages shown in picture</b> - Nature of image e.g) whole testes, 2 whole
+          testes </li>
+        <li><b>description of staining pattern<b> - What does the expression pattern indicate.</li>
+            <li><b>comments<b> - Any additional information.</li>
+            <li><b>x-coordinate</b> - WILL BE REMOVED</li>
+        <li><b>y-coordinate</b> - WILL BE REMOVED</li>
+      </ol> -->
+    </div>
+    <br>
+
+    <!-- Bulk microarray upload notification container -->
+    <div style="width: 100%;float:left" id="myDivthree"></div>
+    <!-- Bulk microarray upload container -->
+    <div class="main_info" style="width: 100%; float:left;">
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/excel_upload_desc" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-three"
+          style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
+          </div>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select microarray dataset or drag and drop a folder</span>
+          </div>
+        </form>
+      </div>
+
+      <h2 style="text-decoration: underline; color: #d4374a;">Upload Microarray Data</h2>
+      <p>
+        Upload microarray datasets here, which are displayed in graphical form on the results
+        page of a given query. They can be
+        <span style="background-color:#d4374a; font-weight:bold">uploaded in bulk in an excel(.xls) spreadsheet.</span>
+        FlyTED will look for the following columns (which must be named as such) and ignore
+        others.
+      </p>
+      <h4>Micorarray data schema:</h4>
+      <a class="schema_download" href="a.xls">Download Microarray Data Schema  <i class="fa fa-download"></i></a>
+    </div>
+    <br>
+
+    <!-- Bulk probe sequence upload notification container -->
+    <div style="width: 100%;float:left;" id="myDivfour"></div>
+    <div class="main_info" style="width: 100%; float:left;">
+      <!-- Bulk probe sequence upload container -->
+      <div class="main_info" style="width: 30%;float:right; height: 100%; padding:0">
+        <form action="/excel_probe_data" class="dropzone dz-clickable" method="post" id="my-awesome-dropzone-four"
+          style="height:100%">
+          <div class="fallback">
+            <input name="file" type="file" multiple />
+          </div>
+          <div class="dz-message" data-dz-message>
+            <span style="font-weight: bold">Click to select probe sequence annotations or drag and drop a folder</span>
+          </div>
+        </form>
+      </div>
+      <h2 style="text-decoration: underline; color: #d4374a;">Upload Probe Sequences</h2>
+      <a class="schema_download" href="a.xls">Download Probe Sequence Data Schema  <i class="fa fa-download"></i></a>
+      <p>
+        Location to upload the 3' and 5' probe sequences used for the corresponding gene.
+        FlyTED will then perform BLAST sequence alignment between the probes and
+        all exisitng transcripts for that gene (retrieved externally from FlyMine),
+        and generate the resulting target sequence.
+      </p>
+      <p>
+        Sequence pairs can be <span style="background-color:#d4374a; font-weight:bold">uploaded in bulk in a comma seperated value file(.csv)</span>
+        and must adhere to the following schema:
+      </p>
+
+      <ul>
+        <li>3_GeneID|| Sequence</li>
+        <li>5_GeneID|| Sequence</li>
+      </ul>
+      <p>
+        The constant ~20 base pair sequence used in all 5' probes and those used in all 3'
+        probes can be left in the submitted probe sequences
+      </p>
+    </div>
+
+    <script>
+    function openPage(pageName, elmnt, color) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablink");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].style.backgroundColor = "";
+      }
+      document.getElementById(pageName).style.display = "block";
+      elmnt.style.backgroundColor = color;
+
+    }
+    // Get the element with id="defaultOpen" and click on it
+    document.getElementById("defaultOpen").click();
+    </script>
+    <script>
+    $(document).ready(function() {
+      $('.your-another').slick();
+    });
+    </script>
+</body>
+
+<script type="text/javascript" src="formListeners.js"></script>
+<script type="text/javascript" src="dropzoneConfigurations.js"></script>
+<script>
+customFileInput()
+</script>
+
+</html>
