@@ -37,10 +37,11 @@ $('#gene_for_change').on('submit', function(e) {
         console.log("***");
         for (var col in data[0]) {
           if (data[0].hasOwnProperty(col)) {
+		
             // Add data value to corresponding column input field,
             // if column value is empty leave input field empty: */
             if (document.getElementById(col) != null) {
-              document.getElementById(col).value = data[0][col];
+             document.getElementById(col).value = data[0][col];
             }
           }
         }
