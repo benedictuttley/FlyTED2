@@ -1,4 +1,3 @@
-=======
 /* MODULE TO UPLOAD PROBE SEQUENCE DATA AND FIND TARGET SEQUENCE USING PYTHON
    SCRPT THAT UTALISES THE BLAST ALGO: */
 
@@ -37,6 +36,7 @@ module.exports.generate_probe_data = function(filename, callback) {
       callback(number_successful, unsuccessful_entrys);
     });
   });
+});
 }
 
 // Function to upload probe data returned form python script into the Probe_Sequences table:

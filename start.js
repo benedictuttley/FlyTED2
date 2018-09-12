@@ -227,7 +227,7 @@ app.post('/fileupload', testmulter.any(), function(req, res) {
   upload.read(req, res, (num_uploaded) => { // Upload submitted image files from admin to correct folder.
     winston.info(`${num_uploaded} image file(s) have been uploaded`);
     if(num_uploaded > 0){
-<<<<<<< HEAD
+
      req.flash('success', `Success: ${num_uploaded} image file(s) have been uploaded`);
     } else{
       req.flash('error', `Error: ${num_uploaded} image file(s) already uploaded.`);
