@@ -72,15 +72,14 @@ var testmulter = multer({
 
 // Admin credentials:
 const Users = {
-  Helen: {
-    username: 'Helen',
-    password: 'Cardiff_2018'
+  Admin_2018: {
+    password: 'Admin_At_Cardiff_001'
   }
 }
 
 // Hash admin password:
-bcrypt.hash(Users.Helen.password, 10, (err, hash) => {
-  Users.Helen.password = hash;
+bcrypt.hash(Users.Admin_2018.password, 10, (err, hash) => {
+  Users.Admin_2018.password = hash;
 });
 
 // --- APP CONFIGURATION START --- //
@@ -149,14 +148,14 @@ passport.use("login", new LocalStrategy({
       if (!user) {
         return done(null, false)
       }
-
+      console.log(password,user.password);
       bcrypt.compare(password, user.password, (err, res) => {
         if (res) {
           winston.info(`User authentication accepted`);
           return done(null, user);
         } else {
           winston.info(`User authentication failed`);
-          return done(null, false, req.flash('error', 'This is a flash message using the express-flash module.'));
+          return done(null, false, req.flash('error', 'Incorrect Credentials Provided'));
         }
       });
     });
